@@ -1,0 +1,14 @@
+int32 MyInteger = 420;
+int64 MyLong = 6 * 4 + 3 + 1 - 7 / 2;
+byte bMyBool = true && false == false;
+MyInteger = 420;
+
+MyInteger = (int32)MyLong;
+
+MyLong[7] = 5;
+
+int32 fx(int32 x, int32 y, int64 MyLong) {
+                        MyLong = 1;
+                      return x * y;
+                  }
+//fx = 6;
