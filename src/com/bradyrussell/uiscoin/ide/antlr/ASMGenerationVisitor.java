@@ -203,7 +203,19 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
             if (ctx.expression() != null) {
                 if(ctx.expression() instanceof UISCParser.NumberLiteralExpressionContext) {
-                    getCurrentScope().declareConstantInlineSymbol(ctx.ID().getText(), new TypedValue(((UISCParser.NumberLiteralExpressionContext)ctx.expression()).number().getText()));
+                    UISCParser.NumberLiteralExpressionContext expression = (UISCParser.NumberLiteralExpressionContext) ctx.expression();
+
+                    TypedValue constantValue;
+
+                    if (expression.number().INT() != null) {
+                        constantValue = new TypedValue(Type.getByKeyword(ctx.type().getText()),Long.parseLong(expression.number().INT().getText()));
+                    } else {
+                        constantValue = new TypedValue(Float.parseFloat(expression.number().FLOAT().getText()));
+                    }
+
+                    getCurrentScope().declareConstantInlineSymbol(ctx.ID().getText(), constantValue);
+                    System.out.println(">>Defined constant "+ctx.ID().getText()+" of type "+constantValue.type+" with value "+constantValue);
+                    return "";
                 } else {
                     System.out.println("Cannot use that rvalue as a constant!");
                     return "INVALID_CONSTANT_RVALUE_"+ctx.ID().getText();

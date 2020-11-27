@@ -1,4 +1,4 @@
-const int32 global = 6;
+const byte global = 6;
 
 fori(5 as int32 i) {
     int64 x = i+global;
