@@ -11,7 +11,12 @@ varDeclaration
     |   type ID '[]' '=' arrayInitializer ';' #arrayValueInitialization
     |   type ID '[]' '=' STRING ';' #arrayStringInitialization
     ;
-type:   'void' | 'byte' | 'int32' | 'int64' | 'float' ;//| ID ; //this allows user-defined types
+
+structDeclaration
+    :   'struct' ID '{' varDeclaration+ '}'
+    ;
+
+type:   'void' | 'byte' | 'int32' | 'int64' | 'float' ;//| ID ; // id here will allow structs as types
 
 booleanLiteral: 'true' | 'false' | 'null';
 
@@ -31,32 +36,38 @@ formalParameter
 
 block:  '{' statement* '}' ;   // possibly empty statement block
 
-statement:   block                      #blockStatement
-    |   varDeclaration                  #varDeclarationStatement
-    |   'if' conditional=expression '{' ifbody=statement '}' elseifStatement* elseStatement? #ifStatement
-    |   'fori' '(' iterations=INT 'as' type ID ')' forbody=statement                       #foriStatement
-    |   'foreach' '(' arrayToLoop=ID 'as' varDeclaration ')' forbody=statement     #foreachStatement
-    |   'return' retval=expression? ';'        #returnStatement
-    |   lhs=ID ('[' arrayIndex=expression ']')? '=' rhs=expression ';'      #assignmentStatement
-    |   lhs=ID ('[' arrayIndex=expression ']')? op=('+='|'-='|'*='|'/='|'%='|'&='|'|=') rhs=expression ';'      #opAndAssignmentStatement
-    |   tryStatement catchStatement? #tryCatchStatement
-    |   expression ';'          #functionCallStatement
-    |   assembly #assemblyStatement
-    |   assertion #assertionStatement
-    |   exception #exceptionStatement
+statement:   block                                                                                           #blockStatement
+    |   varDeclaration                                                                                       #varDeclarationStatement
+    |   structDeclaration                                                                                    #structDeclarationStatement
+    |   'if' conditional=expression '{' ifbody=statement+ '}' elseifStatement* elseStatement?                #ifStatement
+    |   'ufori' '(' iterations=INT (',' iterationsEnd=INT)? 'as' type ID ')' forbody=statement+              #uforiStatement
+    |   'uforeach' '(' arrayToLoop=ID 'as' varDeclaration ')' forbody=statement+                             #uforeachStatement
+    |   'while' '(' expression ')' whilebody=statement+                                                      #whileStatement // EFC code
+    |   'for' '(' varDeclaration conditional=expression ';' afterEach=statement ')' forbody=statement+       #forStatement // EFC code
+    |   'return' retval=expression? ';'                                                                      #returnStatement
+    |   (lhs=ID|lhs_struct=structField) ('[' arrayIndex=expression ']')? '=' rhs=expression ';'              #assignmentStatement
+    |   lhs=ID ('[' arrayIndex=expression ']')? op=('+='|'-='|'*='|'/='|'%='|'&='|'|=') rhs=expression ';'   #opAndAssignmentStatement
+    |   tryStatement catchStatement?                                                                         #tryCatchStatement
+    |   expression ';'                                                                                       #functionCallStatement
+    |   assembly                                                                                             #assemblyStatement
+    |   assertion                                                                                            #assertionStatement
+    |   exception                                                                                            #exceptionStatement
+    |   include                                                                                              #includeStatement
+    |   flag                                                                                                 #flagStatement
+    |   flagData                                                                                             #flagDataStatement
     ;
 
 elseifStatement:
-    'else' 'if' '(' conditional=expression ')' '{' statement '}';
+    'else' 'if' '(' conditional=expression ')' '{' statement+ '}';
 
 elseStatement:
-    'else' '{' statement '}';
+    'else' '{' statement+ '}';
 
 tryStatement:
-    'try' '{' statement '}';
+    'try' '{' statement+ '}';
 
 catchStatement:
-    'catch' '(' exprList? ')' '{' statement '}';
+    'catch' '(' exprList? ')' '{' statement+ '}';
 
 number:
         INT
@@ -75,6 +86,22 @@ exception:
     'throw' '(' exprList? ')' ';' // pushes these values on the stack then OP return
     ;
 
+include:
+    'include' '(' STRING ')' ';'
+    ;
+
+flag:
+    'flag' '(' INT ')' ';'
+    ;
+
+flagData:
+    'flagdata' '(' STRING ')' ';'
+    ;
+
+structField:
+    structname=ID ('.' fieldname=ID)+
+    ;
+
 // expressions should push a single value on to the stack (net +1, temp variables are fine)
 expression:
         '(' type ')' expression                                             #castExpression // cast like (byte) getInteger()
@@ -86,6 +113,8 @@ expression:
     |   '#' type                                                            #sizeOfExpression     // return sizeof(type)
     |   '-' expression                                                      #negateExpression   // unary minus
     |   '!' expression                                                      #notExpression  // boolean not
+    |   op=('--'|'++') expression                                           #prefixOpExpression   // --x or ++x;
+    |   expression op=('--'|'++')                                           #postfixOpExpression   // x-- or x++;
     |   lhs=expression ('%') rhs=expression                                 #moduloExpression
     |   lhs=expression op=('*'|'/') rhs=expression                          #multDivExpression
     |   lhs=expression op=('+'|'-') rhs=expression                          #addSubExpression
@@ -94,6 +123,7 @@ expression:
     |   lhs=expression op=('<'|'<='|'>'|'>=') rhs=expression                #comparisonExpression     //  comparison
     |   lhs=expression op=('=='|'!=') rhs=expression                        #equalityExpression     // equality comparison (lowest priority op)
     |   ID                                                                  #variableReferenceExpression     // variable reference
+    |   structField                                                         #structFieldReferenceExpression     // struct field reference // todo array as struct field?
     |   number                                                              #numberLiteralExpression
     |   booleanLiteral                                                      #booleanLiteralExpression
     |   STRING                                                              #stringLiteralExpression        // strings are byte arrays

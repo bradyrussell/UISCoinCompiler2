@@ -20,7 +20,6 @@ public class Main {
         UISCParser parser = new UISCParser(new CommonTokenStream(lexer));
         ParseTree tree = parser.file();
 
-
         ASMGenerationVisitor asmGenerationVisitor = new ASMGenerationVisitor();
         String asm = asmGenerationVisitor.visit(tree);
 

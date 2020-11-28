@@ -1,6 +1,7 @@
 package com.bradyrussell.uiscoin.ide.symboltable;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ScopeCapture extends ScopeLocal {
     public ScopeCapture(String scopeName, ScopeBase parent) {
@@ -16,7 +17,31 @@ public class ScopeCapture extends ScopeLocal {
         // pick ..y
         //pick ..z    in order where symbolTable.get(x).address = 0, y = 1 etc
 
-        return "CAPTURE_ASM_NOT_IMPLEMENTED";
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\n/* Begin Capture of "+capturedVariableRealAddresses.size()+" Symbols */\n");
+
+        symbolTable.entrySet().stream().filter((e)-> capturedVariableRealAddresses.containsKey(e.getKey())).sorted((a, b)->{
+            int aAddress = 0, bAddress = 0;
+
+            if(a.getValue() instanceof ScopeWithSymbol) {
+                aAddress = ((ScopeWithSymbol)a.getValue()).Symbol.address;
+            }
+            if(a.getValue() instanceof SymbolBase) {
+                aAddress = ((SymbolBase)a.getValue()).address;
+            }
+            if(b.getValue() instanceof ScopeWithSymbol) {
+                bAddress = ((ScopeWithSymbol)b.getValue()).Symbol.address;
+            }
+            if(b.getValue() instanceof SymbolBase) {
+                bAddress = ((SymbolBase)b.getValue()).address;
+            }
+            return aAddress - bAddress;
+        }).map(Map.Entry::getKey).map((s -> capturedVariableRealAddresses.get(s))).forEach((integer -> sb.append("push [").append(integer).append("] pick ")));
+
+        sb.append("\n/* End Capture of "+capturedVariableRealAddresses.size()+" Symbols */\n");
+
+        return sb.toString();
     }
 
     @Override
@@ -39,13 +64,13 @@ public class ScopeCapture extends ScopeLocal {
             capturedVariableRealAddresses.put(Name, actualSymbol.address);
 
             int innerAddress = declareArray(Name, actualSymbol.type, actualSymbol.length);
-            System.out.println("Captured array "+Name+" outer address: "+actualSymbol.address+" inner address: "+innerAddress);
+            System.out.println("[Capture] Captured array "+Name+" outer address: "+actualSymbol.address+" inner address: "+innerAddress);
         } else {
             SymbolBase actualSymbol = (SymbolBase) uncastedActualSymbol;
             capturedVariableRealAddresses.put(Name, actualSymbol.address);
 
             int innerAddress = declareSymbol(Name, actualSymbol.type);
-            System.out.println("Captured symbol "+Name+" outer address: "+actualSymbol.address+" inner address: "+innerAddress);
+            System.out.println("[Capture] Captured symbol "+Name+" outer address: "+actualSymbol.address+" inner address: "+innerAddress);
         }
         return symbolTable.get(Name);
     }

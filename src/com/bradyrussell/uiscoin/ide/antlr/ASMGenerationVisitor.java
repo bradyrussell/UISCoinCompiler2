@@ -30,7 +30,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
     }
 
-    void PushLocalScopeCapture(String ScopeName) {
+    ScopeCapture PushLocalScopeCapture(String ScopeName) {
         if (CurrentLocalScope == null) {
             CurrentLocalScope = new ScopeCapture(ScopeName, Global);
             Global.Children.add(CurrentLocalScope);
@@ -39,6 +39,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             CurrentLocalScope = new ScopeCapture(ScopeName, parent);
             parent.Children.add(CurrentLocalScope);
         }
+        return (ScopeCapture) CurrentLocalScope;
     }
 
     void PushFunctionScope(Type FunctionType, String FunctionName) {
@@ -292,16 +293,18 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     public String visitTryCatchStatement(UISCParser.TryCatchStatementContext ctx) {
         StringBuilder tryCatchAsm = new StringBuilder();
 
-        PushLocalScopeCapture("TryStatement");
         // maybe record depth here so we can drop back to that depth?
-
         // put inside a virtualscript so returns are caught
-
         // execute and jumpif over the catch block if returned true
-/*        tryCatchAsm.append()*/
+
+        ScopeCapture captureScope = PushLocalScopeCapture("TryStatement");
+
         tryCatchAsm.append(visit(ctx.tryStatement()));
 
         PopLocalScope();
+
+        return captureScope.generateCaptureASM() + tryCatchAsm.toString();
+
 
 /*        if(ctx.catchStatement() != null){
             PushLocalScope("CatchStatement");
@@ -312,11 +315,21 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
         /// drop back to that depth?*/
 
-        return tryCatchAsm.toString();
+        //return tryCatchAsm.toString();
+    }
+
+    @Override
+    public String visitException(UISCParser.ExceptionContext ctx) {
+        return visit(ctx.exprList()) + " return ";
     }
 
     @Override
     public String visitAssignmentStatement(UISCParser.AssignmentStatementContext ctx) {
+        if(ctx.lhs == null) {
+            System.out.println("Struct field assignment not yet implemented!" + ctx.lhs_struct.getText());
+            return "NOT_YET_IMPLEMENTED";
+        }
+
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.lhs.getText());
 
         if(scopeContaining == null){
@@ -492,8 +505,16 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     }
 
     @Override
-    public String visitForiStatement(UISCParser.ForiStatementContext ctx) { // loop unrolling
-        int Iterations = Integer.parseInt(ctx.iterations.getText());
+    public String visitUforiStatement(UISCParser.UforiStatementContext ctx) { // loop unrolling
+        int ItBegin, ItEnd;
+
+        if(ctx.iterationsEnd != null) {
+            ItBegin = Integer.parseInt(ctx.iterations.getText());
+            ItEnd = Integer.parseInt(ctx.iterationsEnd.getText());
+        } else {
+            ItEnd = Integer.parseInt(ctx.iterations.getText());
+            ItBegin = 0;
+        }
 
         PushLocalScope("ForIStatement");
 
@@ -502,7 +523,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         StringBuilder forIStatement = new StringBuilder();
 
-        for (int i = 0; i < Iterations; i++) {
+        for (int i = ItBegin; i < ItEnd; i++) {
             PushLocalScope("ForIStatement_Inner_"+i);
             getCurrentScope().declareConstantInlineSymbol(ctx.ID().getText(), new TypedValue(Type.getByKeyword(ctx.type().getText()),i));
             forIStatement.append(visit(ctx.forbody));
@@ -515,7 +536,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     }
 
     @Override
-    public String visitForeachStatement(UISCParser.ForeachStatementContext ctx) { // loop unrolling
+    public String visitUforeachStatement(UISCParser.UforeachStatementContext ctx) { // loop unrolling
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.arrayToLoop.getText());
         if (scopeContaining == null) {
             System.out.println("Array " + ctx.ID().getText() + " was not defined in this scope.");
@@ -800,8 +821,9 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         Object uncastedSymbol = scopeContaining.getSymbol(ctx.ID().getText());
 
-        if(uncastedSymbol instanceof TypedValue) {
-           return "push "+((TypedValue)uncastedSymbol);
+        if(uncastedSymbol instanceof TypedValue) { // constant
+            return ((TypedValue)uncastedSymbol).generateGetSymbolASM();
+           //return "push "+((TypedValue)uncastedSymbol);
         }
 
         SymbolBase symbol = (SymbolBase) uncastedSymbol;
@@ -810,7 +832,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             System.out.println("Undefined symbol " + ctx.ID().getText());
             return "SYMBOL_NOT_DEFINED_" + ctx.ID().getText();
         }
-        return "push [" + symbol.address + "] pick ";
+        return symbol.generateGetSymbolASM();
+        //return "push [" + symbol.address + "] pick ";
     }
 
     @Override

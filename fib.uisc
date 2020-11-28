@@ -1,13 +1,6 @@
-int32 addThree(int32 before) {
-    return before+3;
-}
-
-int32 arr[]  = {1, 2 ,3};
-
-int32 y = arr;
+int32 x = 1;
 
 try{
-
-int32 test = y;
-
+    int32 y = x;
+    throw("myException", 1);
 }

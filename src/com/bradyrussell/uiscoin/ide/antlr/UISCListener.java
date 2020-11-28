@@ -75,6 +75,16 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UISCParser#structDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterStructDeclaration(UISCParser.StructDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#structDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitStructDeclaration(UISCParser.StructDeclarationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UISCParser#type}.
 	 * @param ctx the parse tree
 	 */
@@ -169,6 +179,18 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitVarDeclarationStatement(UISCParser.VarDeclarationStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code structDeclarationStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterStructDeclarationStatement(UISCParser.StructDeclarationStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code structDeclarationStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitStructDeclarationStatement(UISCParser.StructDeclarationStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code ifStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
@@ -181,29 +203,53 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitIfStatement(UISCParser.IfStatementContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code foriStatement}
+	 * Enter a parse tree produced by the {@code uforiStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void enterForiStatement(UISCParser.ForiStatementContext ctx);
+	void enterUforiStatement(UISCParser.UforiStatementContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code foriStatement}
+	 * Exit a parse tree produced by the {@code uforiStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void exitForiStatement(UISCParser.ForiStatementContext ctx);
+	void exitUforiStatement(UISCParser.UforiStatementContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code foreachStatement}
+	 * Enter a parse tree produced by the {@code uforeachStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void enterForeachStatement(UISCParser.ForeachStatementContext ctx);
+	void enterUforeachStatement(UISCParser.UforeachStatementContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code foreachStatement}
+	 * Exit a parse tree produced by the {@code uforeachStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void exitForeachStatement(UISCParser.ForeachStatementContext ctx);
+	void exitUforeachStatement(UISCParser.UforeachStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code whileStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileStatement(UISCParser.WhileStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code whileStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileStatement(UISCParser.WhileStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code forStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterForStatement(UISCParser.ForStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code forStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitForStatement(UISCParser.ForStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code returnStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
@@ -301,6 +347,42 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitExceptionStatement(UISCParser.ExceptionStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code includeStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterIncludeStatement(UISCParser.IncludeStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code includeStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitIncludeStatement(UISCParser.IncludeStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code flagStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterFlagStatement(UISCParser.FlagStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code flagStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitFlagStatement(UISCParser.FlagStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code flagDataStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterFlagDataStatement(UISCParser.FlagDataStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code flagDataStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitFlagDataStatement(UISCParser.FlagDataStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UISCParser#elseifStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -381,6 +463,58 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitException(UISCParser.ExceptionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UISCParser#include}.
+	 * @param ctx the parse tree
+	 */
+	void enterInclude(UISCParser.IncludeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#include}.
+	 * @param ctx the parse tree
+	 */
+	void exitInclude(UISCParser.IncludeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UISCParser#flag}.
+	 * @param ctx the parse tree
+	 */
+	void enterFlag(UISCParser.FlagContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#flag}.
+	 * @param ctx the parse tree
+	 */
+	void exitFlag(UISCParser.FlagContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UISCParser#flagData}.
+	 * @param ctx the parse tree
+	 */
+	void enterFlagData(UISCParser.FlagDataContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#flagData}.
+	 * @param ctx the parse tree
+	 */
+	void exitFlagData(UISCParser.FlagDataContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UISCParser#structField}.
+	 * @param ctx the parse tree
+	 */
+	void enterStructField(UISCParser.StructFieldContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#structField}.
+	 * @param ctx the parse tree
+	 */
+	void exitStructField(UISCParser.StructFieldContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code postfixOpExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterPostfixOpExpression(UISCParser.PostfixOpExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code postfixOpExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitPostfixOpExpression(UISCParser.PostfixOpExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code moduloExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
@@ -393,18 +527,6 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitModuloExpression(UISCParser.ModuloExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code addressOfVariableExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code addressOfVariableExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code andOrExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
@@ -416,18 +538,6 @@ public interface UISCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAndOrExpression(UISCParser.AndOrExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code lengthOfExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterLengthOfExpression(UISCParser.LengthOfExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code lengthOfExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitLengthOfExpression(UISCParser.LengthOfExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code multDivExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
@@ -452,6 +562,18 @@ public interface UISCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNotExpression(UISCParser.NotExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code prefixOpExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrefixOpExpression(UISCParser.PrefixOpExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code prefixOpExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrefixOpExpression(UISCParser.PrefixOpExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code booleanLiteralExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
@@ -513,18 +635,6 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitValueAtVariableExpression(UISCParser.ValueAtVariableExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code stringLiteralExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code stringLiteralExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code castExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
@@ -536,6 +646,102 @@ public interface UISCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCastExpression(UISCParser.CastExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code sizeOfExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterSizeOfExpression(UISCParser.SizeOfExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code sizeOfExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitSizeOfExpression(UISCParser.SizeOfExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code functionCallExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code functionCallExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code bitwiseExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBitwiseExpression(UISCParser.BitwiseExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code bitwiseExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBitwiseExpression(UISCParser.BitwiseExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code negateExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterNegateExpression(UISCParser.NegateExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code negateExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitNegateExpression(UISCParser.NegateExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code addressOfVariableExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code addressOfVariableExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code lengthOfExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLengthOfExpression(UISCParser.LengthOfExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code lengthOfExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLengthOfExpression(UISCParser.LengthOfExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code structFieldReferenceExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterStructFieldReferenceExpression(UISCParser.StructFieldReferenceExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code structFieldReferenceExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitStructFieldReferenceExpression(UISCParser.StructFieldReferenceExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code stringLiteralExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code stringLiteralExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code arrayAccessExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
@@ -573,18 +779,6 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitAddSubExpression(UISCParser.AddSubExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code sizeOfExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterSizeOfExpression(UISCParser.SizeOfExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code sizeOfExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitSizeOfExpression(UISCParser.SizeOfExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code equalityExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
@@ -597,18 +791,6 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitEqualityExpression(UISCParser.EqualityExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code functionCallExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code functionCallExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code charLiteralExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
@@ -620,30 +802,6 @@ public interface UISCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCharLiteralExpression(UISCParser.CharLiteralExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code bitwiseExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterBitwiseExpression(UISCParser.BitwiseExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code bitwiseExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitBitwiseExpression(UISCParser.BitwiseExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code negateExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterNegateExpression(UISCParser.NegateExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code negateExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitNegateExpression(UISCParser.NegateExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ternaryExpression}
 	 * labeled alternative in {@link UISCParser#expression}.

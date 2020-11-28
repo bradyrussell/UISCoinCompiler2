@@ -50,6 +50,12 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link UISCParser#structDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructDeclaration(UISCParser.StructDeclarationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UISCParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -106,6 +112,13 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarDeclarationStatement(UISCParser.VarDeclarationStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code structDeclarationStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructDeclarationStatement(UISCParser.StructDeclarationStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code ifStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
@@ -113,19 +126,33 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfStatement(UISCParser.IfStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code foriStatement}
+	 * Visit a parse tree produced by the {@code uforiStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitForiStatement(UISCParser.ForiStatementContext ctx);
+	T visitUforiStatement(UISCParser.UforiStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code foreachStatement}
+	 * Visit a parse tree produced by the {@code uforeachStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitForeachStatement(UISCParser.ForeachStatementContext ctx);
+	T visitUforeachStatement(UISCParser.UforeachStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code whileStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhileStatement(UISCParser.WhileStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code forStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForStatement(UISCParser.ForStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code returnStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
@@ -183,6 +210,27 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExceptionStatement(UISCParser.ExceptionStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code includeStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIncludeStatement(UISCParser.IncludeStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code flagStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFlagStatement(UISCParser.FlagStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code flagDataStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFlagDataStatement(UISCParser.FlagDataStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UISCParser#elseifStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -231,6 +279,37 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitException(UISCParser.ExceptionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link UISCParser#include}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInclude(UISCParser.IncludeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UISCParser#flag}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFlag(UISCParser.FlagContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UISCParser#flagData}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFlagData(UISCParser.FlagDataContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UISCParser#structField}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructField(UISCParser.StructFieldContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code postfixOpExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPostfixOpExpression(UISCParser.PostfixOpExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code moduloExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
@@ -238,26 +317,12 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitModuloExpression(UISCParser.ModuloExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code addressOfVariableExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code andOrExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAndOrExpression(UISCParser.AndOrExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code lengthOfExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLengthOfExpression(UISCParser.LengthOfExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code multDivExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
@@ -272,6 +337,13 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNotExpression(UISCParser.NotExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code prefixOpExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrefixOpExpression(UISCParser.PrefixOpExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code booleanLiteralExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
@@ -308,19 +380,68 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitValueAtVariableExpression(UISCParser.ValueAtVariableExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code stringLiteralExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code castExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitCastExpression(UISCParser.CastExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code sizeOfExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSizeOfExpression(UISCParser.SizeOfExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code functionCallExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code bitwiseExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBitwiseExpression(UISCParser.BitwiseExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code negateExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNegateExpression(UISCParser.NegateExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code addressOfVariableExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code lengthOfExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLengthOfExpression(UISCParser.LengthOfExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code structFieldReferenceExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructFieldReferenceExpression(UISCParser.StructFieldReferenceExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code stringLiteralExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code arrayAccessExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
@@ -343,13 +464,6 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAddSubExpression(UISCParser.AddSubExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code sizeOfExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSizeOfExpression(UISCParser.SizeOfExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code equalityExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
@@ -357,33 +471,12 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEqualityExpression(UISCParser.EqualityExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code functionCallExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code charLiteralExpression}
 	 * labeled alternative in {@link UISCParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitCharLiteralExpression(UISCParser.CharLiteralExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code bitwiseExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBitwiseExpression(UISCParser.BitwiseExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code negateExpression}
-	 * labeled alternative in {@link UISCParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNegateExpression(UISCParser.NegateExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ternaryExpression}
 	 * labeled alternative in {@link UISCParser#expression}.

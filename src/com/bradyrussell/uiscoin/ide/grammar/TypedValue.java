@@ -1,9 +1,11 @@
 package com.bradyrussell.uiscoin.ide.grammar;
 
+import com.bradyrussell.uiscoin.ide.symboltable.Symbol;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TypedValue {
+public class TypedValue implements Symbol {
     public boolean bIsArray;
     public boolean bIsPointer;
     public ArrayList<TypedValue> ArrayElements;
@@ -121,6 +123,21 @@ public class TypedValue {
                 return String.valueOf(pointerValue);
             }
         }
+        return null;
+    }
+
+    @Override
+    public Integer getSymbolAddress() {
+        return null;
+    }
+
+    @Override
+    public String generateGetSymbolASM() {
+        return "push "+toString()+" ";
+    }
+
+    @Override
+    public String generateSetSymbolASM() {
         return null;
     }
 }
