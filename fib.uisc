@@ -1,5 +1,10 @@
-int32 getX(int32 x){
-    return 2;
-}
+int32 myArray[5];
+byte myOtherArray[] = {1, 2, 3, 4, 5};
 
-int32 y= getX(3);
+foreach(myOtherArray as int32 i;){
+    if(i <= 3) {
+        myArray[i] = i+10;
+    } else {
+        myArray[i] = i;
+    }
+}

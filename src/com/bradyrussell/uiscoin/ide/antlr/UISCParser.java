@@ -970,14 +970,12 @@ public class UISCParser extends Parser {
 		}
 	}
 	public static class ForeachStatementContext extends StatementContext {
-		public ExpressionContext iterations;
+		public Token arrayToLoop;
 		public StatementContext forbody;
 		public VarDeclarationContext varDeclaration() {
 			return getRuleContext(VarDeclarationContext.class,0);
 		}
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
+		public TerminalNode ID() { return getToken(UISCParser.ID, 0); }
 		public StatementContext statement() {
 			return getRuleContext(StatementContext.class,0);
 		}
@@ -1238,7 +1236,7 @@ public class UISCParser extends Parser {
 				setState(150);
 				match(T__16);
 				setState(151);
-				((ForeachStatementContext)_localctx).iterations = expression(0);
+				((ForeachStatementContext)_localctx).arrayToLoop = match(ID);
 				setState(152);
 				match(T__21);
 				setState(153);
@@ -2671,9 +2669,9 @@ public class UISCParser extends Parser {
 		"\7\27\2\2\u008f\u0090\7\23\2\2\u0090\u0091\7<\2\2\u0091\u0092\7\30\2\2"+
 		"\u0092\u0093\5\b\5\2\u0093\u0094\7;\2\2\u0094\u0095\7\24\2\2\u0095\u0096"+
 		"\5\26\f\2\u0096\u00c0\3\2\2\2\u0097\u0098\7\31\2\2\u0098\u0099\7\23\2"+
-		"\2\u0099\u009a\5\"\22\2\u009a\u009b\7\30\2\2\u009b\u009c\5\6\4\2\u009c"+
-		"\u009d\7\24\2\2\u009d\u009e\5\26\f\2\u009e\u00c0\3\2\2\2\u009f\u00a1\7"+
-		"\32\2\2\u00a0\u00a2\5\"\22\2\u00a1\u00a0\3\2\2\2\u00a1\u00a2\3\2\2\2\u00a2"+
+		"\2\u0099\u009a\7;\2\2\u009a\u009b\7\30\2\2\u009b\u009c\5\6\4\2\u009c\u009d"+
+		"\7\24\2\2\u009d\u009e\5\26\f\2\u009e\u00c0\3\2\2\2\u009f\u00a1\7\32\2"+
+		"\2\u00a0\u00a2\5\"\22\2\u00a1\u00a0\3\2\2\2\u00a1\u00a2\3\2\2\2\u00a2"+
 		"\u00a3\3\2\2\2\u00a3\u00c0\7\6\2\2\u00a4\u00a9\7;\2\2\u00a5\u00a6\7\7"+
 		"\2\2\u00a6\u00a7\5\"\22\2\u00a7\u00a8\7\b\2\2\u00a8\u00aa\3\2\2\2\u00a9"+
 		"\u00a5\3\2\2\2\u00a9\u00aa\3\2\2\2\u00aa\u00ab\3\2\2\2\u00ab\u00ac\7\5"+

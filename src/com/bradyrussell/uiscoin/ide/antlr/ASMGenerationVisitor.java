@@ -161,9 +161,28 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     /** End Literals */
 
+
+
     /**
      * Begin Initialization
      */
+
+    @Override
+    public String visitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) {
+        Type symbolType = Type.getByKeyword(ctx.type().getText());
+        int address = getCurrentScope().declareArray(ctx.ID().getText(), symbolType,Integer.parseInt(ctx.INT().getText()));
+
+        if (address < 0) {
+            System.out.println("Symbol was already defined in this scope! " + ctx.ID().getText());
+            return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
+        }
+
+        if(ctx.expression() != null) {
+            // todo copy other array here
+        }
+
+        return " push "+(symbolType.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc push ["+address+"] put";
+    }
 
     @Override
     public String visitVarInitialization(UISCParser.VarInitializationContext ctx) {
@@ -268,10 +287,19 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             }
         }
 
+        Type indexType = ctx.arrayIndex.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
+
         if (ctx.arrayIndex == null) {
             return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push [" + symbol.address + "] put";
-        } else {
-            return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push " + symbol.address + " " + visit(ctx.arrayIndex) + " push " + /*sizeof type*/symbol.type.getSize() + " set";
+        } else { // todo this was wrong
+            return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") +
+                    "push "+symbol.address+" "+ // push stack element
+                    visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType,Type.Int32) +// push array index auto casted to int
+                    " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
+                    " multiply push "+symbol.type.getSize()+
+                    " set ";  // push sizeof
+
+           // return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push " + symbol.address + " " + visit(ctx.arrayIndex) + " push " + /*sizeof type*/symbol.type.getSize() + " set";
         }
     }
 
@@ -389,11 +417,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         for (int i = 0; i < Iterations; i++) {
             PushLocalScope("ForIStatement_Inner_"+i);
             getCurrentScope().declareConstantInlineSymbol(ctx.ID().getText(), new TypedValue(Type.getByKeyword(ctx.type().getText()),i));
-                // setup iterator variable // todo can we somehow inline the iterator variable?
-                //forIStatement.append("push ").append(i).append(" ").append(generateCastAssembly(Type.Int32, Type.getByKeyword(ctx.type().getText()))).append(" push [").append(IteratorAddress).append("] put ");
-           // forIStatement.append("push ").append(i).append(" ").append(generateCastAssembly(Type.Int32, Type.getByKeyword(ctx.type().getText()))).append(" push [").append(IteratorAddress).append("] put ");
-                forIStatement.append(visit(ctx.forbody));
-              //  forIStatement.append(getCurrentScope().getDeallocation()); //todo
+            forIStatement.append(visit(ctx.forbody));
             PopLocalScope();
         }
 
@@ -404,7 +428,62 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitForeachStatement(UISCParser.ForeachStatementContext ctx) { // loop unrolling
-        return super.visitForeachStatement(ctx);
+        ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.arrayToLoop.getText());
+        if (scopeContaining == null) {
+            System.out.println("Array " + ctx.ID().getText() + " was not defined in this scope.");
+            return "ARRAY_NOT_DEFINED_" + ctx.ID().getText();
+        }
+
+        SymbolArray symbol = (SymbolArray) scopeContaining.symbolTable.get(ctx.ID().getText());
+
+        if (symbol == null) {
+            System.out.println("Array " + ctx.ID().getText() + " was not properly defined in this scope.");
+            return "ARRAY_NOT_PROPERLY_DEFINED_" + ctx.ID().getText();
+        }
+
+        PushLocalScope("ForEachStatement_"+ctx.ID().getText());
+
+        StringBuilder forEachStatement = new StringBuilder();
+
+        if(ctx.varDeclaration() instanceof UISCParser.VarInitializationContext) {
+            UISCParser.VarInitializationContext varDeclaration = (UISCParser.VarInitializationContext) ctx.varDeclaration();
+
+            Type varType = Type.getByKeyword(varDeclaration.type().getText());
+
+            if(!symbol.type.widensTo(varType)) { /// todo cast
+                System.out.println("The foreach element was not the correct type. " + varDeclaration.getText());
+                return "FOREACH_VAR_NOT_CORRECT_TYPE_EXPECTED_" + symbol.type;
+            }
+
+            if(varDeclaration.constant != null || varDeclaration.expression() != null || varType == null) {
+                System.out.println("The foreach element was not properly defined. It cannot be a constant or assigned a value and must have a type. " + varDeclaration.getText());
+                return "FOREACH_VAR_NOT_PROPERLY_DEFINED_" + ctx.ID().getText();
+            }
+
+            for (int i = 0; i < symbol.length; i++) {
+                PushLocalScope("ForEachStatement_"+ctx.arrayToLoop.getText()+"_Inner_"+i);
+
+                int varAddress = getCurrentScope().declareSymbol(varDeclaration.ID().getText(), varType);
+//todo off by one to the right
+                forEachStatement.append( "push "+symbol.address+ // push stack element
+                        " push "+i +// push array index
+                        " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
+                        " multiply push "+symbol.type.getSize()+
+                        " get " + generateCastAssembly(symbol.type, varType) + // auto widen to foreach var type
+                        " push ["+varAddress+"] put " // put the array element into the foreach var
+                );
+
+                forEachStatement.append(visit(ctx.forbody));
+
+                PopLocalScope();
+            }
+
+        }
+
+        PopLocalScope();
+
+        return forEachStatement.toString();
+
     }
 
     @Override
@@ -708,7 +787,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         System.out.println("Warning: ArrayValueInitialization assumes each array initializer expression pushes exactly one value onto the stack.");
         // auto widens using visitArrayInitializer();
-        return visit(ctx.arrayInitializer()) + " push [" + ctx.arrayInitializer().exprList().expression().size() + "] combine " + " push [" + getCurrentScope().declareSymbol(ctx.ID().getText(), expectedType) + "] put";
+        return visit(ctx.arrayInitializer()) + " push [" + ctx.arrayInitializer().exprList().expression().size() + "] combine " + " push [" + getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()) + "] put";
     }
 
     // this is how we auto widen array initializers

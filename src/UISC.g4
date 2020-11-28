@@ -34,7 +34,7 @@ statement:   block                      #blockStatement
     |   varDeclaration                  #varDeclarationStatement
     |   'if' conditional=expression '{' ifbody=statement '}' elseifStatement* elseStatement? #ifStatement
     |   'fori' '(' iterations=INT 'as' type ID ')' forbody=statement                       #foriStatement
-    |   'foreach' '(' iterations=expression 'as' varDeclaration ')' forbody=statement     #foreachStatement
+    |   'foreach' '(' arrayToLoop=ID 'as' varDeclaration ')' forbody=statement     #foreachStatement
     |   'return' retval=expression? ';'        #returnStatement
     |   lhs=ID ('[' arrayIndex=expression ']')? '=' rhs=expression ';'      #assignmentStatement
     |   lhs=ID ('[' arrayIndex=expression ']')? op=('+='|'-='|'*='|'/='|'%='|'&='|'|=') rhs=expression ';'      #opAndAssignmentStatement

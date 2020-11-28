@@ -44,6 +44,13 @@ public class ScopeBase {
         return ScopeAddress-1;
     }
 
+    public int declareArray(String Name, Type SymbolType, int Length){
+        if(symbolTable.containsKey(Name)) return -1;
+        symbolTable.put(Name, new SymbolArray(SymbolType, ScopeAddress++, Length));
+        System.out.println("[Scope] Declared array symbol "+Name+"["+Length+"] at address "+(ScopeAddress-1));
+        return ScopeAddress-1;
+    }
+
     public int declareConstantInlineSymbol(String Name, TypedValue Value){
         if(symbolTable.containsKey(Name)) return -1;
         symbolTable.put(Name, Value);
