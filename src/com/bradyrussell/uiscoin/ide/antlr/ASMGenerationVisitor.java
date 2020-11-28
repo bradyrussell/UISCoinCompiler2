@@ -369,8 +369,14 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") +
                     "push "+symbol.address+" "+ // push stack element
                     visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType,Type.Int32) +// push array index auto casted to int
+
+                    (symbol.type.getSize() == 1 ? "" : (symbol.type.getSize()+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                            " multiply"))+
+/*
                     " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
-                    " multiply push "+symbol.type.getSize()+
+                    " multiply "+*/
+
+                    "push "+symbol.type.getSize()+
                     " set ";  // push sizeof
 
            // return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push " + symbol.address + " " + visit(ctx.arrayIndex) + " push " + /*sizeof type*/symbol.type.getSize() + " set";
@@ -573,13 +579,13 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 PushLocalScope("ForEachStatement_"+ctx.arrayToLoop.getText()+"_Inner_"+i);
 
                 int varAddress = getCurrentScope().declareSymbol(varDeclaration.ID().getText(), varType);
-//todo off by one to the right
+//todo off by one to the right?
                 forEachStatement.append( "push "+symbol.address+ // push stack element
                         " push "+i +// push array index
                         " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
                         " multiply push "+symbol.type.getSize()+
                         " get " + generateCastAssembly(symbol.type, varType) + // auto widen to foreach var type
-                        " push ["+varAddress+"] put " // put the array element into the foreach var
+                        ASMUtil.generateStoreAddress(varAddress) // put the array element into the foreach var
                 );
 
                 forEachStatement.append(visit(ctx.forbody));
@@ -887,8 +893,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         return ASMUtil.generateComment("Array access "+ctx.getText()) + "push "+symbol.address+" "+ // push stack element
                 visit(ctx.expression())+" "+ castAssembly +// push array index auto casted to int
-                " push "+SizeOf+ // multiply by sizeof to get beginIndex
-                " multiply push "+SizeOf+
+                " push "+
+                (SizeOf == 1 ? "" : (SizeOf+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                " multiply"))+
+                " push "+SizeOf+
                 " get ";  // push sizeof
     }
 
