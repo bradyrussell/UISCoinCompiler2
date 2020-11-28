@@ -3,7 +3,6 @@ package com.bradyrussell.uiscoin.ide.antlr;
 import com.bradyrussell.uiscoin.ide.grammar.Type;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 import com.bradyrussell.uiscoin.ide.symboltable.*;
-import org.antlr.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.RuleContext;
 
 import java.util.ArrayList;
@@ -197,7 +196,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
         }
 
-        return ASMUtil.generateComment("Array string initialization "+ctx.getText()) + " push \"" + strValue + "\"" + ASMUtil.generateSetAddress(address)/*" push [" + address + "] put"*/;
+        return ASMUtil.generateComment("Array string initialization "+ctx.getText()) + " push \"" + strValue + "\"" + ASMUtil.generateStoreAddress(address)/*" push [" + address + "] put"*/;
     }
 
     @Override
@@ -214,7 +213,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             //todo copy rhs array
         }
 
-        return " push "+(symbolType.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc "+ASMUtil.generateSetAddress(address);//"push ["+address+"] put";
+        return " push "+(symbolType.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc "+ASMUtil.generateStoreAddress(address);//"push ["+address+"] put";
     }
 
     @Override
@@ -247,7 +246,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                     }
                 }
 
-                return visit(ctx.expression()) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbolType) : "") + ASMUtil.generateSetAddress(address);//" push [" + address + "] put";
+                return visit(ctx.expression()) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbolType) : "") + ASMUtil.generateStoreAddress(address);//" push [" + address + "] put";
             }
             return "";
         } else {
@@ -914,7 +913,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         System.out.println("Warning: ArrayValueInitialization assumes each array initializer expression pushes exactly one value onto the stack.");
         // auto widens using visitArrayInitializer();
-        return ASMUtil.generateComment("Array value initialization "+ctx.getText()) + visit(ctx.arrayInitializer()) + " push [" + ctx.arrayInitializer().exprList().expression().size() + "] combine " + ASMUtil.generateSetAddress(getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()));//" push [" + getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()) + "] put";
+        return ASMUtil.generateComment("Array value initialization "+ctx.getText()) + visit(ctx.arrayInitializer()) + " push [" + ctx.arrayInitializer().exprList().expression().size() + "] combine " + ASMUtil.generateStoreAddress(getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()));//" push [" + getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()) + "] put";
     }
 
     // this is how we auto widen array initializers
@@ -952,7 +951,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         int FunctionAddress = ((ScopeWithSymbol) getCurrentScope().findScopeContaining(ctx.ID().getText()).getSymbol(ctx.ID().getText())).Symbol.address;
 
         PopLocalScope();
-        return ASMUtil.generateComment("Function declaration "+ctx.ID().getText()) + "(" + NumberOfParameters + ") { " + functionCode + "} "+ASMUtil.generateSetAddress(FunctionAddress);//push [" + FunctionAddress + "] put";
+        return ASMUtil.generateComment("Function declaration "+ctx.ID().getText()) + "(" + NumberOfParameters + ") { " + functionCode + "} "+ASMUtil.generateStoreAddress(FunctionAddress);//push [" + FunctionAddress + "] put";
     }
 
 

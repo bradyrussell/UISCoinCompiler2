@@ -1,6 +1,9 @@
-int32 x = 1;
+int32 myInts[] = {1, 2, 3, 4};
+byte asBytes[4];
 
-try{
-    int32 y = x;
-    throw("myException", 1);
+int32 counter = 3;
+
+uforeach(myInts as int32 i;){
+    asBytes[counter] = (byte)i;
+    counter = counter - 1;
 }

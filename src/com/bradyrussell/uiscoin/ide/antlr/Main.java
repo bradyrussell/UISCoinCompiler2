@@ -16,6 +16,8 @@ import java.nio.file.Path;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        ASMUtil.bNoComments = true;
+
         UISCLexer lexer = new UISCLexer(new ANTLRInputStream(Files.readString(Path.of("fib.uisc"))));
         UISCParser parser = new UISCParser(new CommonTokenStream(lexer));
         ParseTree tree = parser.file();
@@ -25,7 +27,9 @@ public class Main {
 
         String allocation = asmGenerationVisitor.Global.getRecursiveAllocation()+ "\n" + asm;
 
-        System.out.println("\n\nGenerated Assembly: \n"+allocation/*.replace("push [1]", "true").replace("push [0]", "false")*/+"\n");
+        String optimized = allocation.replace("push [1]", "true").replace("push [0]", "false");
+
+        System.out.println("\n\nGenerated Assembly: \n"+allocation+"\n");
 
 /*        ParseTreeWalker.DEFAULT.walk(new TestUISCListener(), tree);*/
     }

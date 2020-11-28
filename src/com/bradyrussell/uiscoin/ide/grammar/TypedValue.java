@@ -134,7 +134,7 @@ public class TypedValue implements Symbol {
 
     @Override
     public String generateGetSymbolASM() {
-        return ASMUtil.generateGetAddress(getSymbolAddress());
+        return ASMUtil.generateLoadAddress(getSymbolAddress());
     }
 
     @Override

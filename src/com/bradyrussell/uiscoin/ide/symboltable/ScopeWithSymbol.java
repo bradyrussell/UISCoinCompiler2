@@ -17,11 +17,11 @@ public class ScopeWithSymbol extends ScopeLocal implements Symbol {
 
     @Override
     public String generateGetSymbolASM() {
-        return ASMUtil.generateGetAddress(getSymbolAddress());
+        return ASMUtil.generateLoadAddress(getSymbolAddress());
     }
 
     @Override
     public String generateSetSymbolASM() {
-        return ASMUtil.generateSetAddress(getSymbolAddress());
+        return ASMUtil.generateStoreAddress(getSymbolAddress());
     }
 }
