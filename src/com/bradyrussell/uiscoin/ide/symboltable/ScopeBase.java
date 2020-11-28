@@ -116,9 +116,9 @@ public class ScopeBase {
         int ThisDepth = ScopeAddress - ScopeBaseAddress;
 
         for (ScopeBase child : Children) {
-            int childDepth = ThisDepth + child.getDepth();
+            int childDepth = child.getDepth();
             if(childDepth > deepest) deepest = childDepth;
         }
-        return deepest;
+        return ThisDepth + deepest;
     }
 }

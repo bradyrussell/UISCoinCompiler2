@@ -43,6 +43,13 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayValueInitialization(UISCParser.ArrayValueInitializationContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code arrayStringInitialization}
+	 * labeled alternative in {@link UISCParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UISCParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

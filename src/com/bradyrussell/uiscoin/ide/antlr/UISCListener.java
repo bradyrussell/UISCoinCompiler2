@@ -63,6 +63,18 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitArrayValueInitialization(UISCParser.ArrayValueInitializationContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code arrayStringInitialization}
+	 * labeled alternative in {@link UISCParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arrayStringInitialization}
+	 * labeled alternative in {@link UISCParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UISCParser#type}.
 	 * @param ctx the parse tree
 	 */

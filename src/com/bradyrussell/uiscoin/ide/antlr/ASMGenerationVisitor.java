@@ -100,6 +100,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 }
             }
         }
+
+        if(From.equals(Type.Void)) {
+            System.out.println("Warning: Casting from void could violate type safety!");
+            return "";
+        }
         System.out.println("Cannot cast from "+From+" to "+To+"!");
         return null;
     }
@@ -163,9 +168,24 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
 
 
+
     /**
      * Begin Initialization
      */
+
+    @Override
+    public String visitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx) {
+        Type type = Type.getByKeyword(ctx.type().getText());
+        String strValue = stripQuotesFromString(ctx.STRING().getText());
+        int address = getCurrentScope().declareArray(ctx.ID().getText(), type, strValue.length());
+
+        if (address < 0) {
+            System.out.println("Symbol was already defined in this scope! " + ctx.ID().getText());
+            return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
+        }
+
+        return " push \"" + strValue + "\"" + " push [" + address + "] put";
+    }
 
     @Override
     public String visitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) {
@@ -186,9 +206,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitVarInitialization(UISCParser.VarInitializationContext ctx) {
-        Type symbolType = Type.getByKeyword(ctx.type().getText());
+        Type symbolType = ctx.pointer() != null ? Type.getByKeyword(ctx.type().getText()).toPointer() : Type.getByKeyword(ctx.type().getText());
 
         if(ctx.constant == null) {
+
             int address = getCurrentScope().declareSymbol(ctx.ID().getText(), symbolType);
 
             if (address < 0) {
@@ -287,11 +308,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             }
         }
 
-        Type indexType = ctx.arrayIndex.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
-
         if (ctx.arrayIndex == null) {
             return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push [" + symbol.address + "] put";
         } else { // todo this was wrong
+            Type indexType = ctx.arrayIndex.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
             return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") +
                     "push "+symbol.address+" "+ // push stack element
                     visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType,Type.Int32) +// push array index auto casted to int
@@ -602,7 +622,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitValueAtVariableExpression(UISCParser.ValueAtVariableExpressionContext ctx) {
-        return visit(ctx.expression())+" pick"; // todo see if this needs casted
+        return visit(ctx.expression())+generateCastAssembly(Type.Int32, Type.Byte)+" pick";
     }
 
     @Override
@@ -647,6 +667,15 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitAddSubExpression(UISCParser.AddSubExpressionContext ctx) {
+        if(ctx.lhs instanceof UISCParser.StringLiteralExpressionContext || (ctx.lhs instanceof UISCParser.VariableReferenceExpressionContext && // is this array concat?
+                getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) != null &&
+                getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()).symbolTable.get(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) instanceof SymbolArray)) {
+            // todo this will throw off symbol array lengths, so foreach wouldnt work. dont see how this can work unless the sizes are fixed. maybe use set 0, len*size instead? to force user to create new array long enough
+            return getCastedBinaryExpression(ctx.lhs,ctx.rhs,"push [2] combine", "push [2] combine");
+        }
+
+
+
         if (ctx.op.getText().contains("+")) {
             return getCastedBinaryExpression(ctx.lhs,ctx.rhs,"add", "addfloat");
         }

@@ -9,6 +9,7 @@ varDeclaration
     :   constant='const'? type pointer? ID ('=' expression)? ';' #varInitialization    // int32@ myPtr = 7; //read as: there is an int32 at (address) 7
     |   type pointer? ID '[' size=INT ']' ('=' expression)? ';' #arrayAssignmentInitialization  // todo const arrays?
     |   type ID '[]' '=' arrayInitializer ';' #arrayValueInitialization
+    |   type ID '[]' '=' STRING ';' #arrayStringInitialization
     ;
 type:   'void' | 'byte' | 'int32' | 'int64' | 'float' ;//| ID ; //this allows user-defined types
 

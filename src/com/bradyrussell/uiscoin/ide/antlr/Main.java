@@ -1,5 +1,8 @@
 package com.bradyrussell.uiscoin.ide.antlr;
 
+import com.bradyrussell.uiscoin.BytesUtil;
+import com.bradyrussell.uiscoin.script.ScriptBuilder;
+import com.bradyrussell.uiscoin.script.ScriptParser;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;

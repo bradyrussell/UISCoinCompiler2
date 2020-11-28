@@ -95,7 +95,7 @@ public enum Type {
                 return Float;
             }
         }
-        return type;
+        return Void;
     }
 
     public byte[] Parse(String Token) throws CompilerErrorException {

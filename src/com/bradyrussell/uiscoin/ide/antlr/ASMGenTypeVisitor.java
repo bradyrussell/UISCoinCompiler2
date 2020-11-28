@@ -71,6 +71,11 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
         return Type.getWiderType(lhsType, rhsType);
     }
 
+/*    @Override
+    public Type visitVarInitialization(UISCParser.VarInitializationContext ctx) {
+        return ctx.pointer() != null ? Type.getByKeyword(ctx.type().getText()).toPointer() : Type.getByKeyword(ctx.type().getText());
+    }*/
+
     @Override
     public Type visitVariableReferenceExpression(UISCParser.VariableReferenceExpressionContext ctx) {
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.ID().getText());
@@ -104,7 +109,7 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
 
     @Override
     public Type visitStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx) {
-        return Type.BytePointer; // byte array
+        return Type.Byte; // byte array
     }
 
     @Override
@@ -182,7 +187,20 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
 
     @Override
     public Type visitAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx) {
-        return Type.Int32;
+        ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.ID().getText());
+        if(scopeContaining == null) {
+            System.out.println("Cannot deduce type of undefined variable: "+ctx.ID().getText());
+            return null;
+        }
+
+        Object uncasted = scopeContaining.symbolTable.get(ctx.ID().getText());
+
+        if(uncasted instanceof ScopeWithSymbol) { // address of function
+            return Type.VoidPointer; // function ptr
+        } else {
+            SymbolBase symbol = (SymbolBase)uncasted;
+            return  symbol.type.toPointer();
+        }
     }
 
     @Override
@@ -230,9 +248,9 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
     public Type visitValueAtVariableExpression(UISCParser.ValueAtVariableExpressionContext ctx) {
         Type pointedType = visit(ctx.expression());
         if(pointedType == null) {
-            System.out.println("Warning: Cannot find type for pointer, returning void pointer. "+ctx.toString());
-            return Type.VoidPointer;
+            System.out.println("Warning: Cannot find type for valueAt, returning void. "+ctx.toString());
+            return Type.Void;
         }
-        return pointedType.toPointer();
+        return pointedType.fromPointer();
     }
 }

@@ -1,10 +1,3 @@
-int32 myArray[5];
-byte myOtherArray[] = {1, 2, 3, 4, 5};
-
-foreach(myOtherArray as int32 i;){
-    if(i <= 3) {
-        myArray[i] = i+10;
-    } else {
-        myArray[i] = i;
-    }
-}
+byte apple = 1;
+byte@ myPtr = $apple; //int32 value AT myPtr.  pointer to apple
+int32 applecopy = @myPtr; // value At myPtr
