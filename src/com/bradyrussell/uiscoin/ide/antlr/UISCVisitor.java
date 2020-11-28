@@ -162,6 +162,18 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssertionStatement(UISCParser.AssertionStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link UISCParser#elseifStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseifStatement(UISCParser.ElseifStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UISCParser#elseStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseStatement(UISCParser.ElseStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UISCParser#number}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

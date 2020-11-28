@@ -1,7 +1,5 @@
-const byte global = 6;
-
-fori(5 as int32 i) {
-    int64 x = i+global;
+int32 getX(int32 x){
+    return 2;
 }
 
-assert(2 > 1);
+int32 y= getX(3);

@@ -177,6 +177,20 @@ public class UISCBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements U
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitElseifStatement(UISCParser.ElseifStatementContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitElseStatement(UISCParser.ElseStatementContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitNumber(UISCParser.NumberContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

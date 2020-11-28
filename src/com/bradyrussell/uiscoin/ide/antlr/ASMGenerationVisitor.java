@@ -4,6 +4,8 @@ import com.bradyrussell.uiscoin.ide.grammar.Type;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 import com.bradyrussell.uiscoin.ide.symboltable.*;
 
+import java.util.ArrayList;
+
 public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     ////////////////////////
     int LabelIndex = 0;
@@ -275,7 +277,102 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitIfStatement(UISCParser.IfStatementContext ctx) {
-        return super.visitIfStatement(ctx);
+        String ifBlockLabel = getNextLabel();
+        ArrayList<String> elseIfLabels = new ArrayList<>();
+
+        for (UISCParser.ElseifStatementContext elseifStatementContext : ctx.elseifStatement()) {
+            elseIfLabels.add(getNextLabel());
+        }
+
+        String endLabel = getNextLabel();
+
+        StringBuilder asm = new StringBuilder();
+
+        if(ctx.elseifStatement().size() == 0) { // optimized if no else ifs
+            /*
+            if()
+            condition
+            gotoif true
+            FALSEBLOCK
+            goto end
+            :true
+            TRUEBLOCK
+            :end
+             */
+
+            asm.append(visit(ctx.conditional)); // condition
+            asm.append(" gotoif ").append(ifBlockLabel).append(" "); // gotoif true
+            PushLocalScope("IfStatement_ElseBlock");
+            if(ctx.elseStatement() != null) asm.append(visit(ctx.elseStatement())); // falseblock
+            PopLocalScope();
+            asm.append(" goto ").append(endLabel); // goto end
+            asm.append(" :").append(ifBlockLabel).append(" "); // :true
+            PushLocalScope("IfStatement_IfBlock");
+            asm.append(visit(ctx.ifbody)); // TRUEBLOCK
+            PopLocalScope();
+            asm.append(" :").append(endLabel); //:end
+
+        } else {
+             /*
+
+        if ()
+        condition
+        gotoif true
+
+        else if()
+        condition
+        gotoif eliftrue1
+
+        else if()
+        condition
+        gotoif eliftrue2
+
+        else()
+        ELSEBLOCK
+        goto end
+        :true
+        TRUEBLOCK
+        goto end
+
+        :eliftrue1
+           ELIFTRUE1BLOCK
+          goto end
+
+       :eliftrue2
+           ELIFTRUE2BLOCK
+          goto end
+
+        :end
+
+         */
+
+            asm.append(visit(ctx.conditional)); // condition
+            asm.append(" gotoif ").append(ifBlockLabel).append(" "); // gotoif true
+
+            for (int i = 0; i < ctx.elseifStatement().size(); i++) {
+                asm.append(visit(ctx.elseifStatement().get(i).conditional)); // elif condition
+                asm.append(" gotoif ").append(elseIfLabels.get(i)).append(" "); // goto elif N
+            }
+
+            // else
+            asm.append(visit(ctx.elseStatement())).append(" goto ").append(endLabel); // ELSEBLOCK goto end
+
+            asm.append(" :").append(ifBlockLabel).append(" "); // :true
+            asm.append(visit(ctx.ifbody)); // TRUEBLOCK
+            asm.append(" goto ").append(endLabel); // goto end
+
+            for (int i = 0; i < ctx.elseifStatement().size(); i++) {
+                PushLocalScope("IfStatement_ElseIfBlock_"+i);
+                asm.append(" :").append(elseIfLabels.get(i)).append(" "); // :elifN
+                asm.append(visit(ctx.elseifStatement().get(i)));
+                if(i < ctx.elseifStatement().size()-1) asm.append(" goto ").append(endLabel); // goto end (skip last)
+                PopLocalScope();
+            }
+
+            asm.append(" :").append(endLabel); // :end
+        }
+
+        return asm.toString();
     }
 
     @Override
@@ -316,6 +413,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     }
 
 
+
     /** End Statements */
 
 
@@ -329,16 +427,16 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     public String visitComparisonExpression(UISCParser.ComparisonExpressionContext ctx) {
         switch (ctx.op.getText()){
             case "<" ->{
-                return visit(ctx.lhs)+ " "+ visit(ctx.rhs)+" lessthan ";
+                return getCastedBinaryExpression(ctx.lhs, ctx.rhs, " lessthan", " lessthan");
             }
             case "<=" ->{
-                return visit(ctx.lhs)+ " "+ visit(ctx.rhs)+" lessthanequal ";
+                return getCastedBinaryExpression(ctx.lhs, ctx.rhs, " lessthanequal", " lessthanequal");
             }
             case ">" ->{
-                return visit(ctx.lhs)+ " "+ visit(ctx.rhs)+" greaterthan ";
+                return getCastedBinaryExpression(ctx.lhs, ctx.rhs, " greaterthan", " greaterthan");
             }
             case ">=" ->{
-                return visit(ctx.lhs)+ " "+ visit(ctx.rhs)+" greaterthanequal ";
+                return getCastedBinaryExpression(ctx.lhs, ctx.rhs, " greaterthanequal", " greaterthanequal");
             }
             default -> {
                 return "INVALID_COMPARISON_OPERATOR_ERROR";
@@ -444,16 +542,23 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitEqualityExpression(UISCParser.EqualityExpressionContext ctx) {
-        return visit(ctx.lhs) + " " + visit(ctx.rhs) + " bytesequal" + (ctx.op.getText().contains("!=") ? " not" : "");
+        return getCastedBinaryExpression(ctx.lhs, ctx.rhs," bytesequal" + (ctx.op.getText().contains("!=") ? " not" : "")," bytesequal" + (ctx.op.getText().contains("!=") ? " not" : ""));
+        //return visit(ctx.lhs) + " " + visit(ctx.rhs) + " bytesequal" + (ctx.op.getText().contains("!=") ? " not" : "");
     }
 
     @Override
     public String visitNegateExpression(UISCParser.NegateExpressionContext ctx) {
-        if(ctx.expression() instanceof UISCParser.NumberLiteralExpressionContext) { // if number literal, negate the literal
+/*        if(ctx.expression() instanceof UISCParser.NumberLiteralExpressionContext) { // if number literal, negate the literal // todo asm cant handle -INT
             return "push -" + ((UISCParser.NumberLiteralExpressionContext)ctx.expression()).number().getText();
-        }
+        }*/
+        // todo negate fails on byte. fix this and we can remove below
+        Type fromType = ctx.expression().accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
 
-        return visit(ctx.expression()) + " negate";
+        if(Type.Byte.equals(fromType)) {
+            return visit(ctx.expression()) + " convert8to32 negate convert32to8";
+        } else {
+            return visit(ctx.expression()) + " negate";
+        }
     }
 
     @Override
@@ -541,8 +646,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             System.out.println("Function " + ctx.ID().getText() + " was not properly defined in this scope.");
             return "FUNCTION_NOT_PROPERLY_DEFINED_" + ctx.ID().getText();
         }
-
-        return visit(ctx.exprList()) + " push " + functionSymbol.Symbol.address + " pick call";
+        // todo check parameter types
+        return visit(ctx.exprList()) + // params
+                " push ["+ctx.exprList().expression().size()+"] "+ // number of parameters
+                " push [" + functionSymbol.Symbol.address + "] pick"+ // get function bytecode
+                " call verify"; // execute and ensure it did not fail
     }
 
     @Override
@@ -638,7 +746,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         int FunctionAddress = ((ScopeWithSymbol) getCurrentScope().findScopeContaining(ctx.ID().getText()).symbolTable.get(ctx.ID().getText())).Symbol.address;
 
         PopLocalScope();
-        return "(" + NumberOfParameters + ") { " + functionCode + "} push 0x0" + FunctionAddress + " put";
+        return "(" + NumberOfParameters + ") { " + functionCode + "} push [" + FunctionAddress + "] put";
     }
 
 

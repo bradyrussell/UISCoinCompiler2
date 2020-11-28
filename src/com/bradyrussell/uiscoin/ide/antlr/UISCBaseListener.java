@@ -291,6 +291,30 @@ public class UISCBaseListener implements UISCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterElseifStatement(UISCParser.ElseifStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitElseifStatement(UISCParser.ElseifStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterElseStatement(UISCParser.ElseStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitElseStatement(UISCParser.ElseStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterNumber(UISCParser.NumberContext ctx) { }
 	/**
 	 * {@inheritDoc}

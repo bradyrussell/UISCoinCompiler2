@@ -265,6 +265,26 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitAssertionStatement(UISCParser.AssertionStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UISCParser#elseifStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseifStatement(UISCParser.ElseifStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#elseifStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseifStatement(UISCParser.ElseifStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UISCParser#elseStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseStatement(UISCParser.ElseStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#elseStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseStatement(UISCParser.ElseStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UISCParser#number}.
 	 * @param ctx the parse tree
 	 */

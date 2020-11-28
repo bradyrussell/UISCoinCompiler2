@@ -32,7 +32,7 @@ block:  '{' statement* '}' ;   // possibly empty statement block
 
 statement:   block                      #blockStatement
     |   varDeclaration                  #varDeclarationStatement
-    |   'if' conditional=expression '{' ifbody=statement '}' ('else' 'if' '{' elseifbody=statement '}')* ('else' '{' elsebody=statement '}')? #ifStatement
+    |   'if' conditional=expression '{' ifbody=statement '}' elseifStatement* elseStatement? #ifStatement
     |   'fori' '(' iterations=INT 'as' type ID ')' forbody=statement                       #foriStatement
     |   'foreach' '(' iterations=expression 'as' varDeclaration ')' forbody=statement     #foreachStatement
     |   'return' retval=expression? ';'        #returnStatement
@@ -42,6 +42,12 @@ statement:   block                      #blockStatement
     |   assembly #assemblyStatement
     |   assertion #assertionStatement
     ;
+
+elseifStatement:
+    'else' 'if' '(' conditional=expression ')' '{' statement '}';
+
+elseStatement:
+    'else' '{' statement '}';
 
 number:
         INT
