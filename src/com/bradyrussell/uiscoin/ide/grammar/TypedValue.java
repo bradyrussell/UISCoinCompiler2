@@ -1,5 +1,6 @@
 package com.bradyrussell.uiscoin.ide.grammar;
 
+import com.bradyrussell.uiscoin.ide.antlr.ASMUtil;
 import com.bradyrussell.uiscoin.ide.symboltable.Symbol;
 
 import java.util.ArrayList;
@@ -133,11 +134,11 @@ public class TypedValue implements Symbol {
 
     @Override
     public String generateGetSymbolASM() {
-        return "push "+toString()+" ";
+        return ASMUtil.generateGetAddress(getSymbolAddress());
     }
 
     @Override
     public String generateSetSymbolASM() {
-        return null;
+        throw new UnsupportedOperationException("Cannot set a constant!");
     }
 }

@@ -1,5 +1,6 @@
 package com.bradyrussell.uiscoin.ide.symboltable;
 
+import com.bradyrussell.uiscoin.ide.antlr.ASMUtil;
 import com.bradyrussell.uiscoin.ide.grammar.Type;
 
 public class SymbolBase implements Symbol {
@@ -26,11 +27,11 @@ public class SymbolBase implements Symbol {
 
     @Override
     public String generateGetSymbolASM() {
-        return "push ["+getSymbolAddress()+"] pick ";
+        return ASMUtil.generateGetAddress(getSymbolAddress());
     }
 
     @Override
     public String generateSetSymbolASM() {
-        return "push ["+getSymbolAddress()+"] put ";
+        return ASMUtil.generateSetAddress(getSymbolAddress());
     }
 }

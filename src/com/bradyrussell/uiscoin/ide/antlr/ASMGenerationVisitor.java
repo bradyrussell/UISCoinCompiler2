@@ -159,17 +159,17 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     @Override
     public String visitNumberLiteralExpression(UISCParser.NumberLiteralExpressionContext ctx) {
         Type typeOfInteger = ASMGenTypeVisitor.deduceTypeOfNumber(ctx.number().getText());
-        return "push " + (Type.Byte.equals(typeOfInteger) ? "[":"") + ctx.number().getText()+ (Type.Byte.equals(typeOfInteger) ? "]":"");
+        return ASMUtil.generateComment(typeOfInteger+ " literal "+ctx.getText()) + "push " + (Type.Byte.equals(typeOfInteger) ? "[":"") + ctx.number().getText()+ (Type.Byte.equals(typeOfInteger) ? "]":"");
     }
 
     @Override
     public String visitStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx) {
-        return "push " + ctx.STRING().getText();
+        return ASMUtil.generateComment("String literal "+ctx.getText()) + "push " + ctx.STRING().getText();
     }
 
     @Override
     public String visitCharLiteralExpression(UISCParser.CharLiteralExpressionContext ctx) {
-        return "push " + ctx.CHAR().getText().replace("'", "\"");
+        return ASMUtil.generateComment("Char literal "+ctx.getText()) + "push " + ctx.CHAR().getText().replace("'", "\"");
     }
 
     @Override
@@ -197,7 +197,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
         }
 
-        return " push \"" + strValue + "\"" + " push [" + address + "] put";
+        return ASMUtil.generateComment("Array string initialization "+ctx.getText()) + " push \"" + strValue + "\"" + ASMUtil.generateSetAddress(address)/*" push [" + address + "] put"*/;
     }
 
     @Override
@@ -214,7 +214,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             //todo copy rhs array
         }
 
-        return " push "+(symbolType.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc push ["+address+"] put";
+        return " push "+(symbolType.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc "+ASMUtil.generateSetAddress(address);//"push ["+address+"] put";
     }
 
     @Override
@@ -247,7 +247,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                     }
                 }
 
-                return visit(ctx.expression()) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbolType) : "") + " push [" + address + "] put";
+                return visit(ctx.expression()) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbolType) : "") + ASMUtil.generateSetAddress(address);//" push [" + address + "] put";
             }
             return "";
         } else {
@@ -303,7 +303,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         PopLocalScope();
 
-        return captureScope.generateCaptureASM() + tryCatchAsm.toString();
+        return ASMUtil.generateComment("Try statement ") + captureScope.generateCaptureASM() + tryCatchAsm.toString();
 
 
 /*        if(ctx.catchStatement() != null){
@@ -320,7 +320,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitException(UISCParser.ExceptionContext ctx) {
-        return visit(ctx.exprList()) + " return ";
+        return ASMUtil.generateComment("Exception "+ctx.getText()) + visit(ctx.exprList()) + " return ";
     }
 
     @Override
@@ -363,10 +363,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
 
         if (ctx.arrayIndex == null) {
-            return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push [" + symbol.address + "] put";
+            //return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push [" + symbol.address + "] put";
+            return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + symbol.generateSetSymbolASM();
         } else {
             Type indexType = ctx.arrayIndex.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
-            return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") +
+            return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") +
                     "push "+symbol.address+" "+ // push stack element
                     visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType,Type.Int32) +// push array index auto casted to int
                     " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
@@ -396,7 +397,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         } else {
             Type definedReturnType = Type.getByKeyword(functionDeclaration.type().getText());
             if(returnedType.widensTo(definedReturnType)) {
-                return "clear "+generateCastAssembly(returnedType,definedReturnType)+visit(ctx.retval);
+                return ASMUtil.generateComment("Return statement "+ctx.getText()) + "clear "+generateCastAssembly(returnedType,definedReturnType)+visit(ctx.retval);
             } else {
                 System.out.println("Type mismatch! Expected " + definedReturnType + " found " + returnedType);
                 return "TYPE_MISMATCH_EXPECTED_" + definedReturnType + "_FOUND_" + returnedType + "_ERROR";
@@ -501,7 +502,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             asm.append(" :").append(endLabel); // :end
         }
 
-        return asm.toString();
+        return ASMUtil.generateComment("If statement "+ctx.conditional.getText()) + asm.toString();
     }
 
     @Override
@@ -532,7 +533,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         PopLocalScope();
 
-        return forIStatement.toString();
+        return ASMUtil.generateComment("For I Statement "+ItBegin+", "+ItEnd) + forIStatement.toString();
     }
 
     @Override
@@ -591,13 +592,13 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         PopLocalScope();
 
-        return forEachStatement.toString();
+        return ASMUtil.generateComment("ForEach Statement "+ctx.arrayToLoop.getText()) + forEachStatement.toString();
 
     }
 
     @Override
     public String visitAssertion(UISCParser.AssertionContext ctx) {
-        return visit(ctx.expression())+" verify";
+        return ASMUtil.generateComment("Assertion "+ctx.getText()) + visit(ctx.expression())+" verify";
     }
 
 
@@ -634,7 +635,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitAssembly(UISCParser.AssemblyContext ctx) {
-        return stripQuotesFromString(ctx.STRING().getText());
+        return ASMUtil.generateComment("Raw ASM "+ctx.getText()) + stripQuotesFromString(ctx.STRING().getText());
     }
 
     @Override
@@ -664,12 +665,12 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             System.out.println("Undefined symbol " + ctx.ID().getText());
             return "SYMBOL_NOT_DEFINED_" + ctx.ID().getText();
         }
-        return "push " + symbol.address;
+        return ASMUtil.generateComment("Address Of variable "+ctx.getText()) + "push " + symbol.address;
     }
 
     @Override
     public String visitLengthOfExpression(UISCParser.LengthOfExpressionContext ctx) { // this will return number of bytes in array, not number of elements. divide by sizeof
-        return visit(ctx.expression()) + " len swap drop"; // this removes the value which we took the length of
+        return ASMUtil.generateComment("Length of "+ctx.getText()) + visit(ctx.expression()) + " len swap drop"; // this removes the value which we took the length of
     }
 
     @Override
@@ -680,7 +681,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "INVALID_TYPE_" + ctx.type().getText()+"_ERROR";
         }
 
-        return "push ["+sizeOfType.getSize()+"]";
+        return ASMUtil.generateComment("SizeOf "+ctx.getText()) + "push ["+sizeOfType.getSize()+"]";
     }
 
 
@@ -705,7 +706,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     public String visitTernaryExpression(UISCParser.TernaryExpressionContext ctx) {
         String truelabel = getNextLabel();
         String falselabel = getNextLabel();
-        return visit(ctx.condition) + " gotoif "+truelabel+" "+ visit(ctx.iffalse) + " goto "+falselabel+" :"+truelabel+" "+visit(ctx.iftrue)+" :"+falselabel;
+        return ASMUtil.generateComment("Ternary "+ctx.getText()) + visit(ctx.condition) + " gotoif "+truelabel+" "+ visit(ctx.iffalse) + " goto "+falselabel+" :"+truelabel+" "+visit(ctx.iftrue)+" :"+falselabel;
     }
 
 
@@ -718,7 +719,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             System.out.println("Warning: ValueAt of non pointer ("+ctx.expression().getText()+") returns unknown type (void)!");
         }
 
-        return visit(ctx.expression())+castAssembly+" pick ";
+        return ASMUtil.generateComment("Get Value At variable "+ctx.getText()) + visit(ctx.expression())+castAssembly+" pick ";
     }
 
     @Override
@@ -732,7 +733,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "CANNOT_CAST_FROM_" + fromType + "_TO_" + toType + "_ERROR";
         }
 
-        return visit(ctx.expression()) + " " + castAssembly;
+        return ASMUtil.generateComment("Cast "+ctx.getText()) + visit(ctx.expression()) + " " + castAssembly;
     }
 
     @Override
@@ -832,7 +833,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             System.out.println("Undefined symbol " + ctx.ID().getText());
             return "SYMBOL_NOT_DEFINED_" + ctx.ID().getText();
         }
-        return symbol.generateGetSymbolASM();
+        return ASMUtil.generateComment("Variable reference "+ctx.getText()) + symbol.generateGetSymbolASM();
         //return "push [" + symbol.address + "] pick ";
     }
 
@@ -851,9 +852,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "FUNCTION_NOT_PROPERLY_DEFINED_" + ctx.ID().getText();
         }
         // todo check parameter types
-        return visit(ctx.exprList()) + // params
+        return ASMUtil.generateComment("Function call "+ctx.getText()) + visit(ctx.exprList()) + // params
                 " push ["+ctx.exprList().expression().size()+"] "+ // number of parameters
-                " push [" + functionSymbol.Symbol.address + "] pick"+ // get function bytecode
+                functionSymbol.generateGetSymbolASM()+
+                //" push [" + functionSymbol.Symbol.address + "] pick"+ // get function bytecode
                 " call verify"; // execute and ensure it did not fail
     }
 
@@ -884,7 +886,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "ARRAY_INDEX_INVALID_TYPE_" + indexExpressionType;
         }
 
-        return "push "+symbol.address+" "+ // push stack element
+        return ASMUtil.generateComment("Array access "+ctx.getText()) + "push "+symbol.address+" "+ // push stack element
                 visit(ctx.expression())+" "+ castAssembly +// push array index auto casted to int
                 " push "+SizeOf+ // multiply by sizeof to get beginIndex
                 " multiply push "+SizeOf+
@@ -912,7 +914,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         System.out.println("Warning: ArrayValueInitialization assumes each array initializer expression pushes exactly one value onto the stack.");
         // auto widens using visitArrayInitializer();
-        return visit(ctx.arrayInitializer()) + " push [" + ctx.arrayInitializer().exprList().expression().size() + "] combine " + " push [" + getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()) + "] put";
+        return ASMUtil.generateComment("Array value initialization "+ctx.getText()) + visit(ctx.arrayInitializer()) + " push [" + ctx.arrayInitializer().exprList().expression().size() + "] combine " + ASMUtil.generateSetAddress(getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()));//" push [" + getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()) + "] put";
     }
 
     // this is how we auto widen array initializers
@@ -932,7 +934,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             arrayInitializerAsm.append(visit(expressionContext)).append(" ").append(generateCastAssembly(type, castToType)).append(" ");
         }
 
-        return arrayInitializerAsm.toString();
+        return ASMUtil.generateComment("Array initialization "+ctx.getText()) + arrayInitializerAsm.toString();
     }
 
     @Override
@@ -950,7 +952,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         int FunctionAddress = ((ScopeWithSymbol) getCurrentScope().findScopeContaining(ctx.ID().getText()).getSymbol(ctx.ID().getText())).Symbol.address;
 
         PopLocalScope();
-        return "(" + NumberOfParameters + ") { " + functionCode + "} push [" + FunctionAddress + "] put";
+        return ASMUtil.generateComment("Function declaration "+ctx.ID().getText()) + "(" + NumberOfParameters + ") { " + functionCode + "} "+ASMUtil.generateSetAddress(FunctionAddress);//push [" + FunctionAddress + "] put";
     }
 
 

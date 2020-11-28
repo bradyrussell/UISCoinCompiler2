@@ -1,7 +1,10 @@
 package com.bradyrussell.uiscoin.ide.symboltable;
 
+import com.bradyrussell.uiscoin.ide.antlr.ASMUtil;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ScopeCapture extends ScopeLocal {
     public ScopeCapture(String scopeName, ScopeBase parent) {
@@ -19,29 +22,51 @@ public class ScopeCapture extends ScopeLocal {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\n/* Begin Capture of "+capturedVariableRealAddresses.size()+" Symbols */\n");
+        // todo capture constants by putting them in the symbol table too?
 
-        symbolTable.entrySet().stream().filter((e)-> capturedVariableRealAddresses.containsKey(e.getKey())).sorted((a, b)->{
-            int aAddress = 0, bAddress = 0;
+        return symbolTable.entrySet().stream().sorted((a, b)->{ // sort by capture local address
+            if(a.getValue() instanceof Symbol && b.getValue() instanceof Symbol) {
+                return ((Symbol)a.getValue()).getSymbolAddress() - ((Symbol)b.getValue()).getSymbolAddress();
+            } else {
+                throw new UnsupportedOperationException("Symbol table value is not symbol! "+a.getKey()+":"+a.getValue()+""+(a.getValue() instanceof Symbol)+" / "+b.getKey()+":"+b.getValue()+(b.getValue() instanceof Symbol));
+            }
+        }).map((stringObjectEntry -> {
+            if(super.hasSymbol(stringObjectEntry.getKey())) { // local
+                return ASMUtil.generateComment("Allocate space for "+stringObjectEntry.getKey()) + "null ";
+            } else { // capture
+                return ASMUtil.generateComment("Capture "+stringObjectEntry.getKey()) + "push ["+capturedVariableRealAddresses.get(stringObjectEntry.getKey())+"] pick ";
+            }
+        })).collect(Collectors.joining("\n"));
 
-            if(a.getValue() instanceof ScopeWithSymbol) {
-                aAddress = ((ScopeWithSymbol)a.getValue()).Symbol.address;
-            }
-            if(a.getValue() instanceof SymbolBase) {
-                aAddress = ((SymbolBase)a.getValue()).address;
-            }
-            if(b.getValue() instanceof ScopeWithSymbol) {
-                bAddress = ((ScopeWithSymbol)b.getValue()).Symbol.address;
-            }
-            if(b.getValue() instanceof SymbolBase) {
-                bAddress = ((SymbolBase)b.getValue()).address;
-            }
-            return aAddress - bAddress;
-        }).map(Map.Entry::getKey).map((s -> capturedVariableRealAddresses.get(s))).forEach((integer -> sb.append("push [").append(integer).append("] pick ")));
+//        sb.append("\n/* Begin Capture of "+capturedVariableRealAddresses.size()+" Symbols */\n"); // todo this needs to do nulls for  non captured variables
+//
+//        symbolTable.entrySet().stream().filter((e)-> capturedVariableRealAddresses.containsKey(e.getKey())).sorted((a, b)->{
+//            int aAddress = 0, bAddress = 0;
+//
+//            if(a.getValue() instanceof ScopeWithSymbol) {
+//                aAddress = ((ScopeWithSymbol)a.getValue()).Symbol.address;
+//            }
+//            if(a.getValue() instanceof SymbolBase) {
+//                aAddress = ((SymbolBase)a.getValue()).address;
+//            }
+//            if(b.getValue() instanceof ScopeWithSymbol) {
+//                bAddress = ((ScopeWithSymbol)b.getValue()).Symbol.address;
+//            }
+//            if(b.getValue() instanceof SymbolBase) {
+//                bAddress = ((SymbolBase)b.getValue()).address;
+//            }
+//            return aAddress - bAddress;
+//        }).map(Map.Entry::getKey).map((s -> capturedVariableRealAddresses.get(s))).forEach((integer -> sb.append("push [").append(integer).append("] pick ")));
+//
+//        sb.append("\n/* End Capture of "+capturedVariableRealAddresses.size()+" Symbols */\n");
 
-        sb.append("\n/* End Capture of "+capturedVariableRealAddresses.size()+" Symbols */\n");
+       // return sb.toString();
+    }
 
-        return sb.toString();
+    // return modifed values to their original state
+    // this might need to be two separate functions, one called inside the scope and one outside
+    public String generateRestoreCapturedValuesASM(){
+        return null;
     }
 
     @Override
