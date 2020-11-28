@@ -10,10 +10,10 @@ public class ScopeBase {
     public String ScopeName = "AnonymousScope";
     public ScopeBase Parent;
     public ArrayList<ScopeBase> Children = new ArrayList<>();
-    public HashMap<String, Object> symbolTable = new HashMap<>(); // can either be SymbolBase or SymbolWithScope
+    protected HashMap<String, Object> symbolTable = new HashMap<>(); // can either be SymbolBase or SymbolWithScope
 
-    private int ScopeBaseAddress = 0;
-    private int ScopeAddress;
+    protected int ScopeBaseAddress = 0;
+    protected int ScopeAddress;
 
     public ScopeBase(ScopeBase parent) {
         Parent = parent;
@@ -58,6 +58,18 @@ public class ScopeBase {
         return ScopeAddress-1;
     }
 
+    public Object getSymbol(String Name){
+        return symbolTable.get(Name);
+    }
+
+    public boolean hasSymbol(String Name){
+        return symbolTable.containsKey(Name);
+    }
+
+    public int size(){
+        return symbolTable.size();
+    }
+
     @Override
     public String toString() {
         return "ScopeBase{" +
@@ -84,7 +96,7 @@ public class ScopeBase {
     public String getRecursiveAllocation(){
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < getDepth()+1; i++) {
+        for (int i = 0; i < getDepth(); i++) {
             sb.append("null ");
         }
 

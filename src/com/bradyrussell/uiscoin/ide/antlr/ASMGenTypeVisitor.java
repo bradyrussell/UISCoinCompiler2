@@ -84,7 +84,7 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
             return null;
         }
 
-        Object uncastedSymbol = scopeContaining.symbolTable.get(ctx.ID().getText());
+        Object uncastedSymbol = scopeContaining.getSymbol(ctx.ID().getText());
         if(uncastedSymbol instanceof TypedValue) {
             return ((TypedValue)uncastedSymbol).type;
         }
@@ -99,7 +99,7 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
 
     @Override
     public Type visitBooleanLiteral(UISCParser.BooleanLiteralContext ctx) {
-        return Type.Byte;
+        return ctx.getText().equals("null") ? Type.Void : Type.Byte;
     }
 
     @Override
@@ -137,7 +137,7 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
             System.out.println("Cannot deduce type of undefined function: "+ctx.ID().getText());
             return null;
         }
-        ScopeWithSymbol symbol = (ScopeWithSymbol) scopeContaining.symbolTable.get(ctx.ID().getText());
+        ScopeWithSymbol symbol = (ScopeWithSymbol) scopeContaining.getSymbol(ctx.ID().getText());
         if(symbol == null) {
             System.out.println("Cannot deduce type of variable as function: "+ctx.ID().getText());
             return null;
@@ -193,7 +193,7 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
             return null;
         }
 
-        Object uncasted = scopeContaining.symbolTable.get(ctx.ID().getText());
+        Object uncasted = scopeContaining.getSymbol(ctx.ID().getText());
 
         if(uncasted instanceof ScopeWithSymbol) { // address of function
             return Type.VoidPointer; // function ptr
@@ -227,7 +227,7 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
             return null;
         }
 
-        SymbolBase symbol = (SymbolBase) scopeContaining.symbolTable.get(ctx.ID().getText());
+        SymbolBase symbol = (SymbolBase) scopeContaining.getSymbol(ctx.ID().getText());
 
         if (symbol == null) {
             System.out.println("Array " + ctx.ID().getText() + " was not properly defined in this scope.");

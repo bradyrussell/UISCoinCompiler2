@@ -70,7 +70,7 @@ public class deprScriptCompiler {
             }
 
             // assignment   Name = Expr  ->   MyInt = 5+5;
-           if(isValidIdentifierName(InputTokens.get(i)) && getCurrentScope().symbolTable.containsKey(InputTokens.get(i))) {
+           if(isValidIdentifierName(InputTokens.get(i)) && getCurrentScope().hasSymbol(InputTokens.get(i))) {
                String identifierName = InputTokens.get(i);
                String nextToken = InputTokens.get(++i);
                if(nextToken.charAt(0) == '=') {// declaration     int32 MyInt;

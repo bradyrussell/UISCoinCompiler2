@@ -3,6 +3,8 @@ package com.bradyrussell.uiscoin.ide.antlr;
 import com.bradyrussell.uiscoin.ide.grammar.Type;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 import com.bradyrussell.uiscoin.ide.symboltable.*;
+import org.antlr.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.RuleContext;
 
 import java.util.ArrayList;
 
@@ -28,6 +30,16 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
     }
 
+    void PushLocalScopeCapture(String ScopeName) {
+        if (CurrentLocalScope == null) {
+            CurrentLocalScope = new ScopeCapture(ScopeName, Global);
+            Global.Children.add(CurrentLocalScope);
+        } else {
+            ScopeLocal parent = CurrentLocalScope;
+            CurrentLocalScope = new ScopeCapture(ScopeName, parent);
+            parent.Children.add(CurrentLocalScope);
+        }
+    }
 
     void PushFunctionScope(Type FunctionType, String FunctionName) {
         if (CurrentLocalScope == null) {
@@ -198,7 +210,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
 
         if(ctx.expression() != null) {
-            // todo copy other array here
+            //todo copy rhs array
         }
 
         return " push "+(symbolType.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc push ["+address+"] put";
@@ -270,9 +282,38 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     /** End Initialization */
 
+
+
     /**
      * Begin Statements
      */
+
+    @Override
+    public String visitTryCatchStatement(UISCParser.TryCatchStatementContext ctx) {
+        StringBuilder tryCatchAsm = new StringBuilder();
+
+        PushLocalScopeCapture("TryStatement");
+        // maybe record depth here so we can drop back to that depth?
+
+        // put inside a virtualscript so returns are caught
+
+        // execute and jumpif over the catch block if returned true
+/*        tryCatchAsm.append()*/
+        tryCatchAsm.append(visit(ctx.tryStatement()));
+
+        PopLocalScope();
+
+/*        if(ctx.catchStatement() != null){
+            PushLocalScope("CatchStatement");
+
+            PopLocalScope();
+        } else {
+            // clean up exceptions?
+        }
+        /// drop back to that depth?*/
+
+        return tryCatchAsm.toString();
+    }
 
     @Override
     public String visitAssignmentStatement(UISCParser.AssignmentStatementContext ctx) {
@@ -283,12 +324,12 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "SYMBOL_NOT_DEFINED_" + ctx.ID().getText();
         }
 
-        if(scopeContaining.symbolTable.get(ctx.lhs.getText()) instanceof TypedValue) {
+        if(scopeContaining.getSymbol(ctx.lhs.getText()) instanceof TypedValue) {
             System.out.println("Assigning to constant " + ctx.ID().getText());
             return "ASSIGN_TO_CONSTANT_" + ctx.ID().getText();
         }
 
-        SymbolBase symbol = (SymbolBase) scopeContaining.symbolTable.get(ctx.lhs.getText());
+        SymbolBase symbol = (SymbolBase) scopeContaining.getSymbol(ctx.lhs.getText());
 
         if (symbol == null) {
             System.out.println("Undefined symbol " + ctx.lhs.getText());
@@ -310,7 +351,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         if (ctx.arrayIndex == null) {
             return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push [" + symbol.address + "] put";
-        } else { // todo this was wrong
+        } else {
             Type indexType = ctx.arrayIndex.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
             return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") +
                     "push "+symbol.address+" "+ // push stack element
@@ -320,6 +361,33 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                     " set ";  // push sizeof
 
            // return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push " + symbol.address + " " + visit(ctx.arrayIndex) + " push " + /*sizeof type*/symbol.type.getSize() + " set";
+        }
+    }
+
+    @Override
+    public String visitOpAndAssignmentStatement(UISCParser.OpAndAssignmentStatementContext ctx) {
+        return null;//todo
+    }
+
+    @Override
+    public String visitReturnStatement(UISCParser.ReturnStatementContext ctx) {
+        Type returnedType = ctx.retval.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
+
+        RuleContext parent = ctx.parent;
+        while (parent != null && !(parent instanceof UISCParser.FunctionDeclarationContext)) parent = parent.parent;
+        UISCParser.FunctionDeclarationContext functionDeclaration = (UISCParser.FunctionDeclarationContext)parent;
+
+        if(functionDeclaration == null) {
+            System.out.println("Return outside of function declaration " + ctx.getText());
+            return "RETURN_OUTSIDE_FUNCTION_" + ctx.getText() + "_ERROR";
+        } else {
+            Type definedReturnType = Type.getByKeyword(functionDeclaration.type().getText());
+            if(returnedType.widensTo(definedReturnType)) {
+                return "clear "+generateCastAssembly(returnedType,definedReturnType)+visit(ctx.retval);
+            } else {
+                System.out.println("Type mismatch! Expected " + definedReturnType + " found " + returnedType);
+                return "TYPE_MISMATCH_EXPECTED_" + definedReturnType + "_FOUND_" + returnedType + "_ERROR";
+            }
         }
     }
 
@@ -454,7 +522,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "ARRAY_NOT_DEFINED_" + ctx.ID().getText();
         }
 
-        SymbolArray symbol = (SymbolArray) scopeContaining.symbolTable.get(ctx.ID().getText());
+        SymbolArray symbol = (SymbolArray) scopeContaining.getSymbol(ctx.ID().getText());
 
         if (symbol == null) {
             System.out.println("Array " + ctx.ID().getText() + " was not properly defined in this scope.");
@@ -562,7 +630,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "SYMBOL_NOT_DEFINED_" + ctx.ID().getText();
         }
 
-        Object uncastedSymbol = scopeContaining.symbolTable.get(ctx.ID().getText());
+        Object uncastedSymbol = scopeContaining.getSymbol(ctx.ID().getText());
 
         if(uncastedSymbol instanceof TypedValue) {
             System.out.println("Cannot get the address of constant " + ctx.ID().getText());
@@ -622,7 +690,14 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitValueAtVariableExpression(UISCParser.ValueAtVariableExpressionContext ctx) {
-        return visit(ctx.expression())+generateCastAssembly(Type.Int32, Type.Byte)+" pick";
+        Type exprType = ctx.expression().accept(new ASMGenTypeVisitor(Global, CurrentLocalScope)).fromPointer();
+        String castAssembly = generateCastAssembly(exprType, Type.Byte);
+
+        if(exprType == Type.Void) {
+            System.out.println("Warning: ValueAt of non pointer ("+ctx.expression().getText()+") returns unknown type (void)!");
+        }
+
+        return visit(ctx.expression())+castAssembly+" pick ";
     }
 
     @Override
@@ -669,12 +744,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     public String visitAddSubExpression(UISCParser.AddSubExpressionContext ctx) {
         if(ctx.lhs instanceof UISCParser.StringLiteralExpressionContext || (ctx.lhs instanceof UISCParser.VariableReferenceExpressionContext && // is this array concat?
                 getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) != null &&
-                getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()).symbolTable.get(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) instanceof SymbolArray)) {
+                getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()).getSymbol(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) instanceof SymbolArray)) {
             // todo this will throw off symbol array lengths, so foreach wouldnt work. dont see how this can work unless the sizes are fixed. maybe use set 0, len*size instead? to force user to create new array long enough
             return getCastedBinaryExpression(ctx.lhs,ctx.rhs,"push [2] combine", "push [2] combine");
         }
-
-
 
         if (ctx.op.getText().contains("+")) {
             return getCastedBinaryExpression(ctx.lhs,ctx.rhs,"add", "addfloat");
@@ -725,7 +798,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "SYMBOL_NOT_DEFINED_" + ctx.ID().getText();
         }
 
-        Object uncastedSymbol = scopeContaining.symbolTable.get(ctx.ID().getText());
+        Object uncastedSymbol = scopeContaining.getSymbol(ctx.ID().getText());
 
         if(uncastedSymbol instanceof TypedValue) {
            return "push "+((TypedValue)uncastedSymbol);
@@ -748,7 +821,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "FUNCTION_NOT_DEFINED_" + ctx.ID().getText();
         }
 
-        ScopeWithSymbol functionSymbol = (ScopeWithSymbol) scopeContaining.symbolTable.get(ctx.ID().getText());
+        ScopeWithSymbol functionSymbol = (ScopeWithSymbol) scopeContaining.getSymbol(ctx.ID().getText());
 
         if (functionSymbol == null) {
             System.out.println("Function " + ctx.ID().getText() + " was not properly defined in this scope.");
@@ -770,7 +843,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "ARRAY_NOT_DEFINED_" + ctx.ID().getText();
         }
 
-        SymbolBase symbol = (SymbolBase) scopeContaining.symbolTable.get(ctx.ID().getText());
+        SymbolBase symbol = (SymbolBase) scopeContaining.getSymbol(ctx.ID().getText());
 
         if (symbol == null) {
             System.out.println("Array " + ctx.ID().getText() + " was not properly defined in this scope.");
@@ -802,7 +875,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitArrayValueInitialization(UISCParser.ArrayValueInitializationContext ctx) { // todo could be optimized into a single push. would that be smaller? // todo type check
-        if (getCurrentScope().symbolTable.containsKey(ctx.ID().getText())) {
+        if (getCurrentScope().hasSymbol(ctx.ID().getText())) {
             System.out.println("Symbol " + ctx.ID().getText() + " was already defined in this scope!");
             return "ERROR_SYMBOL_REDEFINITION_" + ctx.ID().getText();
         }
@@ -850,8 +923,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
 
         String functionCode = visit(ctx.block());
-        int NumberOfParameters = getCurrentScope().symbolTable.size();
-        int FunctionAddress = ((ScopeWithSymbol) getCurrentScope().findScopeContaining(ctx.ID().getText()).symbolTable.get(ctx.ID().getText())).Symbol.address;
+        int NumberOfParameters = getCurrentScope().size();
+        int FunctionAddress = ((ScopeWithSymbol) getCurrentScope().findScopeContaining(ctx.ID().getText()).getSymbol(ctx.ID().getText())).Symbol.address;
 
         PopLocalScope();
         return "(" + NumberOfParameters + ") { " + functionCode + "} push [" + FunctionAddress + "] put";

@@ -113,14 +113,14 @@ public class TestCompilerPass extends CompilerPassBase<TestCompilationContext> {
         }
 
         // assignment   Name = Expr  ->   MyInt = 5+5;
-        if(isValidIdentifierName(Token) && Context.getCurrentScope().symbolTable.containsKey(Token)) {
+        if(isValidIdentifierName(Token) && Context.getCurrentScope().hasSymbol(Token)) {
             String nextToken = popNextToken();
             if(nextToken.charAt(0) == '=') {
                 String rValue = popNextToken();
 
                 ScopeBase scopeContainingVariable = Context.getCurrentScope().findScopeContaining(Token);
                 if(scopeContainingVariable == null) throw new CompilerErrorException("Undeclared symbol: "+Token);
-                Object symbol = scopeContainingVariable.symbolTable.get(Token);
+                Object symbol = scopeContainingVariable.getSymbol(Token);
                 if(symbol instanceof ScopeWithSymbol) throw new CompilerErrorException("Cannot assign value to function: "+Token);
 
                 System.out.println("ASSIGN VAR "+ Token +" value "+rValue+" type "+((SymbolBase)symbol).type);

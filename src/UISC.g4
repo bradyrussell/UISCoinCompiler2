@@ -13,7 +13,7 @@ varDeclaration
     ;
 type:   'void' | 'byte' | 'int32' | 'int64' | 'float' ;//| ID ; //this allows user-defined types
 
-booleanLiteral: 'true' | 'false';
+booleanLiteral: 'true' | 'false' | 'null';
 
 arrayInitializer
     : '{' exprList? '}'
@@ -39,9 +39,11 @@ statement:   block                      #blockStatement
     |   'return' retval=expression? ';'        #returnStatement
     |   lhs=ID ('[' arrayIndex=expression ']')? '=' rhs=expression ';'      #assignmentStatement
     |   lhs=ID ('[' arrayIndex=expression ']')? op=('+='|'-='|'*='|'/='|'%='|'&='|'|=') rhs=expression ';'      #opAndAssignmentStatement
+    |   tryStatement catchStatement? #tryCatchStatement
     |   expression ';'          #functionCallStatement
     |   assembly #assemblyStatement
     |   assertion #assertionStatement
+    |   exception #exceptionStatement
     ;
 
 elseifStatement:
@@ -49,6 +51,12 @@ elseifStatement:
 
 elseStatement:
     'else' '{' statement '}';
+
+tryStatement:
+    'try' '{' statement '}';
+
+catchStatement:
+    'catch' '(' exprList? ')' '{' statement '}';
 
 number:
         INT
@@ -61,6 +69,10 @@ assembly:
 
 assertion:
     'assert' '(' expression ')' ';'
+    ;
+
+exception:
+    'throw' '(' exprList? ')' ';' // pushes these values on the stack then OP return
     ;
 
 // expressions should push a single value on to the stack (net +1, temp variables are fine)

@@ -26,7 +26,7 @@ public class Main {
 
         String allocation = asmGenerationVisitor.Global.getRecursiveAllocation()+ "\n" + asm;
 
-        System.out.println("\n\nGenerated Assembly: \n"+allocation+"\n");
+        System.out.println("\n\nGenerated Assembly: \n"+allocation.replace("push [1]", "true").replace("push [0]", "false")+"\n");
 
 /*        ParseTreeWalker.DEFAULT.walk(new TestUISCListener(), tree);*/
     }

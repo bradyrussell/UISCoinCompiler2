@@ -148,6 +148,13 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOpAndAssignmentStatement(UISCParser.OpAndAssignmentStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code tryCatchStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTryCatchStatement(UISCParser.TryCatchStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code functionCallStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
@@ -169,6 +176,13 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssertionStatement(UISCParser.AssertionStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code exceptionStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExceptionStatement(UISCParser.ExceptionStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UISCParser#elseifStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -180,6 +194,18 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitElseStatement(UISCParser.ElseStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UISCParser#tryStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTryStatement(UISCParser.TryStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UISCParser#catchStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCatchStatement(UISCParser.CatchStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UISCParser#number}.
 	 * @param ctx the parse tree
@@ -198,6 +224,12 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAssertion(UISCParser.AssertionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UISCParser#exception}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitException(UISCParser.ExceptionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code moduloExpression}
 	 * labeled alternative in {@link UISCParser#expression}.

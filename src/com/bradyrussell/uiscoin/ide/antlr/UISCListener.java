@@ -241,6 +241,18 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitOpAndAssignmentStatement(UISCParser.OpAndAssignmentStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code tryCatchStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterTryCatchStatement(UISCParser.TryCatchStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code tryCatchStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitTryCatchStatement(UISCParser.TryCatchStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code functionCallStatement}
 	 * labeled alternative in {@link UISCParser#statement}.
 	 * @param ctx the parse tree
@@ -277,6 +289,18 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitAssertionStatement(UISCParser.AssertionStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code exceptionStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterExceptionStatement(UISCParser.ExceptionStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code exceptionStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitExceptionStatement(UISCParser.ExceptionStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UISCParser#elseifStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -296,6 +320,26 @@ public interface UISCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitElseStatement(UISCParser.ElseStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UISCParser#tryStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterTryStatement(UISCParser.TryStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#tryStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitTryStatement(UISCParser.TryStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UISCParser#catchStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterCatchStatement(UISCParser.CatchStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#catchStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitCatchStatement(UISCParser.CatchStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link UISCParser#number}.
 	 * @param ctx the parse tree
@@ -326,6 +370,16 @@ public interface UISCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssertion(UISCParser.AssertionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UISCParser#exception}.
+	 * @param ctx the parse tree
+	 */
+	void enterException(UISCParser.ExceptionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#exception}.
+	 * @param ctx the parse tree
+	 */
+	void exitException(UISCParser.ExceptionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code moduloExpression}
 	 * labeled alternative in {@link UISCParser#expression}.

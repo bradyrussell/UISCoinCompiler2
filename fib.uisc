@@ -1,3 +1,13 @@
-byte apple = 1;
-byte@ myPtr = $apple; //int32 value AT myPtr.  pointer to apple
-int32 applecopy = @myPtr; // value At myPtr
+int32 addThree(int32 before) {
+    return before+3;
+}
+
+int32 arr[]  = {1, 2 ,3};
+
+int32 y = arr;
+
+try{
+
+int32 test = y;
+
+}
