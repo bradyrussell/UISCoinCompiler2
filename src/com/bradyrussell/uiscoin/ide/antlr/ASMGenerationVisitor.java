@@ -360,7 +360,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             boolean bShouldWiden = false;
 
             if (!fieldType.equals(rhsType)) {
-                if (rhsType.widensTo(symbol.type)) {
+                if (rhsType.widensTo(symbol.struct.getFieldType(ctx.lhs_struct.fieldname.getText()))) {
                     bShouldWiden = true;
                 } else {
                     System.out.println("Type mismatch! Expected " + fieldType + " found " + rhsType);

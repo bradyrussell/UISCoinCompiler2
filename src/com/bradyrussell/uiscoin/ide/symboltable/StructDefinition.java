@@ -1,5 +1,6 @@
 package com.bradyrussell.uiscoin.ide.symboltable;
 
+import com.bradyrussell.uiscoin.ide.antlr.ASMUtil;
 import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class StructDefinition {
         int index = 0;
         for (String structField : structFieldOrder) {
             if(structField.equals(FieldName)) return index;
-            index += getFieldSize(FieldName);
+            index += getFieldSize(structField);
         }
         return -1;
     }
@@ -63,8 +64,8 @@ public class StructDefinition {
     }
 
     // expects [Data][int32 Struct Address] on stack
-    public String generateFieldSetterASM(String FieldName){
-        return " push "+getFieldByteIndex(FieldName)+" push "+getFieldSize(FieldName)+" set ";
+    public String generateFieldSetterASM(String FieldName){ // todo this seems off for diff size struct fields
+        return ASMUtil.generateComment(FieldName) +ASMUtil.generateComment("Field index: "+getFieldByteIndex(FieldName))+" push " +getFieldByteIndex(FieldName)+ASMUtil.generateComment("Field size: "+getFieldSize(FieldName)) +" push "+getFieldSize(FieldName)+" set ";
     }
 
     // push this struct zeroed onto the stack
