@@ -1,9 +1,10 @@
-int32 myInts[] = {1, 2, 3, 4};
-byte asBytes[4];
-
-int32 counter = 3;
-
-uforeach(myInts as int32 i;){
-    asBytes[counter] = (byte)i;
-    counter = counter - 1;
+int32 myFunction(int32 a, int32 b) {
+    if(a > b) {
+        return a+b;
+    } else {
+        return b - a;
+    }
 }
+
+byte myByte = (byte)myFunction(2,1);
+byte secondByte = 4;

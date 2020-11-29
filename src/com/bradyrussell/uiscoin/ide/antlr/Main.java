@@ -27,7 +27,7 @@ public class Main {
 
         String allocation = asmGenerationVisitor.Global.getRecursiveAllocation()+ "\n" + asm;
 
-        String optimized = allocation.replace("push [1]", "true").replace("push [0]", "false");
+        String optimized = allocation.replace("push [1]", "true").replace("push [0]", "false").replace("true gotoif", "goto");
 
         System.out.println("\n\nGenerated Assembly: \n"+allocation+"\n");
 

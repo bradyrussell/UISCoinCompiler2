@@ -5,6 +5,7 @@ import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ScopeBase {
     public String ScopeName = "AnonymousScope";
@@ -29,9 +30,16 @@ public class ScopeBase {
         System.out.println("[Scope] Entering new scope "+scopeName+", base address: "+ScopeAddress+", parent: "+(Parent == null ? "None" : Parent.ScopeName));
     }
 
-    public ScopeLocal defineFunction(String Name, Type SymbolType){
+    public ScopeLocal defineFunction(String Name, Type SymbolType, List<NameAndType> Parameters){
         if(symbolTable.containsKey(Name)) return null;
-        ScopeWithSymbol scope = new ScopeWithSymbol(Name,this, new SymbolBase(SymbolType, ScopeAddress++));
+
+        SymbolFunction symbol = new SymbolFunction(SymbolType, ScopeAddress++);
+
+        for (NameAndType parameter : Parameters) {
+            symbol.defineParameter(parameter.Name, parameter.Type);
+        }
+
+        ScopeWithSymbol scope = new ScopeWithSymbol(Name,this, symbol);
         symbolTable.put(Name, scope);
         System.out.println("[Scope] Defined function "+Name+" at address "+(ScopeAddress-1));
         return scope;

@@ -49,7 +49,7 @@ public class TestCompilerPass extends CompilerPassBase<TestCompilationContext> {
 
             if(nextToken.charAt(0) == '(') {// function definition      int32 myFunction(int32 myParameter, byte secondParameter) { ... }
                 System.out.println("DEFINE FUNCTION "+identifierName+" of type "+type);
-                currentFunctionScope = Context.getCurrentScope().defineFunction(identifierName, type);
+             //   currentFunctionScope = Context.getCurrentScope().defineFunction(identifierName, type);
 
                 // parameter list
                 //////////////////////////////////////////////////////

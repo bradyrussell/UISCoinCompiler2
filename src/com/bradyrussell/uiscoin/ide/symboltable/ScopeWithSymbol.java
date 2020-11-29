@@ -3,9 +3,9 @@ package com.bradyrussell.uiscoin.ide.symboltable;
 import com.bradyrussell.uiscoin.ide.antlr.ASMUtil;
 
 public class ScopeWithSymbol extends ScopeLocal implements Symbol {
-    public SymbolBase Symbol;
+    public SymbolFunction Symbol;
 
-    public ScopeWithSymbol(String scopeName, ScopeBase parent, SymbolBase symbol) {
+    public ScopeWithSymbol(String scopeName, ScopeBase parent, SymbolFunction symbol) {
         super(scopeName, parent);
         Symbol = symbol;
     }

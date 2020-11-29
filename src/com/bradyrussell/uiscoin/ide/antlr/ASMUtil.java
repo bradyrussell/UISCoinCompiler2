@@ -8,10 +8,10 @@ public class ASMUtil {
     }
 
     public static String generateLoadAddress(int Address) {
-        return ASMUtil.generateComment("Load Value from "+Address)+ "push ["+Address+"] pick ";
+        return ASMUtil.generateComment("Load Value from "+Address)+ " push ["+Address+"] pick ";
     }
 
     public static String generateStoreAddress(int Address) {
-        return ASMUtil.generateComment("Store Value to "+Address)+"push ["+Address+"] put ";
+        return ASMUtil.generateComment("Store Value to "+Address)+" push ["+Address+"] put ";
     }
 }

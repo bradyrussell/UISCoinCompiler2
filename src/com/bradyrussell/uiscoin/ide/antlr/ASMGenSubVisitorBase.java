@@ -20,7 +20,7 @@ public abstract class ASMGenSubVisitorBase<T> extends UISCBaseVisitor<T> {
         return CurrentLocalScope == null ? Global : CurrentLocalScope;
     }
 
-    void PushLocalScope(String ScopeName) {
+/*    void PushLocalScope(String ScopeName) {
         if (CurrentLocalScope == null) {
             CurrentLocalScope = new ScopeLocal(ScopeName, Global);
             Global.Children.add(CurrentLocalScope);
@@ -42,7 +42,7 @@ public abstract class ASMGenSubVisitorBase<T> extends UISCBaseVisitor<T> {
     void PopLocalScope() {
         if (CurrentLocalScope.Parent instanceof ScopeLocal) CurrentLocalScope = (ScopeLocal) CurrentLocalScope.Parent;
         CurrentLocalScope = null;
-    }
+    }*/
     ////////////////////////
 
 
