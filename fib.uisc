@@ -1,12 +1,3 @@
-struct ptrStruct{
-    int64@ xPtr;
-    int64@ yPtr;
-}
+byte b= 1;
 
-ptrStruct apple;
-
-apple.xPtr = 1;
-apple.yPtr = 1;
-
-//todo struct ignores ptrs
-
+b += 2;

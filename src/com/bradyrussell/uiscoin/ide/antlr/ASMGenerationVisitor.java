@@ -496,7 +496,53 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitOpAndAssignmentStatement(UISCParser.OpAndAssignmentStatementContext ctx) {
-        return null;//todo
+        String opAsm = null;
+
+        switch (ctx.op.getText()) {
+            case "+=" ->{
+                opAsm = "add";
+            }
+            case "-=" ->{
+                opAsm = "subtract";
+            }
+            case "*=" ->{
+                opAsm = "multiply";
+            }
+            case "/=" ->{
+                opAsm = "divide";
+            }
+            case "&=" ->{
+                opAsm = "bitand";
+            }
+            case "|=" ->{
+                opAsm = "bitor";
+            }
+            case "%=" ->{
+                opAsm = "modulo";
+            }
+        }
+
+        if(opAsm == null){
+            throw new UnsupportedOperationException("Invalid operator: "+ctx.op.getText());
+        }
+
+        ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.lhs.getText());
+
+        if(scopeContaining == null){
+            System.out.println("Undefined symbol " + ctx.lhs.getText());
+            return "SYMBOL_NOT_DEFINED_" + ctx.lhs.getText();
+        }
+
+        SymbolBase symbol = (SymbolBase) scopeContaining.getSymbol(ctx.lhs.getText());
+
+        PrimitiveType rhsType = ctx.rhs.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+
+        if(rhsType != null && rhsType.widensTo(symbol.type)) {
+            return symbol.generateGetSymbolASM() + " " + visit(ctx.rhs) + " " + opAsm + " "+ symbol.generateSetSymbolASM();
+        } else {
+            System.out.println("Type mismatch! Expected " + symbol.type + " found " + rhsType);
+            return "TYPE_MISMATCH_EXPECTED_" + symbol.type + "_FOUND_" + rhsType + "_ERROR";
+        }
     }
 
     @Override
@@ -954,7 +1000,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     }
 
     @Override
-    public String visitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx) { // todo typecheck
+    public String visitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx) {
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.ID().getText());
         if (scopeContaining == null) {
             System.out.println("Function " + ctx.ID().getText() + " was not defined in this scope.");
@@ -1202,7 +1248,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         String functionCode = visit(ctx.block());
         //int NumberOfParameters = getCurrentScope().size(); // we capture all for now so we dont have to deal with ScopeCapture
         int FunctionAddress = ((ScopeWithSymbol) getCurrentScope().findScopeContaining(ctx.ID().getText()).getSymbol(ctx.ID().getText())).Symbol.address;
-        //todo cast to retval is appearing before not after
+
         PopLocalScope();
         return ASMUtil.generateComment("Function declaration "+ctx.ID().getText()) + "push { " + functionCode + "} "+ASMUtil.generateStoreAddress(FunctionAddress);//push [" + FunctionAddress + "] put";
     }
