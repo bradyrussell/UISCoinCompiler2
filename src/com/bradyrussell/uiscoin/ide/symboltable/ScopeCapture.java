@@ -15,6 +15,7 @@ public class ScopeCapture extends ScopeLocal {
 
     HashMap<String, Integer> capturedVariableRealAddresses = new HashMap<>();
 
+    //todo change this to wrapCaptureASM(String InnerASM)
     public String generateCaptureASM(){
         // pick capturedVariableRealAddresses(x)
         // pick ..y

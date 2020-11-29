@@ -15,6 +15,12 @@ public enum PrimitiveType {
     Int32Pointer(4),
     Int64Pointer(4),
     FloatPointer(4),
+
+    StructArray(1),// * Size * Length
+    ByteArray(1),// * Length
+    Int32Array(4),// * Length
+    Int64Array(8),// * Length
+    FloatArray(4),// * Length
     ;
 
     final String[] Keywords;
@@ -93,6 +99,56 @@ public enum PrimitiveType {
                 return Int64;
             }
             case FloatPointer -> {
+                return Float;
+            }
+        }
+        return Void;
+    }
+
+    public PrimitiveType toArray(){
+        return toArray(this);
+    }
+
+    public static PrimitiveType toArray(PrimitiveType type){
+        switch (type) {
+            case Void -> {
+                return StructArray;
+            }
+            case Byte -> {
+                return ByteArray;
+            }
+            case Int32 -> {
+                return Int32Array;
+            }
+            case Int64 -> {
+                return Int64Array;
+            }
+            case Float -> {
+                return FloatArray;
+            }
+        }
+        return type;
+    }
+
+    public PrimitiveType fromArray(){
+        return fromArray(this);
+    }
+
+    public static PrimitiveType fromArray(PrimitiveType type){
+        switch (type) {
+            case StructArray -> {
+                return Void;
+            }
+            case ByteArray -> {
+                return Byte;
+            }
+            case Int32Array -> {
+                return Int32;
+            }
+            case Int64Array -> {
+                return Int64;
+            }
+            case FloatArray -> {
                 return Float;
             }
         }

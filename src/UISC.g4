@@ -63,6 +63,9 @@ statement:   block                                                              
     |   include                                                                                              #includeStatement
     |   flag                                                                                                 #flagStatement
     |   flagData                                                                                             #flagDataStatement
+    |   'break' ';'                                                                                          #breakStatement
+    |   'continue' ';'                                                                                       #continueStatement
+
     ;
 
 elseifStatement:
@@ -113,6 +116,7 @@ structField:
 // expressions should push a single value on to the stack (net +1, temp variables are fine)
 expression:
         '(' type ')' expression                                             #castExpression // cast like (byte) getInteger()
+    |  '_' ID '(' exprList ')'                                              #nativeCallExpression // wrapper around native functions like encryptAES
     |   ID '(' exprList? ')'                                                #functionCallExpression  // func call like f(), f(x), f(1,2)
     |   ID '[' expression ']'                                               #arrayAccessExpression   // array index like a[i], a[i][j]
     |   '$' ID                                                              #addressOfVariableExpression     // push variable location
@@ -140,6 +144,11 @@ expression:
     | condition=expression '?' iftrue=expression ':' iffalse=expression     #ternaryExpression
     ;
 exprList : expression (',' expression)* ;   // arg list
+
+//have to reserve keywords here so they arent parsed as struct names?
+CONST:
+    'const'
+    ;
 
 ID  :   LETTER (LETTER | [0-9])* ;
 fragment

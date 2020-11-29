@@ -452,7 +452,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         } else {
             PrimitiveType definedReturnType = PrimitiveType.getByKeyword(functionDeclaration.type().getText());
             if(returnedType.widensTo(definedReturnType)) {
-                return ASMUtil.generateComment("Return statement "+ctx.getText()) + " "+generateCastAssembly(returnedType,definedReturnType)+visit(ctx.retval);
+                return ASMUtil.generateComment("Return statement "+ctx.getText()) + " "+visit(ctx.retval)+generateCastAssembly(returnedType,definedReturnType);
             } else {
                 System.out.println("Type mismatch! Expected " + definedReturnType + " found " + returnedType);
                 return "TYPE_MISMATCH_EXPECTED_" + definedReturnType + "_FOUND_" + returnedType + "_ERROR";
@@ -615,7 +615,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
             PrimitiveType varType = PrimitiveType.getByKeyword(varDeclaration.type().getText());
 
-            if(!symbol.type.widensTo(varType)) { /// todo cast
+            if(!symbol.type.widensTo(varType)) {
                 System.out.println("The foreach element was not the correct type. " + varDeclaration.getText());
                 return "FOREACH_VAR_NOT_CORRECT_TYPE_EXPECTED_" + symbol.type;
             }
@@ -629,7 +629,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 PushLocalScope("ForEachStatement_"+ctx.arrayToLoop.getText()+"_Inner_"+i);
 
                 int varAddress = getCurrentScope().declareSymbol(varDeclaration.ID().getText(), varType);
-//todo off by one to the right?
+//todo off by one to the right? dont think so anymore
                 forEachStatement.append( "push "+symbol.address+ // push stack element
                         " push "+i +// push array index
                         " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
@@ -907,28 +907,31 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "FUNCTION_NOT_PROPERLY_DEFINED_" + ctx.ID().getText();
         }
 
-        int numParamsProvided = ctx.exprList().expression().size();
-        if(functionSymbol.Symbol.getNumberOfParameters() != numParamsProvided) {
-            System.out.println("Function " + ctx.ID().getText() + " expects "+functionSymbol.Symbol.getNumberOfParameters()+" but only "+numParamsProvided+" were provided.");
-            return "FUNCTION_INCORRECT_NUMBER_PARAMETERS_" + ctx.ID().getText()+"_EXPECTED_"+functionSymbol.Symbol.getNumberOfParameters()+"_FOUND_"+numParamsProvided;
+        if(ctx.exprList() != null) {
+            int numParamsProvided = ctx.exprList().expression().size();
+            if (functionSymbol.Symbol.getNumberOfParameters() != numParamsProvided) {
+                System.out.println("Function " + ctx.ID().getText() + " expects " + functionSymbol.Symbol.getNumberOfParameters() + " but only " + numParamsProvided + " were provided.");
+                return "FUNCTION_INCORRECT_NUMBER_PARAMETERS_" + ctx.ID().getText() + "_EXPECTED_" + functionSymbol.Symbol.getNumberOfParameters() + "_FOUND_" + numParamsProvided;
+            }
         }
 
         StringBuilder sb = new StringBuilder();
 
-        List<UISCParser.ExpressionContext> expression = ctx.exprList().expression();
-        for (int i = 0; i < expression.size(); i++) {
-            PrimitiveType providedType = expression.get(i).accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
-            if(providedType.widensTo(functionSymbol.Symbol.getTypeOfParameter(i))) {
-                sb.append(ASMUtil.generateComment("Function parameter "+functionSymbol.Symbol.getNameOfParameter(i)));
-                sb.append(visit(expression.get(i))).append(" ").append(generateCastAssembly(providedType, functionSymbol.Symbol.getTypeOfParameter(i)));
-                sb.append(ASMUtil.generateStoreAddress(((Symbol)functionSymbol.getSymbol(functionSymbol.Symbol.getNameOfParameter(i))).getSymbolAddress()));
-            } else {
-                System.out.println("Function " + ctx.ID().getText() + " expects "+functionSymbol.Symbol.getTypeOfParameter(i)+" for parameter "+functionSymbol.Symbol.getNameOfParameter(i)+" but "+providedType+" was provided.");
-                return "FUNCTION_INCORRECT_TYPE_PARAMETERS_" + ctx.ID().getText()+"_EXPECTED_"+functionSymbol.Symbol.getTypeOfParameter(i)+"_FOUND_"+providedType;
+        if(ctx.exprList() != null) {
+            List<UISCParser.ExpressionContext> expression = ctx.exprList().expression();
+            for (int i = 0; i < expression.size(); i++) {
+                PrimitiveType providedType = expression.get(i).accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+                if (providedType.widensTo(functionSymbol.Symbol.getTypeOfParameter(i))) {
+                    sb.append(ASMUtil.generateComment("Function parameter " + functionSymbol.Symbol.getNameOfParameter(i)));
+                    sb.append(visit(expression.get(i))).append(" ").append(generateCastAssembly(providedType, functionSymbol.Symbol.getTypeOfParameter(i)));
+                    sb.append(ASMUtil.generateStoreAddress(((Symbol) functionSymbol.getSymbol(functionSymbol.Symbol.getNameOfParameter(i))).getSymbolAddress()));
+                } else {
+                    System.out.println("Function " + ctx.ID().getText() + " expects " + functionSymbol.Symbol.getTypeOfParameter(i) + " for parameter " + functionSymbol.Symbol.getNameOfParameter(i) + " but " + providedType + " was provided.");
+                    return "FUNCTION_INCORRECT_TYPE_PARAMETERS_" + ctx.ID().getText() + "_EXPECTED_" + functionSymbol.Symbol.getTypeOfParameter(i) + "_FOUND_" + providedType;
+                }
             }
         }
 
-        // todo check parameter types
         return sb.toString()+ ASMUtil.generateComment("Function call "+ctx.getText()) + // params
                 " depth "+//capture whole stack
                 //" push ["+ctx.exprList().expression().size()+"] "+ // number of parameters
@@ -1056,12 +1059,17 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitFunctionDeclaration(UISCParser.FunctionDeclarationContext ctx) {
-        System.out.println(">>Defined function " + ctx.type().getText() + " " + ctx.ID().getText() + " " + ctx.formalParameters().toStringTree().replaceAll("\\[(.*?)\\]", "").replace("(", "").replace(")", ""));
+        System.out.println(">>Defined function " + ctx.type().getText() + " " + ctx.ID().getText() + " " + (ctx.formalParameters() == null ? "":ctx.formalParameters().toStringTree().replaceAll("\\[(.*?)\\]", "").replace("(", "").replace(")", "")));
 
         PrimitiveType fxnType = PrimitiveType.getByKeyword(ctx.type().getText());
 
         if(fxnType == null){
             throw new UnsupportedOperationException("Struct functions are not yet supported.");
+        }
+
+        if(ctx.block() == null) {
+            System.out.println("No code block was found for the function: "+ctx.ID().getText());
+            return "NO_BLOCK_SPECIFIED_IN_FUNCTION";
         }
 
         if(!fxnType.equals(PrimitiveType.Void)) {
@@ -1074,22 +1082,26 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         ArrayList<NameAndType> Parameters = new ArrayList<>();
 
-        for (UISCParser.FormalParameterContext formalParameterContext : ctx.formalParameters().formalParameter()) {
-            Parameters.add(new NameAndType(formalParameterContext.ID().getText(), PrimitiveType.getByKeyword(formalParameterContext.type().getText())));
+        if(ctx.formalParameters() != null) {
+            for (UISCParser.FormalParameterContext formalParameterContext : ctx.formalParameters().formalParameter()) {
+                Parameters.add(new NameAndType(formalParameterContext.ID().getText(), PrimitiveType.getByKeyword(formalParameterContext.type().getText())));
+            }
         }
 
         PushFunctionScope(fxnType, ctx.ID().getText(), Parameters);
 
-        for (UISCParser.FormalParameterContext formalParameterContext : ctx.formalParameters().formalParameter()) {
-            getCurrentScope().declareSymbol(formalParameterContext.ID().getText(), PrimitiveType.getByKeyword(formalParameterContext.type().getText()));
+        if(ctx.formalParameters() != null) {
+            for (UISCParser.FormalParameterContext formalParameterContext : ctx.formalParameters().formalParameter()) {
+                getCurrentScope().declareSymbol(formalParameterContext.ID().getText(), PrimitiveType.getByKeyword(formalParameterContext.type().getText()));
+            }
         }
 
         String functionCode = visit(ctx.block());
         //int NumberOfParameters = getCurrentScope().size(); // we capture all for now so we dont have to deal with ScopeCapture
         int FunctionAddress = ((ScopeWithSymbol) getCurrentScope().findScopeContaining(ctx.ID().getText()).getSymbol(ctx.ID().getText())).Symbol.address;
-
+        //todo cast to retval is appearing before not after
         PopLocalScope();
-        return ASMUtil.generateComment("Function declaration "+ctx.ID().getText()) + "(*) { " + functionCode + "} swap drop "+ASMUtil.generateStoreAddress(FunctionAddress);//push [" + FunctionAddress + "] put";
+        return ASMUtil.generateComment("Function declaration "+ctx.ID().getText()) + "push { " + functionCode + "} "+ASMUtil.generateStoreAddress(FunctionAddress);//push [" + FunctionAddress + "] put";
     }
 
 

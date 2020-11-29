@@ -1,0 +1,14 @@
+int32 y;
+int32 z;
+
+const byte mask = 30;
+
+int32 myTest(int32 x) {
+
+    return (byte)-x&mask;
+}
+flag(5);
+/*int32 */y = myTest(1);
+/*int32 */z = myTest(2);
+
+//functions are smashing the stack... which is why i wanted capture scope lol

@@ -1,13 +1,11 @@
-struct ip {
-    byte a;
-    byte b;
-    byte c;
-    byte d;
-}
-
 int32 x = 1;
 
+if(x > 10){
+x = 0;
+} else if(x > 5){
+ x = 1;
+} else {
+ x = -1;
+}
 
-/*ip myIPFxn(int32 a){
-    return a;
-}*/
+int32 y= x;
