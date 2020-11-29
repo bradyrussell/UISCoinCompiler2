@@ -66,8 +66,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     public ASMGenerationVisitor() {
         nativeFunctionCallParameters.put("encrypt", 2);
         nativeFunctionCallParameters.put("decrypt", 2);
+        nativeFunctionCallParameters.put("verifySig", 2);
         nativeFunctionCallParameters.put("zip", 1);
         nativeFunctionCallParameters.put("unzip", 1);
+        nativeFunctionCallParameters.put("sha512", 1);
+        nativeFunctionCallParameters.put("instruction", 0);
     }
 
     private String getNextLabel(){
@@ -199,9 +202,15 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx) {
-        PrimitiveType type = PrimitiveType.getByKeyword(ctx.type().getText());
+        PrimitiveType byKeyword = PrimitiveType.getByKeyword(ctx.type().getText());
+
+        if(byKeyword == null || !PrimitiveType.ByteArray.equals(byKeyword.toArray())) {
+            System.out.println("Cannot string initialize "+byKeyword+" array! " + ctx.ID().getText());
+            return "TYPE_MISMATCH_" + ctx.ID().getText();
+        }
+
         String strValue = stripQuotesFromString(ctx.STRING().getText());
-        int address = getCurrentScope().declareArray(ctx.ID().getText(), type, strValue.length());
+        int address = getCurrentScope().declareArray(ctx.ID().getText(), byKeyword.toArray(), strValue.length());
 
         if (address < 0) {
             System.out.println("Symbol was already defined in this scope! " + ctx.ID().getText());
@@ -214,6 +223,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     @Override
     public String visitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) {
         PrimitiveType symbolType = PrimitiveType.getByKeyword(ctx.type().getText());
+
+        if(symbolType == null){
+            throw new UnsupportedOperationException("Struct array assignment not yet implemented");
+        }
+
         int address = getCurrentScope().declareArray(ctx.ID().getText(), symbolType,Integer.parseInt(ctx.INT().getText()));
 
         if (address < 0) {
@@ -222,7 +236,13 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
 
         if(ctx.expression() != null) {
-            //todo copy rhs array
+            PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+            if(!symbolType.equals(expressionType)) {
+                System.out.println("Cannot initialize "+symbolType+" array with "+expressionType+"! " + ctx.ID().getText());
+                return "TYPE_MISMATCH_" + ctx.ID().getText();
+            }
+
+            return visit(ctx.expression()) +" "+ASMUtil.generateStoreAddress(address);
         }
 
         return " push "+(symbolType.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc "+ASMUtil.generateStoreAddress(address);//"push ["+address+"] put";
@@ -230,7 +250,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitVarInitialization(UISCParser.VarInitializationContext ctx) {
-        PrimitiveType symbolType = ctx.pointer() != null ? (PrimitiveType.getByKeyword(ctx.type().getText()) == null ? null : PrimitiveType.getByKeyword(ctx.type().getText()).toPointer()) : PrimitiveType.getByKeyword(ctx.type().getText());
+        PrimitiveType primitiveType = PrimitiveType.getByKeyword(ctx.type().getText());
+        PrimitiveType symbolType = ctx.pointer() != null ? (primitiveType == null ? null : primitiveType.toPointer()) : primitiveType;
 
         if(symbolType == null) {
             int address = getCurrentScope().declareStruct(ctx.ID().getText(),ctx.type().getText());
@@ -290,7 +311,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                     TypedValue constantValue;
 
                     if (expression.number().INT() != null) {
-                        constantValue = new TypedValue(PrimitiveType.getByKeyword(ctx.type().getText()),Long.parseLong(expression.number().INT().getText()));
+                        constantValue = new TypedValue(primitiveType,Long.parseLong(expression.number().INT().getText()));
                     } else {
                         constantValue = new TypedValue(Float.parseFloat(expression.number().FLOAT().getText()));
                     }
@@ -311,10 +332,39 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     /** End Initialization */
 
 
+    @Override
+    public String visitFunctionCallStatement(UISCParser.FunctionCallStatementContext ctx) {
+        if(ctx.expression() instanceof UISCParser.FunctionCallExpressionContext) {
+            UISCParser.FunctionCallExpressionContext call = (UISCParser.FunctionCallExpressionContext) ctx.expression();
+            ScopeBase scopeContaining = getCurrentScope().findScopeContaining(call.ID().getText());
+            if (scopeContaining == null) {
+                System.out.println("Function " + call.ID().getText() + " was not defined in this scope.");
+                return "FUNCTION_NOT_DEFINED_" + call.ID().getText();
+            }
+
+            ScopeWithSymbol functionSymbol = (ScopeWithSymbol) scopeContaining.getSymbol(call.ID().getText());
+
+            if (functionSymbol == null) {
+                System.out.println("Function " + call.ID().getText() + " was not properly defined in this scope.");
+                return "FUNCTION_NOT_PROPERLY_DEFINED_" + call.ID().getText();
+            }
+
+            if(functionSymbol.Symbol.type.equals(PrimitiveType.Void)) {
+                return visit(ctx.expression()); // this function call doesnt return a value
+            }
+            System.out.println("Warning: Result of function call on line "+ctx.start.getLine()+" is ignored.");
+            return visit(ctx.expression()) + " drop"; // this function call doesnt use the retval, drop it. like:  add(1,2);
+        }
+
+        System.out.println("Removing unused statement: "+ctx.expression().getText());
+        return ASMUtil.generateComment("UNUSED_STATEMENT_"+ctx.expression().getText()); // this is an unexpected expression that does nothing like: 1 + 2;
+    }
 
     /**
      * Begin Statements
      */
+
+
 
     @Override
     public String visitTryCatchStatement(UISCParser.TryCatchStatementContext ctx) {
@@ -834,7 +884,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) != null &&
                 getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()).getSymbol(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) instanceof SymbolArray)) {
             // todo this will throw off symbol array lengths, so foreach wouldnt work. dont see how this can work unless the sizes are fixed. maybe use set 0, len*size instead? to force user to create new array long enough
-            return getCastedBinaryExpression(ctx.lhs,ctx.rhs,"push [2] combine", "push [2] combine");
+            return getCastedBinaryExpression(ctx.lhs,ctx.rhs,"append", "append");
         }
 
         if (ctx.op.getText().contains("+")) {
@@ -1016,7 +1066,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "NATIVE_CALL_"+ctx.ID().getText()+"_EXPECTED_"+ParamsExpected+"_PARAMETERS_FOUND_0";
         }
 
-        if(ctx.exprList().expression().size() != ParamsExpected) {
+        if(((ctx.exprList() == null && ParamsExpected > 0)) || ctx.exprList() != null && ctx.exprList().expression().size() != ParamsExpected) {
             return "NATIVE_CALL_"+ctx.ID().getText()+"_EXPECTED_"+ParamsExpected+"_PARAMETERS_FOUND_"+ctx.exprList().expression().size();
         }
 
@@ -1035,9 +1085,19 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             case "unzip" ->{
                 return visit(ctx.exprList().expression(0)) + " unzip";
             }
+            case "sha512" ->{
+                return visit(ctx.exprList().expression(0)) + " sha512";
+            }
+            case "verifySig" ->{
+                return visit(ctx.exprList().expression(0)) + " "  + visit(ctx.exprList().expression(1)) + " verifysig verify";
+            }
+            case "instruction"->{
+                return " instruction";
+            }
         }
         throw new UnsupportedOperationException("Unknown native call: "+ctx.ID().getText());
     }
+
 
     /**
      * End Expressions

@@ -131,6 +131,22 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
     }
 
     @Override
+    public PrimitiveType visitNativeCallExpression(UISCParser.NativeCallExpressionContext ctx) {
+        switch (ctx.ID().getText()) {
+            case "encrypt","decrypt","zip","unzip","sha512" ->{
+                return PrimitiveType.ByteArray;
+            }
+            case "verifySig" -> {
+                return PrimitiveType.Void;
+            }
+            case "instruction" -> {
+                return PrimitiveType.Int32;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public PrimitiveType visitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx) {
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.ID().getText());
         if(scopeContaining == null) {
@@ -199,7 +215,12 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
             return PrimitiveType.VoidPointer; // function ptr
         } else {
             SymbolBase symbol = (SymbolBase)uncasted;
-            return  symbol.type.toPointer();
+
+            if(symbol.type == null) {
+                throw new UnsupportedOperationException("Struct pointers not yet implemented");
+            } else {
+                return  symbol.type.toPointer();
+            }
         }
     }
 

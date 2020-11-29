@@ -1,6 +1,12 @@
-byte m[] = "Hello world!";
-byte k[] = "encryptionKey";
-_encrypt(m, k);
-_decrypt(_encrypt(m, k), k);
-_zip(_decrypt(_encrypt(m, k), k));
-_unzip(_zip(_decrypt(_encrypt(m, k), k)));
+struct ptrStruct{
+    int64@ xPtr;
+    int64@ yPtr;
+}
+
+ptrStruct apple;
+
+apple.xPtr = 1;
+apple.yPtr = 1;
+
+//todo struct ignores ptrs
+

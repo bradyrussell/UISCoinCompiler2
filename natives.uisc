@@ -1,0 +1,7 @@
+byte m[] = "Hello world!";
+byte k[] = "encryptionKey";
+_encrypt(m, k);
+asm("/* my asm comment */");
+_decrypt(_encrypt(m, k), k);
+_zip(_decrypt(_encrypt(m, k), k));
+_unzip(_zip(_decrypt(_encrypt(m, k), k)));

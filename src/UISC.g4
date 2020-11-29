@@ -7,9 +7,9 @@ pointer
 
 varDeclaration
     :   constant='const'? type pointer? ID ('=' expression)? ';' #varInitialization    // int32@ myPtr = 7; //read as: there is an int32 at (address) 7
-    |   type pointer? ID '[' size=INT ']' ('=' expression)? ';' #arrayAssignmentInitialization  // todo const arrays?
     |   type ID '[]' '=' arrayInitializer ';' #arrayValueInitialization
     |   type ID '[]' '=' STRING ';' #arrayStringInitialization
+    |   type pointer? ID '[' size=INT ']' ('=' expression)? ';' #arrayAssignmentInitialization  // todo const arrays? // cant make int optional....
     ;
 
 structDeclaration
@@ -116,7 +116,7 @@ structField:
 // expressions should push a single value on to the stack (net +1, temp variables are fine)
 expression:
         '(' type ')' expression                                             #castExpression // cast like (byte) getInteger()
-    |  '_' ID '(' exprList ')'                                              #nativeCallExpression // wrapper around native functions like encryptAES
+    |  '_' ID '(' exprList? ')'                                             #nativeCallExpression // wrapper around native functions like encryptAES
     |   ID '(' exprList? ')'                                                #functionCallExpression  // func call like f(), f(x), f(1,2)
     |   ID '[' expression ']'                                               #arrayAccessExpression   // array index like a[i], a[i][j]
     |   '$' ID                                                              #addressOfVariableExpression     // push variable location
