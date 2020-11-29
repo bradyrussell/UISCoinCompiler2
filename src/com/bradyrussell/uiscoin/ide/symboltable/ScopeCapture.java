@@ -15,6 +15,9 @@ public class ScopeCapture extends ScopeLocal {
 
     HashMap<String, Integer> capturedVariableRealAddresses = new HashMap<>();
 
+    // todo how to capture pointers?
+    // another hashmap for pointers which we also capture and restore the contents?
+
     //todo change this to wrapCaptureASM(String InnerASM)
     public String generateCaptureASM(){
         // pick capturedVariableRealAddresses(x)

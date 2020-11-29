@@ -1,3 +1,4 @@
-byte b= 1;
 
-b += 2;
+try{
+    _encrypt(1,2);
+}

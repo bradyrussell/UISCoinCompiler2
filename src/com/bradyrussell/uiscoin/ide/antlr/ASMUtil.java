@@ -14,4 +14,8 @@ public class ASMUtil {
     public static String generateStoreAddress(int Address) {
         return ASMUtil.generateComment("Store Value to "+Address)+" push ["+Address+"] put ";
     }
+
+    public static String generatePushASMString(String ASMString) {
+        return ASMUtil.generateComment("Bytecode for: "+ASMString)+" push { "+ASMString+" } ";
+    }
 }

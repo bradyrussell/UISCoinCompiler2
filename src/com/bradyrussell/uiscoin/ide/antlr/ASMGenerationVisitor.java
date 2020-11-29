@@ -78,6 +78,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     }
 
     //todo Literal calculation visitor? like 2+5+2 would just return 9? or just add to the visitor if both are literals return the calc'd value
+    /*
+    could make a LiteralCalculatorVisitor<TypedValue> that implements +, -, *, etc
+     for only literals returns null on expressions etc then everything here tries to run it before doing its calculations
+     that way stuff like 5 * 5 would generate 25 in the asm or true & false
+     */
 
     private static String stripQuotesFromString(String QuotedString) {
         return QuotedString.substring(1, QuotedString.length() - 1);
@@ -374,13 +379,25 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         // put inside a virtualscript so returns are caught
         // execute and jumpif over the catch block if returned true
 
-        ScopeCapture captureScope = PushLocalScopeCapture("TryStatement");
+       // ScopeCapture captureScope = PushLocalScopeCapture("TryStatement");
 
-        tryCatchAsm.append(visit(ctx.tryStatement()));
+        //depth push {fxn} call verify
+
+        PushLocalScope("TryStatement");
+
+        if(ctx.catchStatement() == null) {
+            // try without catch. just ignores returns
+            tryCatchAsm.append(" depth "+ASMUtil.generatePushASMString(visit(ctx.tryStatement()))+" call drop ");
+        } else {
+            String endLabel = getNextLabel();
+            tryCatchAsm.append(" depth "+ASMUtil.generatePushASMString(visit(ctx.tryStatement()))+" call gotoif "+endLabel);
+            tryCatchAsm.append(visit(ctx.catchStatement())); // catch block
+            tryCatchAsm.append(" :"+endLabel);
+        }
 
         PopLocalScope();
 
-        return ASMUtil.generateComment("Try statement ") + captureScope.generateCaptureASM() + tryCatchAsm.toString();
+      //  return ASMUtil.generateComment("Try statement ") + captureScope.generateCaptureASM() + tryCatchAsm.toString();
 
 
 /*        if(ctx.catchStatement() != null){
@@ -392,7 +409,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
         /// drop back to that depth?*/
 
-        //return tryCatchAsm.toString();
+        return tryCatchAsm.toString();
     }
 
     @Override
@@ -929,7 +946,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         if(ctx.lhs instanceof UISCParser.StringLiteralExpressionContext || (ctx.lhs instanceof UISCParser.VariableReferenceExpressionContext && // is this array concat?
                 getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) != null &&
                 getCurrentScope().findScopeContaining(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()).getSymbol(((UISCParser.VariableReferenceExpressionContext)ctx.lhs).ID().getText()) instanceof SymbolArray)) {
-            // todo this will throw off symbol array lengths, so foreach wouldnt work. dont see how this can work unless the sizes are fixed. maybe use set 0, len*size instead? to force user to create new array long enough
+            // todo this will throw off symbol array lengths, so uforeach wouldnt work. dont see how this can work unless the sizes are fixed. maybe use set 0, len*size instead? to force user to create new array long enough
+            // yeah could be a void that takes a pointer to fill in
             return getCastedBinaryExpression(ctx.lhs,ctx.rhs,"append", "append");
         }
 
@@ -1098,8 +1116,6 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "STRUCT_NOT_PROPERLY_DEFINED_" + ctx.structField().structname.getText();
         }
 
-        // todo type check
-        // todo cast?
         return " push "+ symbol.address + symbol.struct.generateFieldGetterASM(ctx.structField().fieldname.getText());
     }
 
