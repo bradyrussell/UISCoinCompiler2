@@ -5,31 +5,6 @@ struct ip {
     byte d;
 }
 
-struct diffFields {
-    int32 i32;
-    byte b8;
-    int64 i64;
+ip myIPFxn(int32 a){
+    return a;
 }
-
-ip myIP;
-ip myIP2;
-
-myIP.a = 1;
-myIP.b = 2;
-myIP.c = 3;
-myIP.d = 4;
-
-myIP2.a = myIP.d;
-myIP2.b = myIP.c;
-myIP2.c = myIP.b;
-myIP2.d = myIP.a;
-
-diffFields f;
-
-f.i32 = myIP.a;
-f.b8 = myIP.b;
-f.i64 = myIP.c;
-
-int64 myi64 = f.i64;
-int32 myi32 = f.i32;
-byte mybyte = f.b8;

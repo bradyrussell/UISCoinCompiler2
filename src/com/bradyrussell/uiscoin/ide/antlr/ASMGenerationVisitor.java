@@ -1052,6 +1052,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         PrimitiveType fxnType = PrimitiveType.getByKeyword(ctx.type().getText());
 
+        if(fxnType == null){
+            throw new UnsupportedOperationException("Struct functions are not yet supported.");
+        }
+
         if(!fxnType.equals(PrimitiveType.Void)) {
             Boolean doAllPathsReturn = ctx.block().accept(new ASMGenAllPathsReturnVisitor());
             if(doAllPathsReturn == null || !doAllPathsReturn){
