@@ -1,11 +1,6 @@
-int32 x = 1;
-
-if(x > 10){
-x = 0;
-} else if(x > 5){
- x = 1;
-} else {
- x = -1;
-}
-
-int32 y= x;
+byte m[] = "Hello world!";
+byte k[] = "encryptionKey";
+_encrypt(m, k);
+_decrypt(_encrypt(m, k), k);
+_zip(_decrypt(_encrypt(m, k), k));
+_unzip(_zip(_decrypt(_encrypt(m, k), k)));

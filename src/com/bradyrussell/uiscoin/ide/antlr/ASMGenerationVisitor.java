@@ -6,9 +6,12 @@ import com.bradyrussell.uiscoin.ide.symboltable.*;
 import org.antlr.v4.runtime.RuleContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
+    HashMap<String, Integer> nativeFunctionCallParameters = new HashMap<>();
+
     ////////////////////////
     int LabelIndex = 0;
 
@@ -58,6 +61,14 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         CurrentLocalScope = null;
     }
     ////////////////////////
+
+
+    public ASMGenerationVisitor() {
+        nativeFunctionCallParameters.put("encrypt", 2);
+        nativeFunctionCallParameters.put("decrypt", 2);
+        nativeFunctionCallParameters.put("zip", 1);
+        nativeFunctionCallParameters.put("unzip", 1);
+    }
 
     private String getNextLabel(){
         return "L"+LabelIndex++;
@@ -994,6 +1005,38 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         // todo type check
         // todo cast?
         return " push "+ symbol.address + symbol.struct.generateFieldGetterASM(ctx.structField().fieldname.getText());
+    }
+
+    @Override
+    public String visitNativeCallExpression(UISCParser.NativeCallExpressionContext ctx) {
+        if(!nativeFunctionCallParameters.containsKey(ctx.ID().getText())) throw new UnsupportedOperationException("Unknown native call: "+ctx.ID().getText());
+        int ParamsExpected = nativeFunctionCallParameters.get(ctx.ID().getText());
+
+        if(ParamsExpected != 0 && ctx.exprList().expression() == null) {
+            return "NATIVE_CALL_"+ctx.ID().getText()+"_EXPECTED_"+ParamsExpected+"_PARAMETERS_FOUND_0";
+        }
+
+        if(ctx.exprList().expression().size() != ParamsExpected) {
+            return "NATIVE_CALL_"+ctx.ID().getText()+"_EXPECTED_"+ParamsExpected+"_PARAMETERS_FOUND_"+ctx.exprList().expression().size();
+        }
+
+        switch (ctx.ID().getText()) {
+            case "encrypt" ->{
+                //push key //push message //encryptaes
+                return visit(ctx.exprList().expression(1)) + " " + visit(ctx.exprList().expression(0)) + " encryptaes";
+            }
+            case "decrypt" ->{
+                //push key //push message //decryptaes
+                return visit(ctx.exprList().expression(1)) + " " + visit(ctx.exprList().expression(0)) + " decryptaes";
+            }
+            case "zip" ->{
+                return visit(ctx.exprList().expression(0)) + " zip";
+            }
+            case "unzip" ->{
+                return visit(ctx.exprList().expression(0)) + " unzip";
+            }
+        }
+        throw new UnsupportedOperationException("Unknown native call: "+ctx.ID().getText());
     }
 
     /**

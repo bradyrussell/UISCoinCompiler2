@@ -403,6 +403,30 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitFlagDataStatement(UISCParser.FlagDataStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code breakStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterBreakStatement(UISCParser.BreakStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code breakStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitBreakStatement(UISCParser.BreakStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code continueStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterContinueStatement(UISCParser.ContinueStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code continueStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitContinueStatement(UISCParser.ContinueStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UISCParser#elseifStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -666,6 +690,18 @@ public interface UISCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCastExpression(UISCParser.CastExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code nativeCallExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterNativeCallExpression(UISCParser.NativeCallExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code nativeCallExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitNativeCallExpression(UISCParser.NativeCallExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code sizeOfExpression}
 	 * labeled alternative in {@link UISCParser#expression}.

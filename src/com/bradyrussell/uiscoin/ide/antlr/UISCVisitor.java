@@ -243,6 +243,20 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFlagDataStatement(UISCParser.FlagDataStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code breakStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBreakStatement(UISCParser.BreakStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code continueStatement}
+	 * labeled alternative in {@link UISCParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContinueStatement(UISCParser.ContinueStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UISCParser#elseifStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -398,6 +412,13 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCastExpression(UISCParser.CastExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code nativeCallExpression}
+	 * labeled alternative in {@link UISCParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNativeCallExpression(UISCParser.NativeCallExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code sizeOfExpression}
 	 * labeled alternative in {@link UISCParser#expression}.

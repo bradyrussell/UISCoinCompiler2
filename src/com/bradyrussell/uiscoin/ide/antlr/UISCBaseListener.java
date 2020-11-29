@@ -435,6 +435,30 @@ public class UISCBaseListener implements UISCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBreakStatement(UISCParser.BreakStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBreakStatement(UISCParser.BreakStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterContinueStatement(UISCParser.ContinueStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitContinueStatement(UISCParser.ContinueStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterElseifStatement(UISCParser.ElseifStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -718,6 +742,18 @@ public class UISCBaseListener implements UISCListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCastExpression(UISCParser.CastExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNativeCallExpression(UISCParser.NativeCallExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNativeCallExpression(UISCParser.NativeCallExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
