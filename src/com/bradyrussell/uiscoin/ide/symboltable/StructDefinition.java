@@ -5,10 +5,20 @@ import com.bradyrussell.uiscoin.ide.grammar.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class StructDefinition {
     private HashMap<String, Type> structFields;
     private ArrayList<String> structFieldOrder;
+
+    public StructDefinition(List<NameAndType> Fields) {
+        structFields = new HashMap<>();
+        structFieldOrder = new ArrayList<>();
+
+        for (NameAndType field : Fields) {
+            if(!defineField(field.Name,field.Type)) throw new UnsupportedOperationException("Struct field redefinition: "+field.Name);
+        }
+    }
 
     public int getSize(){
         return structFields.values().stream().mapToInt(Type::getSize).sum();
@@ -56,5 +66,10 @@ public class StructDefinition {
     // expects [Data][Struct Address] on stack
     public String generateFieldSetterASM(String FieldName){
         return "push "+getFieldByteIndex(FieldName)+" push "+getFieldSize(FieldName)+" set ";
+    }
+
+    // push this struct zeroed onto the stack
+    public String generateAllocatorASM(){
+        return " push "+getSize()+" alloc ";
     }
 }

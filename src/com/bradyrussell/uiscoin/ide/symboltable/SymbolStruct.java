@@ -4,8 +4,8 @@ import com.bradyrussell.uiscoin.ide.grammar.Type;
 
 public class SymbolStruct extends SymbolBase{
     StructDefinition struct;
-    public SymbolStruct(Type type, int address, StructDefinition struct) {
-        super(type, address);
+    public SymbolStruct(int address, StructDefinition struct) {
+        super(null, address);
         this.struct = struct;
     }
 }

@@ -18,6 +18,11 @@ public class ASMGenAllPathsReturnVisitor extends UISCBaseVisitor<Boolean>{
         return true;
     }
 
+    @Override
+    public Boolean visitException(UISCParser.ExceptionContext ctx) {
+        return true;
+    }
+
     // any control flow splitting rules need to be overridden
 
     @Override

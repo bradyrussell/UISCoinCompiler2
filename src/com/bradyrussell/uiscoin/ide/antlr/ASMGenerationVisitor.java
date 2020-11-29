@@ -969,6 +969,23 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     }
 
     @Override
+    public String visitStructDeclaration(UISCParser.StructDeclarationContext ctx) {
+        ArrayList<NameAndType> Params = new ArrayList<>();
+
+        for (UISCParser.VarDeclarationContext varDeclarationContext : ctx.varDeclaration()) {
+            if(varDeclarationContext instanceof UISCParser.VarInitializationContext) {
+                UISCParser.VarInitializationContext structField = (UISCParser.VarInitializationContext) varDeclarationContext;
+                Params.add(new NameAndType(structField.ID().getText(),Type.getByKeyword(structField.type().getText())));
+            } else {
+                throw new UnsupportedOperationException("Arrays in struct not yet supported.");
+            }
+        }
+
+        getCurrentScope().defineStruct(ctx.ID().getText(), Params);
+        return "";
+    }
+
+    @Override
     public String visitFunctionDeclaration(UISCParser.FunctionDeclarationContext ctx) {
         System.out.println(">>Defined function " + ctx.type().getText() + " " + ctx.ID().getText() + " " + ctx.formalParameters().toStringTree().replaceAll("\\[(.*?)\\]", "").replace("(", "").replace(")", ""));
 

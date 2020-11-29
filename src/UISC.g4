@@ -16,7 +16,15 @@ structDeclaration
     :   'struct' ID '{' varDeclaration+ '}'
     ;
 
-type:   'void' | 'byte' | 'int32' | 'int64' | 'float' ;//| ID ; // id here will allow structs as types
+type:   primitiveType | structType;
+
+primitiveType:
+    'void' | 'byte' | 'int32' | 'int64' | 'float'
+    ;
+
+structType:
+    ID
+    ;
 
 booleanLiteral: 'true' | 'false' | 'null';
 

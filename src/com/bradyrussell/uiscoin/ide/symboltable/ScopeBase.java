@@ -12,6 +12,7 @@ public class ScopeBase {
     public ScopeBase Parent;
     public ArrayList<ScopeBase> Children = new ArrayList<>();
     protected HashMap<String, Object> symbolTable = new HashMap<>(); // can either be SymbolBase or SymbolWithScope
+    protected HashMap<String, StructDefinition> structDefinitions = new HashMap<>();
 
     protected int ScopeBaseAddress = 0;
     protected int ScopeAddress;
@@ -45,10 +46,29 @@ public class ScopeBase {
         return scope;
     }
 
+    public boolean defineStruct(String Name, List<NameAndType> Fields){
+        if(structDefinitions.containsKey(Name)) return false;
+        structDefinitions.put(Name,new StructDefinition(Fields));
+        System.out.println("[Scope] Defined struct "+Name+" with "+Fields.size()+" fields.");
+        return true;
+    }
+
     public int declareSymbol(String Name, Type SymbolType){
         if(symbolTable.containsKey(Name)) return -1;
         symbolTable.put(Name, new SymbolBase(SymbolType, ScopeAddress++));
         System.out.println("[Scope] Declared symbol "+Name+" at address "+(ScopeAddress-1));
+        return ScopeAddress-1;
+    }
+
+    public int declareStruct(String Name, String StructType){
+        if(symbolTable.containsKey(Name)) return -1;
+
+        if(!structDefinitions.containsKey(StructType)) {
+            throw new UnsupportedOperationException("Undefined struct! "+StructType);
+        }
+
+        symbolTable.put(Name, new SymbolStruct(ScopeAddress++, structDefinitions.get(StructType)));
+        System.out.println("[Scope] Declared struct symbol "+Name+" at address "+(ScopeAddress-1));
         return ScopeAddress-1;
     }
 
