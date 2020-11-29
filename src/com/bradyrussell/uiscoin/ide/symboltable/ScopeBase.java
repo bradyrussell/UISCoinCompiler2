@@ -1,6 +1,6 @@
 package com.bradyrussell.uiscoin.ide.symboltable;
 
-import com.bradyrussell.uiscoin.ide.grammar.Type;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class ScopeBase {
         System.out.println("[Scope] Entering new scope "+scopeName+", base address: "+ScopeAddress+", parent: "+(Parent == null ? "None" : Parent.ScopeName));
     }
 
-    public ScopeLocal defineFunction(String Name, Type SymbolType, List<NameAndType> Parameters){
+    public ScopeLocal defineFunction(String Name, PrimitiveType SymbolType, List<NameAndType> Parameters){
         if(symbolTable.containsKey(Name)) return null;
 
         SymbolFunction symbol = new SymbolFunction(SymbolType, ScopeAddress++);
@@ -53,7 +53,7 @@ public class ScopeBase {
         return true;
     }
 
-    public int declareSymbol(String Name, Type SymbolType){
+    public int declareSymbol(String Name, PrimitiveType SymbolType){
         if(symbolTable.containsKey(Name)) return -1;
         symbolTable.put(Name, new SymbolBase(SymbolType, ScopeAddress++));
         System.out.println("[Scope] Declared symbol "+Name+" at address "+(ScopeAddress-1));
@@ -72,7 +72,7 @@ public class ScopeBase {
         return ScopeAddress-1;
     }
 
-    public int declareArray(String Name, Type SymbolType, int Length){
+    public int declareArray(String Name, PrimitiveType SymbolType, int Length){
         if(symbolTable.containsKey(Name)) return -1;
         symbolTable.put(Name, new SymbolArray(SymbolType, ScopeAddress++, Length));
         System.out.println("[Scope] Declared array symbol "+Name+"["+Length+"] at address "+(ScopeAddress-1));
@@ -119,6 +119,16 @@ public class ScopeBase {
 
         //System.out.println("Symbol "+Name+" was not found in scope "+ScopeName);
         return Parent.findScopeContaining(Name);
+    }
+
+    public StructDefinition findStructDefinition(String StructType) {
+        if(structDefinitions.containsKey(StructType)) return structDefinitions.get(StructType);
+        if(Parent == null) {
+            //System.out.println("Symbol "+Name+" was not found in global scope "+ScopeName);
+            return null;
+        }
+
+        return Parent.findStructDefinition(StructType);
     }
 
     public String getRecursiveAllocation(){

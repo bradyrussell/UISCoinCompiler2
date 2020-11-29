@@ -1,7 +1,7 @@
 package com.bradyrussell.uiscoin.ide.compiler;
 
 import com.bradyrussell.uiscoin.ide.CompilerErrorException;
-import com.bradyrussell.uiscoin.ide.grammar.Type;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeBase;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeLocal;
 import com.bradyrussell.uiscoin.ide.symboltable.SymbolBase;
@@ -22,7 +22,7 @@ public class TestCompilerPass extends CompilerPassBase<TestCompilationContext> {
 
     @Override
     public boolean accept(String Token) throws CompilerErrorException {
-        Type type = Type.getByKeyword(Token);
+        PrimitiveType type = PrimitiveType.getByKeyword(Token);
         if (type != null) {
             String identifierName = popNextToken();
 
@@ -56,7 +56,7 @@ public class TestCompilerPass extends CompilerPassBase<TestCompilationContext> {
                 String nextNextToken = popNextToken();
                 while (nextNextToken.charAt(0) != ')') {
                     //accept parameter
-                    Type parameterType = Type.getByKeyword(nextNextToken);
+                    PrimitiveType parameterType = PrimitiveType.getByKeyword(nextNextToken);
                     if (parameterType != null) {
                         String parameterName = popNextToken();
 
@@ -136,7 +136,7 @@ public class TestCompilerPass extends CompilerPassBase<TestCompilationContext> {
     }
 
     public static boolean isValidIdentifierName(String Token){
-        if(Type.getByKeyword(Token) != null) return false;
+        if(PrimitiveType.getByKeyword(Token) != null) return false;
 
         char[] charArray = Token.toCharArray();
         for (int i = 0; i < charArray.length; i++) {

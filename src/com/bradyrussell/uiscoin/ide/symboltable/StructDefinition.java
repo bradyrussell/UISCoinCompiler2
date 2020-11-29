@@ -1,14 +1,13 @@
 package com.bradyrussell.uiscoin.ide.symboltable;
 
-import com.bradyrussell.uiscoin.ide.grammar.Type;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 public class StructDefinition {
-    private HashMap<String, Type> structFields;
+    private HashMap<String, PrimitiveType> structFields;
     private ArrayList<String> structFieldOrder;
 
     public StructDefinition(List<NameAndType> Fields) {
@@ -21,7 +20,7 @@ public class StructDefinition {
     }
 
     public int getSize(){
-        return structFields.values().stream().mapToInt(Type::getSize).sum();
+        return structFields.values().stream().mapToInt(PrimitiveType::getSize).sum();
     }
 
     public int getFieldByteIndex(String FieldName){
@@ -37,7 +36,7 @@ public class StructDefinition {
         return getFieldType(FieldName).getSize();
     }
 
-    public boolean defineField(String FieldName, Type FieldType) {
+    public boolean defineField(String FieldName, PrimitiveType FieldType) {
         if(structFields.containsKey(FieldName)) return false;
 
         structFields.put(FieldName,FieldType);
@@ -46,26 +45,26 @@ public class StructDefinition {
         return true;
     }
 
-    public ArrayList<Type> getOrderedTypes(){
-        ArrayList<Type> types = new ArrayList<>();
+    public ArrayList<PrimitiveType> getOrderedTypes(){
+        ArrayList<PrimitiveType> types = new ArrayList<>();
         for (String structField : structFieldOrder) {
             types.add(getFieldType(structField));
         }
         return types;
     }
 
-    public Type getFieldType(String FieldName){
+    public PrimitiveType getFieldType(String FieldName){
         return structFields.get(FieldName);
     }
 
     // expects int32 Struct address to be the top stack element
     public String generateFieldGetterASM(String FieldName){
-        return "push "+getFieldByteIndex(FieldName)+" push "+getFieldSize(FieldName)+" get ";
+        return " push "+getFieldByteIndex(FieldName)+" push "+getFieldSize(FieldName)+" get ";
     }
 
-    // expects [Data][Struct Address] on stack
+    // expects [Data][int32 Struct Address] on stack
     public String generateFieldSetterASM(String FieldName){
-        return "push "+getFieldByteIndex(FieldName)+" push "+getFieldSize(FieldName)+" set ";
+        return " push "+getFieldByteIndex(FieldName)+" push "+getFieldSize(FieldName)+" set ";
     }
 
     // push this struct zeroed onto the stack

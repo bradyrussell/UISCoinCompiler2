@@ -1,18 +1,18 @@
 package com.bradyrussell.uiscoin.ide.antlr;
 
-import com.bradyrussell.uiscoin.ide.grammar.Type;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 import com.bradyrussell.uiscoin.ide.symboltable.*;
 import org.antlr.v4.runtime.tree.RuleNode;
 
-public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
-    public ASMGenTypeVisitor(ScopeGlobal global, ScopeLocal currentLocalScope) {
+public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveType> {
+    public ASMGenPrimitiveTypeVisitor(ScopeGlobal global, ScopeLocal currentLocalScope) {
         super(global, currentLocalScope);
     }
 
     @Override
-    public Type visitChildren(RuleNode node) {
-        Type type = super.visitChildren(node);
+    public PrimitiveType visitChildren(RuleNode node) {
+        PrimitiveType type = super.visitChildren(node);
         if(type == null){
             System.out.println("[TypeChecker] Type visitor returned null! Cannot determine type for: "+node.getText());
         }
@@ -20,34 +20,34 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
     }
 
     @Override
-    protected Type defaultResult() {
+    protected PrimitiveType defaultResult() {
         return null;
     }
 
     @Override
-    protected Type aggregateResult(Type aggregate, Type nextResult) {
+    protected PrimitiveType aggregateResult(PrimitiveType aggregate, PrimitiveType nextResult) {
         if(aggregate == null && nextResult != null) return nextResult;
         if(nextResult == null) return null;
-        return Type.getWiderType(aggregate, nextResult);
+        return PrimitiveType.getWiderType(aggregate, nextResult);
     }
 
-    public static Type deduceTypeOfNumber(String NumberString){
+    public static PrimitiveType deduceTypeOfNumber(String NumberString){
         try {
             //noinspection ResultOfMethodCallIgnored
             Byte.parseByte(NumberString);
-            return Type.Byte;
+            return PrimitiveType.Byte;
         } catch (Exception e) {
             try {
                 Integer.parseInt(NumberString);
-                return Type.Int32;
+                return PrimitiveType.Int32;
             } catch (Exception e2) {
                 try {
                     Long.parseLong(NumberString);
-                    return Type.Int64;
+                    return PrimitiveType.Int64;
                 } catch (Exception e3) {
                     try {
                         Float.parseFloat(NumberString);
-                        return Type.Float;
+                        return PrimitiveType.Float;
                     } catch (Exception e4) {
                         System.out.println("Cannot deduce type of number: "+NumberString);
                         return null;
@@ -57,18 +57,18 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
         }
     }
 
-    private Type getCastedBinaryExpression(UISCParser.ExpressionContext LHS, UISCParser.ExpressionContext RHS){
+    private PrimitiveType getCastedBinaryExpression(UISCParser.ExpressionContext LHS, UISCParser.ExpressionContext RHS){
         //Type lhsType = LHS.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
         //Type rhsType = RHS.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));
-        Type lhsType = visit(LHS);
-        Type rhsType = visit(RHS);
+        PrimitiveType lhsType = visit(LHS);
+        PrimitiveType rhsType = visit(RHS);
 
         if(lhsType == null || rhsType == null) {
             System.out.println("Type null! Cannot determine type: " + lhsType + " and " + rhsType);
             return null;
         }
 
-        return Type.getWiderType(lhsType, rhsType);
+        return PrimitiveType.getWiderType(lhsType, rhsType);
     }
 
 /*    @Override
@@ -77,7 +77,7 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
     }*/
 
     @Override
-    public Type visitVariableReferenceExpression(UISCParser.VariableReferenceExpressionContext ctx) {
+    public PrimitiveType visitVariableReferenceExpression(UISCParser.VariableReferenceExpressionContext ctx) {
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.ID().getText());
         if(scopeContaining == null) {
             System.out.println("Cannot deduce type of undefined variable: "+ctx.ID().getText());
@@ -98,40 +98,40 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
     }
 
     @Override
-    public Type visitBooleanLiteral(UISCParser.BooleanLiteralContext ctx) {
-        return ctx.getText().equals("null") ? Type.Void : Type.Byte;
+    public PrimitiveType visitBooleanLiteral(UISCParser.BooleanLiteralContext ctx) {
+        return ctx.getText().equals("null") ? PrimitiveType.Void : PrimitiveType.Byte;
     }
 
     @Override
-    public Type visitNumberLiteralExpression(UISCParser.NumberLiteralExpressionContext ctx) {
+    public PrimitiveType visitNumberLiteralExpression(UISCParser.NumberLiteralExpressionContext ctx) {
         return deduceTypeOfNumber(ctx.number().getText());
     }
 
     @Override
-    public Type visitStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx) {
-        return Type.Byte; // byte array
+    public PrimitiveType visitStringLiteralExpression(UISCParser.StringLiteralExpressionContext ctx) {
+        return PrimitiveType.Byte; // byte array
     }
 
     @Override
-    public Type visitCharLiteralExpression(UISCParser.CharLiteralExpressionContext ctx) {
-        return Type.Byte;
+    public PrimitiveType visitCharLiteralExpression(UISCParser.CharLiteralExpressionContext ctx) {
+        return PrimitiveType.Byte;
     }
 
     @Override
-    public Type visitArrayInitializer(UISCParser.ArrayInitializerContext ctx) {
-        Type lastType = null;
+    public PrimitiveType visitArrayInitializer(UISCParser.ArrayInitializerContext ctx) {
+        PrimitiveType lastType = null;
         for (UISCParser.ExpressionContext expressionContext : ctx.exprList().expression()) {
             if(lastType == null) {
                 lastType = visit(expressionContext);
             } else {
-                lastType = Type.getWiderType(lastType, visit(expressionContext));
+                lastType = PrimitiveType.getWiderType(lastType, visit(expressionContext));
             }
         }
         return lastType;
     }
 
     @Override
-    public Type visitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx) {
+    public PrimitiveType visitFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx) {
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.ID().getText());
         if(scopeContaining == null) {
             System.out.println("Cannot deduce type of undefined function: "+ctx.ID().getText());
@@ -146,47 +146,47 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
     }
 
     @Override
-    public Type visitModuloExpression(UISCParser.ModuloExpressionContext ctx) {
+    public PrimitiveType visitModuloExpression(UISCParser.ModuloExpressionContext ctx) {
         return getCastedBinaryExpression(ctx.lhs, ctx.rhs);
     }
 
     @Override
-    public Type visitAndOrExpression(UISCParser.AndOrExpressionContext ctx) {
+    public PrimitiveType visitAndOrExpression(UISCParser.AndOrExpressionContext ctx) {
         return getCastedBinaryExpression(ctx.lhs, ctx.rhs);
     }
 
     @Override
-    public Type visitMultDivExpression(UISCParser.MultDivExpressionContext ctx) {
+    public PrimitiveType visitMultDivExpression(UISCParser.MultDivExpressionContext ctx) {
         return getCastedBinaryExpression(ctx.lhs, ctx.rhs);
     }
 
     @Override
-    public Type visitAddSubExpression(UISCParser.AddSubExpressionContext ctx) {
+    public PrimitiveType visitAddSubExpression(UISCParser.AddSubExpressionContext ctx) {
         return getCastedBinaryExpression(ctx.lhs, ctx.rhs);
     }
 
     @Override
-    public Type visitEqualityExpression(UISCParser.EqualityExpressionContext ctx) {
+    public PrimitiveType visitEqualityExpression(UISCParser.EqualityExpressionContext ctx) {
         return getCastedBinaryExpression(ctx.lhs, ctx.rhs);
     }
 
     @Override
-    public Type visitBitwiseExpression(UISCParser.BitwiseExpressionContext ctx) {
+    public PrimitiveType visitBitwiseExpression(UISCParser.BitwiseExpressionContext ctx) {
         return getCastedBinaryExpression(ctx.lhs, ctx.rhs);
     }
 
     @Override
-    public Type visitTernaryExpression(UISCParser.TernaryExpressionContext ctx) {
-        Type commonType = getCastedBinaryExpression(ctx.iftrue, ctx.iffalse);
+    public PrimitiveType visitTernaryExpression(UISCParser.TernaryExpressionContext ctx) {
+        PrimitiveType commonType = getCastedBinaryExpression(ctx.iftrue, ctx.iffalse);
         if(commonType == null){
             System.out.println("Warning: Cannot find common type for ternary expression, returning void pointer. "+ctx.toString());
-            return Type.VoidPointer;
+            return PrimitiveType.VoidPointer;
         }
         return commonType;
     }
 
     @Override
-    public Type visitAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx) {
+    public PrimitiveType visitAddressOfVariableExpression(UISCParser.AddressOfVariableExpressionContext ctx) {
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.ID().getText());
         if(scopeContaining == null) {
             System.out.println("Cannot deduce type of undefined variable: "+ctx.ID().getText());
@@ -196,7 +196,7 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
         Object uncasted = scopeContaining.getSymbol(ctx.ID().getText());
 
         if(uncasted instanceof ScopeWithSymbol) { // address of function
-            return Type.VoidPointer; // function ptr
+            return PrimitiveType.VoidPointer; // function ptr
         } else {
             SymbolBase symbol = (SymbolBase)uncasted;
             return  symbol.type.toPointer();
@@ -204,22 +204,22 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
     }
 
     @Override
-    public Type visitCastExpression(UISCParser.CastExpressionContext ctx) {
-        return Type.getByKeyword(ctx.type().getText());
+    public PrimitiveType visitCastExpression(UISCParser.CastExpressionContext ctx) {
+        return PrimitiveType.getByKeyword(ctx.type().getText());
     }
 
     @Override
-    public Type visitParenExpression(UISCParser.ParenExpressionContext ctx) {
+    public PrimitiveType visitParenExpression(UISCParser.ParenExpressionContext ctx) {
         return visit(ctx.expression());
     }
 
     @Override
-    public Type visitLengthOfExpression(UISCParser.LengthOfExpressionContext ctx) {
-        return Type.Int32; // todo check what type LEN returns
+    public PrimitiveType visitLengthOfExpression(UISCParser.LengthOfExpressionContext ctx) {
+        return PrimitiveType.Int32; // todo check what type LEN returns
     }
 
     @Override
-    public Type visitArrayAccessExpression(UISCParser.ArrayAccessExpressionContext ctx) {
+    public PrimitiveType visitArrayAccessExpression(UISCParser.ArrayAccessExpressionContext ctx) {
         // this is always r value
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.ID().getText());
         if (scopeContaining == null) {
@@ -238,19 +238,37 @@ public class ASMGenTypeVisitor extends ASMGenSubVisitorBase<Type> {
     }
 
     @Override
-    public Type visitSizeOfExpression(UISCParser.SizeOfExpressionContext ctx) {
-        Type sizeOfType = Type.getByKeyword(ctx.type().getText());
+    public PrimitiveType visitSizeOfExpression(UISCParser.SizeOfExpressionContext ctx) {
+        PrimitiveType sizeOfType = PrimitiveType.getByKeyword(ctx.type().getText());
         if (sizeOfType == null) return null;
         return deduceTypeOfNumber(""+sizeOfType.getSize());
     }
 
     @Override
-    public Type visitValueAtVariableExpression(UISCParser.ValueAtVariableExpressionContext ctx) {
-        Type pointedType = visit(ctx.expression());
+    public PrimitiveType visitValueAtVariableExpression(UISCParser.ValueAtVariableExpressionContext ctx) {
+        PrimitiveType pointedType = visit(ctx.expression());
         if(pointedType == null) {
             System.out.println("Warning: Cannot find type for valueAt, returning void. "+ctx.toString());
-            return Type.Void;
+            return PrimitiveType.Void;
         }
         return pointedType.fromPointer();
+    }
+
+    @Override
+    public PrimitiveType visitStructFieldReferenceExpression(UISCParser.StructFieldReferenceExpressionContext ctx) {
+        ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.structField().structname.getText());
+        if (scopeContaining == null) {
+            System.out.println("Struct " + ctx.structField().structname.getText() + " was not defined in this scope.");
+            return null;
+        }
+
+        SymbolStruct symbol = (SymbolStruct) scopeContaining.getSymbol(ctx.structField().structname.getText());
+
+        if (symbol == null) {
+            System.out.println("Struct " + ctx.structField().structname.getText() + " was not properly defined in this scope.");
+            return null;
+        }
+
+        return symbol.struct.getFieldType(ctx.structField().fieldname.getText());
     }
 }

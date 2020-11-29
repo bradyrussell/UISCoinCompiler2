@@ -3,7 +3,7 @@ package com.bradyrussell.uiscoin.ide.grammar;
 import com.bradyrussell.uiscoin.ide.CompilerErrorException;
 import com.bradyrussell.uiscoin.script.ScriptUtil;
 
-public enum Type {
+public enum PrimitiveType {
     Void(1, "void", "v"),
     Byte(1, "byte", "i8", "char", "b", "bool"),
     Int32(4, "int32", "i32", "int", "i"),
@@ -20,39 +20,40 @@ public enum Type {
     final String[] Keywords;
     final int SizeOf;
 
-    Type(int sizeOf, String... keywords) {
+    PrimitiveType(int sizeOf, String... keywords) {
         SizeOf = sizeOf;
         Keywords = keywords;
     }
 
-    public static Type getByKeyword(String Keyword) {
-        for (Type value : Type.values()) {
+    public static PrimitiveType getByKeyword(String Keyword) {
+        for (PrimitiveType value : PrimitiveType.values()) {
             for (String keyword : value.Keywords) {
                 if(keyword.equals(Keyword)) return value;
             }
         }
-        throw new IllegalArgumentException(Keyword+" is not a valid type!");
+        return null;
+        //throw new IllegalArgumentException(Keyword+" is not a valid type!");
     }
 
     public int getSize() {
         return SizeOf;
     }
 
-    public static Type getWiderType(Type A, Type B){ // for math
-        if(A.equals(Type.Float) || B.equals(Type.Float)) return Type.Float; // integer always widens to float for math
+    public static PrimitiveType getWiderType(PrimitiveType A, PrimitiveType B){ // for math
+        if(A.equals(PrimitiveType.Float) || B.equals(PrimitiveType.Float)) return PrimitiveType.Float; // integer always widens to float for math
         return A.getSize() >= B.getSize() ? A : B; // otherwise choose largest
     }
 
-    public boolean widensTo(Type WideType){
-        if(!(this.equals(Type.Byte) || this.equals(Type.Int32))) return false;
+    public boolean widensTo(PrimitiveType WideType){
+        if(!(this.equals(PrimitiveType.Byte) || this.equals(PrimitiveType.Int32))) return false;
         return this.SizeOf <= WideType.SizeOf;
     }
 
-    public Type toPointer(){
+    public PrimitiveType toPointer(){
         return toPointer(this);
     }
 
-    public static Type toPointer(Type type){
+    public static PrimitiveType toPointer(PrimitiveType type){
         switch (type) {
             case Void -> {
                 return VoidPointer;
@@ -73,11 +74,11 @@ public enum Type {
         return type;
     }
 
-    public Type fromPointer(){
+    public PrimitiveType fromPointer(){
         return fromPointer(this);
     }
 
-    public static Type fromPointer(Type type){
+    public static PrimitiveType fromPointer(PrimitiveType type){
         switch (type) {
             case VoidPointer -> {
                 return Void;

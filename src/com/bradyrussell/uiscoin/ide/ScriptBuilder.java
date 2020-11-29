@@ -1,7 +1,7 @@
 package com.bradyrussell.uiscoin.ide;
 
 import com.bradyrussell.uiscoin.ide.grammar.Operation;
-import com.bradyrussell.uiscoin.ide.grammar.Type;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeBase;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeGlobal;
@@ -31,7 +31,7 @@ public class ScriptBuilder {
         CurrentLocalScope = null;
     }
 
-    public ScriptBuilder declareVariable(String Name, Type VariableType){
+    public ScriptBuilder declareVariable(String Name, PrimitiveType VariableType){
         getCurrentScope().declareSymbol(Name, VariableType);
         return this;
     }

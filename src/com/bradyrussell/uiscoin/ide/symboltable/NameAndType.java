@@ -1,12 +1,12 @@
 package com.bradyrussell.uiscoin.ide.symboltable;
 
-import com.bradyrussell.uiscoin.ide.grammar.Type;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 
 public class NameAndType {
     String Name;
-    com.bradyrussell.uiscoin.ide.grammar.Type Type;
+    PrimitiveType Type;
 
-    public NameAndType(String name, Type type) {
+    public NameAndType(String name, PrimitiveType type) {
         Name = name;
         Type = type;
     }

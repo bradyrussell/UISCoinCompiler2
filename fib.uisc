@@ -1,10 +1,20 @@
-int32 myFunction(int32 a, int32 b) {
-    if(a > b) {
-        return a+b;
-    } else {
-        return b - a;
-    }
+struct ip {
+    byte a;
+    byte b;
+    byte c;
+    byte d;
 }
 
-byte myByte = (byte)myFunction(2,1);
-byte secondByte = 4;
+ip myIP;
+ip myIP2;
+
+myIP.a = 1;
+myIP.b = 2;
+myIP.c = 3;
+myIP.d = 4;
+
+myIP2.a = myIP.d;
+myIP2.b = myIP.c;
+myIP2.c = myIP.b;
+myIP2.d = myIP.a;
+

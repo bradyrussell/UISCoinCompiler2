@@ -95,6 +95,26 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitType(UISCParser.TypeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UISCParser#primitiveType}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrimitiveType(UISCParser.PrimitiveTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#primitiveType}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrimitiveType(UISCParser.PrimitiveTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UISCParser#structType}.
+	 * @param ctx the parse tree
+	 */
+	void enterStructType(UISCParser.StructTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UISCParser#structType}.
+	 * @param ctx the parse tree
+	 */
+	void exitStructType(UISCParser.StructTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UISCParser#booleanLiteral}.
 	 * @param ctx the parse tree
 	 */

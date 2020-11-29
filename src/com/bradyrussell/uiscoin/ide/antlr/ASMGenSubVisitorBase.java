@@ -1,6 +1,5 @@
 package com.bradyrussell.uiscoin.ide.antlr;
 
-import com.bradyrussell.uiscoin.ide.grammar.Type;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeBase;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeGlobal;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeLocal;

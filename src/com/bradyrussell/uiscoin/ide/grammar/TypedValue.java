@@ -11,7 +11,7 @@ public class TypedValue implements Symbol {
     public boolean bIsPointer;
     public ArrayList<TypedValue> ArrayElements;
 
-    public  Type type;
+    public PrimitiveType type;
     public  byte byteValue;
     public  int intValue;
     public  long longValue;
@@ -19,39 +19,39 @@ public class TypedValue implements Symbol {
     public  int pointerValue;
 
     public TypedValue(byte byteValue) {
-        this.type = Type.Byte;
+        this.type = PrimitiveType.Byte;
         this.byteValue = byteValue;
     }
 
     public TypedValue(int intValue) {
-        this.type = Type.Int32;
+        this.type = PrimitiveType.Int32;
         this.intValue = intValue;
     }
 
     public TypedValue(long longValue) {
-        this.type = Type.Int64;
+        this.type = PrimitiveType.Int64;
         this.longValue = longValue;
     }
 
     public TypedValue(float floatValue) {
-        this.type = Type.Float;
+        this.type = PrimitiveType.Float;
         this.floatValue = floatValue;
     }
 
     public TypedValue(TypedValue... arrayElementsVararg) {
         bIsArray = true;
         ArrayList<TypedValue> arrayElements = new ArrayList<>(Arrays.asList(arrayElementsVararg));
-        this.type = arrayElements.size() == 0 ? Type.Void : arrayElements.get(0).type;
+        this.type = arrayElements.size() == 0 ? PrimitiveType.Void : arrayElements.get(0).type;
         ArrayElements = arrayElements;
     }
 
     public TypedValue(ArrayList<TypedValue> arrayElements) {
         bIsArray = true;
-        this.type = arrayElements.size() == 0 ? Type.Void : arrayElements.get(0).type;
+        this.type = arrayElements.size() == 0 ? PrimitiveType.Void : arrayElements.get(0).type;
         ArrayElements = arrayElements;
     }
 
-    public TypedValue(Type type, long Value) {
+    public TypedValue(PrimitiveType type, long Value) {
         this.type = type;
         this.byteValue = (byte) Value;
         this.intValue = (int) Value;
@@ -59,7 +59,7 @@ public class TypedValue implements Symbol {
         this.pointerValue = (int) Value;
     }
 
-    public TypedValue(Type type, long Value, boolean bIsPointer) {
+    public TypedValue(PrimitiveType type, long Value, boolean bIsPointer) {
         this.type = type;
         this.bIsPointer = bIsPointer;
         if(bIsPointer) {
@@ -74,19 +74,19 @@ public class TypedValue implements Symbol {
     public TypedValue(String NumberString) {
         try {
             byteValue = Byte.parseByte(NumberString);
-            type = Type.Byte;
+            type = PrimitiveType.Byte;
         } catch (Exception e) {
             try {
                 intValue = Integer.parseInt(NumberString);
-                type =  Type.Int32;
+                type =  PrimitiveType.Int32;
             } catch (Exception e2) {
                 try {
                     longValue = Long.parseLong(NumberString);
-                    type =  Type.Int64;
+                    type =  PrimitiveType.Int64;
                 } catch (Exception e3) {
                     try {
                         floatValue = Float.parseFloat(NumberString);
-                        type =  Type.Float;
+                        type =  PrimitiveType.Float;
                     } catch (Exception e4) {
                         System.out.println("Cannot deduce type of number: "+NumberString);
                         type =  null;

@@ -72,6 +72,20 @@ public class UISCBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements U
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitPrimitiveType(UISCParser.PrimitiveTypeContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitStructType(UISCParser.StructTypeContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitBooleanLiteral(UISCParser.BooleanLiteralContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

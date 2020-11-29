@@ -1,6 +1,6 @@
 package com.bradyrussell.uiscoin.ide;
 
-import com.bradyrussell.uiscoin.ide.grammar.Type;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeBase;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeGlobal;
 import com.bradyrussell.uiscoin.ide.symboltable.ScopeLocal;
@@ -42,7 +42,7 @@ public class deprScriptCompiler {
         for (int i = 0; i < InputTokens.size(); i++) {
 
             // type declaration   Type Name -> int32 MyInt
-            Type type = Type.getByKeyword(InputTokens.get(i));
+            PrimitiveType type = PrimitiveType.getByKeyword(InputTokens.get(i));
             if (type != null) {
                 String identifierName = InputTokens.get(++i);
 
