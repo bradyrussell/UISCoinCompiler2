@@ -229,6 +229,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 return "STRUCT_SYMBOL_REDEFINITION_" + ctx.ID().getText();
             }
 
+            if(ctx.expression() != null) {
+                throw new UnsupportedOperationException("Assigning struct values on initialization is not yet supported.");
+            }
+
             System.out.println(">>Initialized struct symbol " + ctx.ID().getText() + " of type " + ctx.type().getText() + " with address " + address);
             return getCurrentScope().findStructDefinition(ctx.type().getText()).generateAllocatorASM() + ASMUtil.generateStoreAddress(address);
         }
@@ -381,6 +385,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         if(scopeContaining.getSymbol(ctx.lhs.getText()) instanceof TypedValue) {
             System.out.println("Assigning to constant " + ctx.ID().getText());
             return "ASSIGN_TO_CONSTANT_" + ctx.ID().getText();
+        }
+
+        if(scopeContaining.getSymbol(ctx.lhs.getText()) instanceof SymbolStruct) {
+            throw new UnsupportedOperationException("Assigning whole struct values not yet supported.");
         }
 
         SymbolBase symbol = (SymbolBase) scopeContaining.getSymbol(ctx.lhs.getText());
