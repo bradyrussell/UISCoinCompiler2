@@ -94,6 +94,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         StringBuilder asm = new StringBuilder();
 
+        if(From.isPointer()) {
+            System.out.println("Warning: Casting value from "+From+" to "+To+" might violate type safety!");
+            From = PrimitiveType.Int32;
+        }
+
         if(To.isPointer()) {
             System.out.println("Warning: Casting value from "+From+" to "+To+" might violate type safety!");
             To = PrimitiveType.Int32;
@@ -233,7 +238,32 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     @Override
     public String visitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) {
         if(ctx.type().primitiveType() == null){
-            throw new UnsupportedOperationException("Struct array assignment not yet implemented");
+
+            StructDefinition structDefinition = getCurrentScope().findStructDefinition(ctx.type().structType().getText());
+
+            if(structDefinition == null){
+                throw new UnsupportedOperationException("Struct type "+ctx.type().structType().getText()+" was not defined in this scope.");
+            }
+
+            int address = getCurrentScope().declareArray(ctx.ID().getText(), null, Integer.parseInt(ctx.INT().getText()));
+
+            if (address < 0) {
+                System.out.println("Symbol was already defined in this scope! " + ctx.ID().getText());
+                return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
+            }
+
+            if(ctx.expression() != null) {
+                throw new UnsupportedOperationException("Value initializing struct arrays is not supported;");
+                /*PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+                if(!symbolType.equals(expressionType)) {
+                    System.out.println("Cannot initialize "+symbolType+" array with "+expressionType+"! " + ctx.ID().getText());
+                    return "TYPE_MISMATCH_" + ctx.ID().getText();
+                }
+
+                return visit(ctx.expression()) +" "+ASMUtil.generateStoreAddress(address);*/
+            }
+
+            return " push "+(structDefinition.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc "+ASMUtil.generateStoreAddress(address);//"push ["+address+"] put";
         }
 
         PrimitiveType symbolType = ctx.type().pointer() == null ? PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()) : PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()).toPointer();
@@ -435,6 +465,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     @Override
     public String visitAssignmentStatement(UISCParser.AssignmentStatementContext ctx) {
         if(ctx.lhs == null) {
+
 
             ScopeBase scopeContainingStruct = getCurrentScope().findScopeContaining(ctx.lhs_struct.structname.getText());
 
@@ -1241,8 +1272,18 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 }
 
                 Params.add(new NameAndType(structField.ID().getText(), structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer()));
-            } else {
-                throw new UnsupportedOperationException("Arrays in struct not yet supported.");
+            } else if(varDeclarationContext instanceof UISCParser.ArrayAssignmentInitializationContext) {
+                UISCParser.ArrayAssignmentInitializationContext structField = (UISCParser.ArrayAssignmentInitializationContext) varDeclarationContext;
+
+                if(structField.expression() != null) {
+                    throw new UnsupportedOperationException("That is not allowed right now");
+                }
+
+                if(structField.type().primitiveType() == null) {
+                    throw new UnsupportedOperationException("Nested structs are not currently supported");
+                }
+
+                Params.add(new NameAndType(structField.ID().getText(), structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer(),Integer.parseInt(structField.size.getText())));
             }
         }
 

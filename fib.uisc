@@ -1,8 +1,6 @@
-int32 x = 122;
-int32 y = -1;
+struct a {
+    int64 x[4];
+    int64 y[4];
+}
 
-int32@ ptrArr[2];
-
-
-ptrArr[0] = $x;
-ptrArr[1] = $y;
+a b;
