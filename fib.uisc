@@ -1,6 +1,9 @@
 struct a {
-    int64 x[4];
-    int64 y[4];
+    int32 x[4];
 }
 
 a b;
+
+int32 x = 4;
+int32 y = 3;
+int64 z = x+y;

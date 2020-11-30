@@ -294,6 +294,8 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
             return null;
         }
 
-        return symbol.struct.getFieldType(ctx.structField().fieldname.getText());
+        if(!symbol.struct.getFieldType(ctx.structField().fieldname.getText()).isPrimitive()) return null;
+
+        return symbol.struct.getFieldType(ctx.structField().fieldname.getText()).PrimitiveType;
     }
 }

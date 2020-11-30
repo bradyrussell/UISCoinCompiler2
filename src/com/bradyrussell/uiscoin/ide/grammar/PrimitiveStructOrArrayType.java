@@ -1,0 +1,68 @@
+package com.bradyrussell.uiscoin.ide.grammar;
+
+import java.util.Objects;
+
+public class PrimitiveStructOrArrayType {
+    public PrimitiveType PrimitiveType;
+    public int ArrayLength = -1;
+    public String StructName = null;
+
+    public boolean isArray(){
+        return ArrayLength >= 0;
+    }
+
+    public boolean isStruct() {
+        return StructName != null;
+    }
+
+    public boolean isPrimitive() {
+        return !isArray() && !isStruct();
+    }
+
+    public boolean isStructArray() {
+        return isArray() && isStruct();
+    }
+
+    public PrimitiveStructOrArrayType(PrimitiveType type) {
+        PrimitiveType = type;
+    }
+
+    public PrimitiveStructOrArrayType(PrimitiveType type, int arrayLength) {
+        PrimitiveType = type;
+        ArrayLength = arrayLength;
+    }
+
+    public PrimitiveStructOrArrayType(String structName) {
+        StructName = structName;
+    }
+
+    public PrimitiveStructOrArrayType(String structName, int arrayLength) {
+        ArrayLength = arrayLength;
+        StructName = structName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PrimitiveStructOrArrayType that = (PrimitiveStructOrArrayType) o;
+
+        if(that.isArray() != this.isArray() || that.isStruct() != this.isStruct()) return false;
+        if(that.isArray() && this.isArray() && that.isStruct() && this.isStruct()) return this.StructName.equals(that.StructName) && that.ArrayLength == this.ArrayLength;
+        if(that.isStruct() && this.isStruct()) return this.StructName.equals(that.StructName);
+        if(that.isArray() && this.isArray()) return this.PrimitiveType.equals(that.PrimitiveType) && that.ArrayLength == this.ArrayLength;
+        return that.PrimitiveType.equals(this.PrimitiveType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(PrimitiveType, ArrayLength, StructName);
+    }
+
+    @Override
+    public String toString() {
+        String type = isStructArray() ? (StructName+"Array["+ArrayLength+"]") : isStruct() ? StructName : isArray() ? (PrimitiveType +"Array") : PrimitiveType.toString();
+
+        return "PrimitiveStructOrArrayType{"+ type +"}";
+    }
+}

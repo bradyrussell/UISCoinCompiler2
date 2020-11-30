@@ -1,25 +1,26 @@
 package com.bradyrussell.uiscoin.ide.symboltable;
 
 import com.bradyrussell.uiscoin.ide.antlr.ASMUtil;
-import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveStructOrArrayType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class StructDefinition {
-    private HashMap<String, String> structStructFields; // if a field is a struct, the entry in structFields will be null
-    private HashMap<String, PrimitiveType> structFields;
+    private HashMap<String, PrimitiveStructOrArrayType> structFields;
     private ArrayList<String> structFieldOrder;
 
-    public StructDefinition(List<NameAndType> Fields) {
+    private ScopeBase parentScope;
+
+    public StructDefinition(ScopeBase ParentScope, List<NameAndType> Fields) {
         structFields = new HashMap<>();
         structFieldOrder = new ArrayList<>();
-        structStructFields = new HashMap<>();
+        parentScope = ParentScope;
 
         for (NameAndType field : Fields) {
-            if(field.bIsStruct) {
-                if (!defineStructField(field.Name, field.StructType)) throw new UnsupportedOperationException("Struct struct field redefinition: " + field.Name);
+            if(field.Type.isStruct()) {
+                if (!defineStructField(field.Name, field.Type.StructName)) throw new UnsupportedOperationException("Struct struct field redefinition: " + field.Name);
             } else {
                 if (!defineField(field.Name, field.Type)) throw new UnsupportedOperationException("Struct field redefinition: " + field.Name);
             }
@@ -29,11 +30,11 @@ public class StructDefinition {
     public int getSize(){
         int size = 0;
 
-        for (PrimitiveType value : structFields.values()) {
-            if(value == null) throw new UnsupportedOperationException("getting the size of struct struct fields not yet supported"); //todo need some way to get defined structs for size
+        for (String s : structFields.keySet()) {
+            size += getFieldSize(s);
         }
 
-        return structFields.values().stream().mapToInt(PrimitiveType::getSize).sum();
+        return size;
     }
 
     public int getFieldByteIndex(String FieldName){
@@ -46,11 +47,25 @@ public class StructDefinition {
     }
 
     public int getFieldSize(String FieldName){
-        if(structStructFields.containsKey(FieldName)) throw new UnsupportedOperationException("getting the size of struct struct fields not yet supported");
-        return getFieldType(FieldName).getSize();
+        PrimitiveStructOrArrayType value = structFields.get(FieldName);
+
+        if(value.isArray()) {
+            return value.ArrayLength * value.PrimitiveType.getSize();
+        } else if(value.isStruct()) {
+            StructDefinition structDefinition = parentScope.findStructDefinition(value.StructName);
+
+            if(structDefinition == null){
+                throw new UnsupportedOperationException("Could not find the struct "+value.StructName+" in the current scope.");
+            }
+
+            return value.isArray() ? structDefinition.getSize() * value.ArrayLength : structDefinition.getSize();
+        } else {
+            return value.PrimitiveType.getSize();
+        }
+
     }
 
-    public boolean defineField(String FieldName, PrimitiveType FieldType) {
+    public boolean defineField(String FieldName, PrimitiveStructOrArrayType FieldType) {
         if(structFields.containsKey(FieldName)) return false;
 
         structFields.put(FieldName,FieldType);
@@ -62,22 +77,21 @@ public class StructDefinition {
     public boolean defineStructField(String FieldName, String StructType) {
         if(structFields.containsKey(FieldName)) return false;
 
-        structFields.put(FieldName,null);
-        structStructFields.put(FieldName, StructType);
+        structFields.put(FieldName,new PrimitiveStructOrArrayType(StructType));
         structFieldOrder.add(FieldName);
 
         return true;
     }
 
-    public ArrayList<PrimitiveType> getOrderedTypes(){
-        ArrayList<PrimitiveType> types = new ArrayList<>();
+    public ArrayList<PrimitiveStructOrArrayType> getOrderedTypes(){
+        ArrayList<PrimitiveStructOrArrayType> types = new ArrayList<>();
         for (String structField : structFieldOrder) {
             types.add(getFieldType(structField));
         }
         return types;
     }
 
-    public PrimitiveType getFieldType(String FieldName){
+    public PrimitiveStructOrArrayType getFieldType(String FieldName){
         return structFields.get(FieldName);
     }
 

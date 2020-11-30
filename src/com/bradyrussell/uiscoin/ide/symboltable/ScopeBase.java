@@ -37,7 +37,7 @@ public class ScopeBase {
         SymbolFunction symbol = new SymbolFunction(SymbolType, ScopeAddress++);
 
         for (NameAndType parameter : Parameters) {
-            symbol.defineParameter(parameter.Name, parameter.Type);
+            symbol.defineParameter(parameter.Name, parameter.Type.PrimitiveType);
         }
 
         ScopeWithSymbol scope = new ScopeWithSymbol(Name,this, symbol);
@@ -48,7 +48,7 @@ public class ScopeBase {
 
     public boolean defineStruct(String Name, List<NameAndType> Fields){
         if(structDefinitions.containsKey(Name)) return false;
-        structDefinitions.put(Name,new StructDefinition(Fields));
+        structDefinitions.put(Name,new StructDefinition(this, Fields));
         System.out.println("[Scope] Defined struct "+Name+" with "+Fields.size()+" fields.");
         return true;
     }

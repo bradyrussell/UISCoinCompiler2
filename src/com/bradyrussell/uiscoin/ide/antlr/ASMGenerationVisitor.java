@@ -1,5 +1,6 @@
 package com.bradyrussell.uiscoin.ide.antlr;
 
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveStructOrArrayType;
 import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 import com.bradyrussell.uiscoin.ide.symboltable.*;
@@ -64,9 +65,12 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
 
     public ASMGenerationVisitor() {
+        nativeFunctionCallParameters.put("set", 4); // location, position, length, value
+        nativeFunctionCallParameters.put("get", 3); // location, position, length
         nativeFunctionCallParameters.put("encrypt", 2);
         nativeFunctionCallParameters.put("decrypt", 2);
         nativeFunctionCallParameters.put("verifySig", 2);
+        nativeFunctionCallParameters.put("alloc", 2); // location, size
         nativeFunctionCallParameters.put("zip", 1);
         nativeFunctionCallParameters.put("unzip", 1);
         nativeFunctionCallParameters.put("sha512", 1);
@@ -476,9 +480,10 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
             SymbolStruct symbol = (SymbolStruct) scopeContainingStruct.getSymbol(ctx.lhs_struct.structname.getText());
 
-            PrimitiveType fieldType = symbol.struct.getFieldType(ctx.lhs_struct.fieldname.getText());
+            PrimitiveStructOrArrayType structField = symbol.struct.getFieldType(ctx.lhs_struct.fieldname.getText());
+            if(!structField.isPrimitive()) throw new UnsupportedOperationException("Havent gotten to nonprimitives");
 
-            if(fieldType == null){
+            if(structField.PrimitiveType == null){
                 System.out.println("Undefined field " + ctx.lhs_struct.structname.getText() + "." + ctx.lhs_struct.fieldname.getText());
                 return "FIELD_NOT_DEFINED_"+ ctx.lhs_struct.structname.getText() + "." +  ctx.lhs_struct.fieldname.getText();
             }
@@ -487,16 +492,16 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
             boolean bShouldWiden = false;
 
-            if (!fieldType.equals(rhsType)) {
-                if (rhsType.widensTo(symbol.struct.getFieldType(ctx.lhs_struct.fieldname.getText()))) {
+            if (!structField.PrimitiveType.equals(rhsType)) {
+                if (rhsType.widensTo(structField.PrimitiveType)) {
                     bShouldWiden = true;
                 } else {
-                    System.out.println("Type mismatch! Expected " + fieldType + " found " + rhsType);
-                    return "TYPE_MISMATCH_EXPECTED_" + fieldType + "_FOUND_" + rhsType + "_ERROR";
+                    System.out.println("Type mismatch! Expected " + structField.PrimitiveType + " found " + rhsType);
+                    return "TYPE_MISMATCH_EXPECTED_" + structField.PrimitiveType + "_FOUND_" + rhsType + "_ERROR";
                 }
             }
                         // value to set                                                                         struct base address                 struct field setter
-            return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, fieldType) : "") + " push " + symbol.address + symbol.struct.generateFieldSetterASM(ctx.lhs_struct.fieldname.getText());
+            return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, structField.PrimitiveType) : "") + " push " + symbol.address + symbol.struct.generateFieldSetterASM(ctx.lhs_struct.fieldname.getText());
         }
 
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.lhs.getText());
@@ -1271,7 +1276,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                     throw new UnsupportedOperationException("Nested structs are not currently supported");
                 }
 
-                Params.add(new NameAndType(structField.ID().getText(), structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer()));
+                Params.add(new NameAndType(structField.ID().getText(), new PrimitiveStructOrArrayType(structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer())));
             } else if(varDeclarationContext instanceof UISCParser.ArrayAssignmentInitializationContext) {
                 UISCParser.ArrayAssignmentInitializationContext structField = (UISCParser.ArrayAssignmentInitializationContext) varDeclarationContext;
 
@@ -1283,7 +1288,9 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                     throw new UnsupportedOperationException("Nested structs are not currently supported");
                 }
 
-                Params.add(new NameAndType(structField.ID().getText(), structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer(),Integer.parseInt(structField.size.getText())));
+                Params.add(new NameAndType(structField.ID().getText(),
+                        new PrimitiveStructOrArrayType(structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer(),Integer.parseInt(structField.size.getText()))
+                ));
             }
         }
 
@@ -1318,7 +1325,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         if(ctx.formalParameters() != null) {
             for (UISCParser.FormalParameterContext formalParameterContext : ctx.formalParameters().formalParameter()) {
-                Parameters.add(new NameAndType(formalParameterContext.ID().getText(), PrimitiveType.getByKeyword(formalParameterContext.type().getText())));
+                Parameters.add(new NameAndType(formalParameterContext.ID().getText(), new PrimitiveStructOrArrayType(PrimitiveType.getByKeyword(formalParameterContext.type().getText()))));
             }
         }
 
