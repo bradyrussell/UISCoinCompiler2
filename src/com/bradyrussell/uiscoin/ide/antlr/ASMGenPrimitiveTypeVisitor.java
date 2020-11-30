@@ -226,7 +226,11 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
 
     @Override
     public PrimitiveType visitCastExpression(UISCParser.CastExpressionContext ctx) {
-        return PrimitiveType.getByKeyword(ctx.type().getText());
+        PrimitiveType primitiveType = PrimitiveType.getByKeyword(ctx.type().primitiveType().getText());
+        if(primitiveType == null) {
+            throw new UnsupportedOperationException("Casting to structs is not yet supported");
+        }
+        return ctx.type().pointer() == null ? primitiveType : primitiveType.toPointer();
     }
 
     @Override

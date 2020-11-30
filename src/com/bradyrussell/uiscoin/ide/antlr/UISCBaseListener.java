@@ -51,18 +51,6 @@ public class UISCBaseListener implements UISCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterArrayValueInitialization(UISCParser.ArrayValueInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -82,6 +70,18 @@ public class UISCBaseListener implements UISCListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

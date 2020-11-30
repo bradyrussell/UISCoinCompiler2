@@ -37,8 +37,8 @@ public enum PrimitiveType {
                 if(keyword.equals(Keyword)) return value;
             }
         }
-        return null;
-        //throw new IllegalArgumentException(Keyword+" is not a valid type!");
+        //return null;
+        throw new IllegalArgumentException(Keyword+" is not a valid type!");
     }
 
     public int getSize() {
@@ -51,6 +51,7 @@ public enum PrimitiveType {
     }
 
     public boolean widensTo(PrimitiveType WideType){
+        if(WideType.isPointer() || WideType.isArray()) return false;
         if(!(this.equals(PrimitiveType.Byte) || this.equals(PrimitiveType.Int32))) return false;
         return this.SizeOf <= WideType.SizeOf;
     }
@@ -153,6 +154,36 @@ public enum PrimitiveType {
             }
         }
         return Void;
+    }
+
+    public static boolean isArray(PrimitiveType type){
+        switch (type){
+            case StructArray,ByteArray,Int32Array,Int64Array,FloatArray -> {
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
+    public static boolean isPointer(PrimitiveType type){
+        switch (type){
+            case VoidPointer,BytePointer,Int32Pointer,Int64Pointer,FloatPointer -> {
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
+    public boolean isArray(){
+        return isArray(this);
+    }
+
+    public boolean isPointer(){
+        return isPointer(this);
     }
 
     public byte[] Parse(String Token) throws CompilerErrorException {

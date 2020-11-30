@@ -6,17 +6,17 @@ pointer
     : '@';
 
 varDeclaration
-    :   constant='const'? type pointer? ID ('=' expression)? ';' #varInitialization    // int32@ myPtr = 7; //read as: there is an int32 at (address) 7
+    :   constant='const'? type ID ('=' expression)? ';' #varInitialization    // int32@ myPtr = 7; //read as: there is an int32 at (address) 7
     |   type ID '[]' '=' arrayInitializer ';' #arrayValueInitialization
     |   type ID '[]' '=' STRING ';' #arrayStringInitialization
-    |   type pointer? ID '[' size=INT ']' ('=' expression)? ';' #arrayAssignmentInitialization  // todo const arrays? // cant make int optional....
+    |   type ID '[' size=INT ']' ('=' expression)? ';' #arrayAssignmentInitialization  // todo const arrays? // cant make int optional....
     ;
 
 structDeclaration
     :   'struct' ID '{' varDeclaration+ '}'
     ;
 
-type:   primitiveType | structType;
+type:   (primitiveType | structType) pointer?;
 
 primitiveType:
     'void' | 'byte' | 'int32' | 'int64' | 'float'
@@ -39,7 +39,7 @@ formalParameters
     :   formalParameter (',' formalParameter)*
     ;
 formalParameter
-    :   type pointer? ID
+    :   type ID
     ;
 
 block:  '{' statement* '}' ;   // possibly empty statement block

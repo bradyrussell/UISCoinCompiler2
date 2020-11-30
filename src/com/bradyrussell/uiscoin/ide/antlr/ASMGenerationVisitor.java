@@ -94,6 +94,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         StringBuilder asm = new StringBuilder();
 
+        if(To.isPointer()) {
+            System.out.println("Warning: Casting value from "+From+" to "+To+" might violate type safety!");
+            To = PrimitiveType.Int32;
+        }
+
         if (From.equals(PrimitiveType.Byte)) {
             if (To.getSize() > 1) { // int32 is the intermediate type
                 asm.append("convert8to32 ");
@@ -227,7 +232,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx) {
-        PrimitiveType symbolType = PrimitiveType.getByKeyword(ctx.type().getText());
+        if(ctx.type().primitiveType() == null){
+            throw new UnsupportedOperationException("Struct array assignment not yet implemented");
+        }
+
+        PrimitiveType symbolType = ctx.type().pointer() == null ? PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()) : PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()).toPointer();
 
         if(symbolType == null){
             throw new UnsupportedOperationException("Struct array assignment not yet implemented");
@@ -255,11 +264,74 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitVarInitialization(UISCParser.VarInitializationContext ctx) {
-        PrimitiveType primitiveType = PrimitiveType.getByKeyword(ctx.type().getText());
-        PrimitiveType symbolType = ctx.pointer() != null ? (primitiveType == null ? null : primitiveType.toPointer()) : primitiveType;
 
-        if(symbolType == null) {
-            int address = getCurrentScope().declareStruct(ctx.ID().getText(),ctx.type().getText());
+        if(ctx.type().primitiveType() != null){
+            PrimitiveType primitiveType = ctx.type().pointer() == null ? PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()) : PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()).toPointer();
+
+            if(ctx.constant == null) {
+                int address = getCurrentScope().declareSymbol(ctx.ID().getText(), primitiveType);
+
+                if (address < 0) {
+                    System.out.println("Symbol was already defined in this scope! " + ctx.ID().getText());
+                    return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
+                }
+
+                System.out.println(">>Initialized symbol " + ctx.ID().getText() + " of type " + primitiveType + " with address " + address);
+
+                if (ctx.expression() != null) {
+                    PrimitiveType rhsType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+
+                    boolean bShouldWiden = false;
+
+                    if (!primitiveType.equals(rhsType)) {
+                        if (rhsType.widensTo(primitiveType)) {
+                            bShouldWiden = true;
+                        } else {
+                            System.out.println("Type mismatch! Expected " + primitiveType + " found " + rhsType);
+                            return "TYPE_MISMATCH_EXPECTED_" + primitiveType + "_FOUND_" + rhsType;
+                        }
+                    }
+
+                    return visit(ctx.expression()) + (bShouldWiden ? " " + generateCastAssembly(rhsType, primitiveType) : "") + ASMUtil.generateStoreAddress(address);
+                }
+                return "";
+            } else {
+                if(getCurrentScope().findScopeContaining(ctx.ID().getText()) != null) {
+                    System.out.println("Symbol was already defined in this scope! " + ctx.ID().getText());
+                    return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
+                }
+
+                if (ctx.expression() != null) {
+                    if(ctx.expression() instanceof UISCParser.NumberLiteralExpressionContext) {
+                        UISCParser.NumberLiteralExpressionContext expression = (UISCParser.NumberLiteralExpressionContext) ctx.expression();
+
+                        TypedValue constantValue;
+
+                        if (expression.number().INT() != null) {
+                            constantValue = new TypedValue(primitiveType,Long.parseLong(expression.number().INT().getText()));
+                        } else {
+                            constantValue = new TypedValue(Float.parseFloat(expression.number().FLOAT().getText()));
+                        }
+
+                        getCurrentScope().declareConstantInlineSymbol(ctx.ID().getText(), constantValue);
+                        System.out.println(">>Defined constant "+ctx.ID().getText()+" of type "+constantValue.type+" with value "+constantValue);
+                        return "";
+                    } else {
+                        System.out.println("Cannot use that rvalue as a constant!");
+                        return "INVALID_CONSTANT_RVALUE_"+ctx.ID().getText();
+                    }
+                }
+                System.out.println("Must specify constant value!");
+                return "INVALID_CONSTANT_"+ctx.ID().getText();
+            }
+        }
+
+        if(ctx.type().structType() != null){
+            if(ctx.type().pointer() != null) {
+                throw new UnsupportedOperationException("Struct pointers are not yet implemented.");
+            }
+
+            int address = getCurrentScope().declareStruct(ctx.ID().getText(),ctx.type().structType().getText());
 
             if (address < 0) {
                 System.out.println("Struct symbol was already defined in this scope! " + ctx.ID().getText());
@@ -270,68 +342,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 throw new UnsupportedOperationException("Assigning struct values on initialization is not yet supported.");
             }
 
-            System.out.println(">>Initialized struct symbol " + ctx.ID().getText() + " of type " + ctx.type().getText() + " with address " + address);
+            System.out.println(">>Initialized struct symbol " + ctx.ID().getText() + " of type " + ctx.type().structType().getText() + " with address " + address);
             return getCurrentScope().findStructDefinition(ctx.type().getText()).generateAllocatorASM() + ASMUtil.generateStoreAddress(address);
         }
 
-        if(ctx.constant == null) {
-
-            int address = getCurrentScope().declareSymbol(ctx.ID().getText(), symbolType);
-
-            if (address < 0) {
-                System.out.println("Symbol was already defined in this scope! " + ctx.ID().getText());
-                return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
-            }
-
-            //int address = ((SymbolBase) getCurrentScope().symbolTable.get(ctx.ID().getText())).address;
-            System.out.println(">>Initialized symbol " + ctx.ID().getText() + " of type " + symbolType + " with address " + address);
-
-            if (ctx.expression() != null) {
-                PrimitiveType rhsType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
-
-                boolean bShouldWiden = false;
-
-                if (!symbolType.equals(rhsType)) {
-                    if (rhsType.widensTo(symbolType)) {
-                        bShouldWiden = true;
-                    } else {
-                        System.out.println("Type mismatch! Expected " + symbolType + " found " + rhsType);
-                        return "TYPE_MISMATCH_EXPECTED_" + symbolType + "_FOUND_" + rhsType;
-                    }
-                }
-
-                return visit(ctx.expression()) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbolType) : "") + ASMUtil.generateStoreAddress(address);//" push [" + address + "] put";
-            }
-            return "";
-        } else {
-            if(getCurrentScope().findScopeContaining(ctx.ID().getText()) != null) {
-                System.out.println("Symbol was already defined in this scope! " + ctx.ID().getText());
-                return "SYMBOL_REDEFINITION_" + ctx.ID().getText();
-            }
-
-            if (ctx.expression() != null) {
-                if(ctx.expression() instanceof UISCParser.NumberLiteralExpressionContext) {
-                    UISCParser.NumberLiteralExpressionContext expression = (UISCParser.NumberLiteralExpressionContext) ctx.expression();
-
-                    TypedValue constantValue;
-
-                    if (expression.number().INT() != null) {
-                        constantValue = new TypedValue(primitiveType,Long.parseLong(expression.number().INT().getText()));
-                    } else {
-                        constantValue = new TypedValue(Float.parseFloat(expression.number().FLOAT().getText()));
-                    }
-
-                    getCurrentScope().declareConstantInlineSymbol(ctx.ID().getText(), constantValue);
-                    System.out.println(">>Defined constant "+ctx.ID().getText()+" of type "+constantValue.type+" with value "+constantValue);
-                    return "";
-                } else {
-                    System.out.println("Cannot use that rvalue as a constant!");
-                    return "INVALID_CONSTANT_RVALUE_"+ctx.ID().getText();
-                }
-            }
-            System.out.println("Must specify constant value!");
-            return "INVALID_CONSTANT_"+ctx.ID().getText();
-        }
+        throw new UnsupportedOperationException("Invalid variable initialization: "+ctx.getText());
     }
 
     /** End Initialization */
@@ -494,17 +509,16 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + symbol.generateSetSymbolASM();
         } else {
             PrimitiveType indexType = ctx.arrayIndex.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
-            return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") +
+            return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
                     "push "+symbol.address+" "+ // push stack element
                     visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType, PrimitiveType.Int32) +// push array index auto casted to int
-
-                    (symbol.type.getSize() == 1 ? "" : (symbol.type.getSize()+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                    (symbol.type.getSize() == 1 ? "" : ("push "+ symbol.type.getSize()+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
                             " multiply"))+
 /*
                     " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
                     " multiply "+*/
 
-                    "push "+symbol.type.getSize()+
+                    " push "+symbol.type.getSize()+
                     " set ";  // push sizeof
 
            // return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push " + symbol.address + " " + visit(ctx.arrayIndex) + " push " + /*sizeof type*/symbol.type.getSize() + " set";
@@ -888,7 +902,6 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         return ASMUtil.generateComment("Ternary "+ctx.getText()) + visit(ctx.condition) + " gotoif "+truelabel+" "+ visit(ctx.iffalse) + " goto "+falselabel+" :"+truelabel+" "+visit(ctx.iftrue)+" :"+falselabel;
     }
 
-
     @Override
     public String visitValueAtVariableExpression(UISCParser.ValueAtVariableExpressionContext ctx) {
         PrimitiveType exprType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope)).fromPointer();
@@ -904,15 +917,21 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     @Override
     public String visitCastExpression(UISCParser.CastExpressionContext ctx) {
         PrimitiveType fromType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
-        PrimitiveType toType = PrimitiveType.getByKeyword(ctx.type().getText());
-        String castAssembly = generateCastAssembly(fromType, toType);
 
-        if (castAssembly == null) {
-            System.out.println("Type mismatch! Cannot cast from " + fromType + " to " + toType);
-            return "CANNOT_CAST_FROM_" + fromType + "_TO_" + toType + "_ERROR";
+        if(ctx.type().primitiveType() != null){
+           PrimitiveType toType = ctx.type().pointer() == null ? PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()) : PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()).toPointer();
+
+            String castAssembly = generateCastAssembly(fromType, toType);
+
+            if (castAssembly == null) {
+                System.out.println("Type mismatch! Cannot cast from " + fromType + " to " + toType);
+                return "CANNOT_CAST_FROM_" + fromType + "_TO_" + toType + "_ERROR";
+            }
+
+            return ASMUtil.generateComment("Cast "+ctx.getText()) + visit(ctx.expression()) + " " + castAssembly;
         }
 
-        return ASMUtil.generateComment("Cast "+ctx.getText()) + visit(ctx.expression()) + " " + castAssembly;
+        throw new UnsupportedOperationException("Cannot cast to type: "+ctx.type().getText());
     }
 
     @Override
@@ -1212,7 +1231,16 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         for (UISCParser.VarDeclarationContext varDeclarationContext : ctx.varDeclaration()) {
             if(varDeclarationContext instanceof UISCParser.VarInitializationContext) {
                 UISCParser.VarInitializationContext structField = (UISCParser.VarInitializationContext) varDeclarationContext;
-                Params.add(new NameAndType(structField.ID().getText(), PrimitiveType.getByKeyword(structField.type().getText())));
+
+                if(structField.constant != null) {
+                    throw new UnsupportedOperationException("Constants are not allowed in structs (yet?)");
+                }
+
+                if(structField.type().primitiveType() == null) {
+                    throw new UnsupportedOperationException("Nested structs are not currently supported");
+                }
+
+                Params.add(new NameAndType(structField.ID().getText(), structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer()));
             } else {
                 throw new UnsupportedOperationException("Arrays in struct not yet supported.");
             }

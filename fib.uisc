@@ -1,4 +1,8 @@
+int32 x = 122;
+int32 y = -1;
 
-try{
-    _encrypt(1,2);
-}
+int32@ ptrArr[2];
+
+
+ptrArr[0] = $x;
+ptrArr[1] = $y;

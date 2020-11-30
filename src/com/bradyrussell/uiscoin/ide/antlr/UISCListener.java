@@ -39,18 +39,6 @@ public interface UISCListener extends ParseTreeListener {
 	 */
 	void exitVarInitialization(UISCParser.VarInitializationContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code arrayAssignmentInitialization}
-	 * labeled alternative in {@link UISCParser#varDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code arrayAssignmentInitialization}
-	 * labeled alternative in {@link UISCParser#varDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code arrayValueInitialization}
 	 * labeled alternative in {@link UISCParser#varDeclaration}.
 	 * @param ctx the parse tree
@@ -74,6 +62,18 @@ public interface UISCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code arrayAssignmentInitialization}
+	 * labeled alternative in {@link UISCParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arrayAssignmentInitialization}
+	 * labeled alternative in {@link UISCParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link UISCParser#structDeclaration}.
 	 * @param ctx the parse tree

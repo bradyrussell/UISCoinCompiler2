@@ -29,13 +29,6 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarInitialization(UISCParser.VarInitializationContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code arrayAssignmentInitialization}
-	 * labeled alternative in {@link UISCParser#varDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code arrayValueInitialization}
 	 * labeled alternative in {@link UISCParser#varDeclaration}.
 	 * @param ctx the parse tree
@@ -49,6 +42,13 @@ public interface UISCVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArrayStringInitialization(UISCParser.ArrayStringInitializationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayAssignmentInitialization}
+	 * labeled alternative in {@link UISCParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayAssignmentInitialization(UISCParser.ArrayAssignmentInitializationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UISCParser#structDeclaration}.
 	 * @param ctx the parse tree
