@@ -133,7 +133,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitNumberLiteralExpression(UISCParser.NumberLiteralExpressionContext ctx) {
-        return ASMUtil.generatePushNumberLiteral(ctx.number().getText());
+        return ASMUtil.generatePushNumberLiteralCast(ctx.number().getText(), null);
         //PrimitiveType typeOfInteger = PrimitiveType.deduceTypeOfNumber(ctx.number().getText());
         //return ASMUtil.generateComment(typeOfInteger+ " literal "+ctx.getText()) + "push " + (PrimitiveType.Byte.equals(typeOfInteger) ? "[":"") + ctx.number().getText()+ (PrimitiveType.Byte.equals(typeOfInteger) ? "]":"");
     }
@@ -210,7 +210,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 return visit(ctx.expression()) +" "+ASMUtil.generateStoreAddress(address);*/
             }
 
-            return " push "+(structDefinition.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc "+ASMUtil.generateStoreAddress(address);//"push ["+address+"] put";
+            return ASMUtil.generatePushNumberLiteralCast(Integer.toString(structDefinition.getSize() * Integer.parseInt(ctx.INT().getText())), PrimitiveType.Int32)+" alloc "+ASMUtil.generateStoreAddress(address);//"push ["+address+"] put";
         }
 
         PrimitiveType symbolType = ctx.type().pointer() == null ? PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()) : PrimitiveType.getByKeyword(ctx.type().primitiveType().getText()).toPointer();
@@ -236,7 +236,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return visit(ctx.expression()) +" "+ASMUtil.generateStoreAddress(address);
         }
 
-        return " push "+(symbolType.getSize() * Integer.parseInt(ctx.INT().getText()))+" alloc "+ASMUtil.generateStoreAddress(address);//"push ["+address+"] put";
+        return ASMUtil.generatePushNumberLiteralCast(Integer.toString(symbolType.getSize() * Integer.parseInt(ctx.INT().getText())),PrimitiveType.Int32)+" alloc "+ASMUtil.generateStoreAddress(address);//"push ["+address+"] put";
     }
 
     @Override
@@ -466,12 +466,14 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
                 return visit(ctx.rhs) +
                         (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
-                        "push "+symbol.address+" "+ // push stack element
+                        //"push "+symbol.address+" "+ // push stack element
+                        ASMUtil.generatePushNumberLiteralCast(Integer.toString(symbol.address), PrimitiveType.Int32)+//
                         visit(ctx.lhs_struct.fieldArrayIndex) +" "+
                         generateCastAssembly(Objects.requireNonNull(PrimitiveType.deduceTypeOfNumber(ctx.lhs_struct.fieldArrayIndex.getText())), PrimitiveType.Int32) +// push array index auto casted to int
-                        (fieldType.PrimitiveType.getSize() == 1 ? "" : ("push "+ fieldType.PrimitiveType.getSize()+" multiply"))+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
-                        (symbol.struct.getFieldByteIndex(ctx.lhs_struct.fieldname.getText()) != 0 ? (" push " + symbol.struct.getFieldByteIndex(ctx.lhs_struct.fieldname.getText()) + " add") : "") +    // add struct field offset
-                        " push "+fieldType.PrimitiveType.getSize()+
+                        (fieldType.PrimitiveType.getSize() == 1 ? "" : (ASMUtil.generatePushNumberLiteralCast(Integer.toString(fieldType.PrimitiveType.getSize()), PrimitiveType.Int32)+" multiply"))+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                        (symbol.struct.getFieldByteIndex(ctx.lhs_struct.fieldname.getText()) != 0 ? (ASMUtil.generatePushNumberLiteralCast(Integer.toString(symbol.struct.getFieldByteIndex(ctx.lhs_struct.fieldname.getText())), PrimitiveType.Int32) + " add") : "") +    // add struct field offset
+                        ASMUtil.generatePushNumberLiteralCast(Integer.toString(fieldType.PrimitiveType.getSize()), PrimitiveType.Int32)+
+                        //" push "+fieldType.PrimitiveType.getSize()+
                         " set ";  // push sizeof
 
                 //////////////////////////////////////////////////
@@ -479,8 +481,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             }
 
             if(structField.isPrimitive()) {
-                // value to set                                                                                              struct base address                 struct field setter
-                return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, structField.PrimitiveType) : "") + " push " + symbol.address + symbol.struct.generateFieldSetterASM(ctx.lhs_struct.fieldname.getText());
+                // value to set                                                                                                                                                 struct base address                               struct field setter
+                return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, structField.PrimitiveType) : "") + ASMUtil.generatePushNumberLiteralCast(Integer.toString(symbol.address), PrimitiveType.Int32) + symbol.struct.generateFieldSetterASM(ctx.lhs_struct.fieldname.getText());
             }
             //todo struct as struct member
 
@@ -877,7 +879,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             System.out.println("Undefined symbol " + ctx.ID().getText());
             return "SYMBOL_NOT_DEFINED_" + ctx.ID().getText();
         }
-        return ASMUtil.generateComment("Address Of variable "+ctx.getText()) + "push " + symbol.address;
+        return ASMUtil.generateComment("Address Of variable "+ctx.getText()) + ASMUtil.generatePushNumberLiteralCast(Integer.toString(symbol.address),PrimitiveType.Int32);
     }
 
     @Override

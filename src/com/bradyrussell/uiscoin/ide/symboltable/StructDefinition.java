@@ -2,6 +2,7 @@ package com.bradyrussell.uiscoin.ide.symboltable;
 
 import com.bradyrussell.uiscoin.ide.antlr.ASMUtil;
 import com.bradyrussell.uiscoin.ide.grammar.PrimitiveStructOrArrayType;
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,16 +98,16 @@ public class StructDefinition {
 
     // expects int32 Struct address to be the top stack element
     public String generateFieldGetterASM(String FieldName){
-        return " push "+getFieldByteIndex(FieldName)+" push "+getFieldSize(FieldName)+" get ";
+        return ASMUtil.generatePushNumberLiteralCast(getFieldByteIndex(FieldName), PrimitiveType.Int32)+ASMUtil.generatePushNumberLiteralCast(getFieldSize(FieldName), PrimitiveType.Int32)+" get ";
     }
 
     // expects [Data][int32 Struct Address] on stack
-    public String generateFieldSetterASM(String FieldName){ // todo this seems off for diff size struct fields
-        return ASMUtil.generateComment(FieldName) +ASMUtil.generateComment("Field index: "+getFieldByteIndex(FieldName))+" push " +getFieldByteIndex(FieldName)+ASMUtil.generateComment("Field size: "+getFieldSize(FieldName)) +" push "+getFieldSize(FieldName)+" set ";
+    public String generateFieldSetterASM(String FieldName){
+        return ASMUtil.generateComment(FieldName) +ASMUtil.generateComment("Field index: "+getFieldByteIndex(FieldName))+ASMUtil.generatePushNumberLiteralCast(getFieldByteIndex(FieldName), PrimitiveType.Int32)+ASMUtil.generateComment("Field size: "+getFieldSize(FieldName)) +ASMUtil.generatePushNumberLiteralCast(getFieldSize(FieldName), PrimitiveType.Int32)+" set ";
     }
 
     // push this struct zeroed onto the stack
     public String generateAllocatorASM(){
-        return " push "+getSize()+" alloc ";
+        return ASMUtil.generatePushNumberLiteralCast(getSize(), PrimitiveType.Int32)+" alloc ";
     }
 }

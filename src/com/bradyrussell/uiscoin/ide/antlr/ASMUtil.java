@@ -97,8 +97,16 @@ public class ASMUtil {
         return null;
     }
 
-    public static String generatePushNumberLiteral(String NumberLiteralString){
+    public static String generatePushNumberLiteralCast(String NumberLiteralString, PrimitiveType CastToType){
         PrimitiveType typeOfInteger = PrimitiveType.deduceTypeOfNumber(NumberLiteralString);
-        return "push " + (PrimitiveType.Byte.equals(typeOfInteger) ? "[":"") + NumberLiteralString + (PrimitiveType.Byte.equals(typeOfInteger) ? "] ":" ");
+        if(typeOfInteger == null) throw new UnsupportedOperationException("Could not deduce type of number: "+NumberLiteralString);
+        return " push " + (PrimitiveType.Byte.equals(typeOfInteger) ? "[":"") + NumberLiteralString + (PrimitiveType.Byte.equals(typeOfInteger) ? "] ":" ")+(CastToType == null ? "":generateCastAssembly(typeOfInteger, CastToType));
+    }
+
+    public static String generatePushNumberLiteralCast(long LiteralInteger, PrimitiveType CastToType){
+        String NumberLiteralString = Long.toString(LiteralInteger);
+        PrimitiveType typeOfInteger = PrimitiveType.deduceTypeOfNumber(NumberLiteralString);
+        if(typeOfInteger == null) throw new UnsupportedOperationException("Could not deduce type of number: "+NumberLiteralString);
+        return " push " + (PrimitiveType.Byte.equals(typeOfInteger) ? "[":"") + NumberLiteralString + (PrimitiveType.Byte.equals(typeOfInteger) ? "] ":" ")+(CastToType == null ? "":generateCastAssembly(typeOfInteger, CastToType));
     }
 }
