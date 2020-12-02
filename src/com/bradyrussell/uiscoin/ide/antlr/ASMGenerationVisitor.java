@@ -1,5 +1,7 @@
 package com.bradyrussell.uiscoin.ide.antlr;
 
+import com.bradyrussell.uiscoin.MagicBytes;
+import com.bradyrussell.uiscoin.MagicNumbers;
 import com.bradyrussell.uiscoin.ide.grammar.PrimitiveStructOrArrayType;
 import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
@@ -9,6 +11,7 @@ import org.antlr.v4.runtime.RuleContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     HashMap<String, Integer> nativeFunctionCallParameters = new HashMap<>();
@@ -191,7 +194,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitNumberLiteralExpression(UISCParser.NumberLiteralExpressionContext ctx) {
-        PrimitiveType typeOfInteger = ASMGenPrimitiveTypeVisitor.deduceTypeOfNumber(ctx.number().getText());
+        PrimitiveType typeOfInteger = PrimitiveType.deduceTypeOfNumber(ctx.number().getText());
         return ASMUtil.generateComment(typeOfInteger+ " literal "+ctx.getText()) + "push " + (PrimitiveType.Byte.equals(typeOfInteger) ? "[":"") + ctx.number().getText()+ (PrimitiveType.Byte.equals(typeOfInteger) ? "]":"");
     }
 
@@ -410,7 +413,11 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return visit(ctx.expression()) + " drop"; // this function call doesnt use the retval, drop it. like:  add(1,2);
         }
 
-        System.out.println("Removing unused statement: "+ctx.expression().getText());
+        if(ctx.expression() instanceof UISCParser.PostfixOpExpressionContext || ctx.expression() instanceof UISCParser.PrefixOpExpressionContext) {
+            return super.visitFunctionCallStatement(ctx);
+        }
+
+        System.out.println("Warning: Removing unused statement: "+ctx.expression().getText());
         return ASMUtil.generateComment("UNUSED_STATEMENT_"+ctx.expression().getText()); // this is an unexpected expression that does nothing like: 1 + 2;
     }
 
@@ -469,8 +476,6 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     @Override
     public String visitAssignmentStatement(UISCParser.AssignmentStatementContext ctx) {
         if(ctx.lhs == null) {
-
-
             ScopeBase scopeContainingStruct = getCurrentScope().findScopeContaining(ctx.lhs_struct.structname.getText());
 
             if(scopeContainingStruct == null){
@@ -480,8 +485,17 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
             SymbolStruct symbol = (SymbolStruct) scopeContainingStruct.getSymbol(ctx.lhs_struct.structname.getText());
 
+            if(ctx.lhs_struct.structArrayIndex != null) throw new UnsupportedOperationException("you have an array of structs??? ");
+
+            if(symbol.struct == null) {
+                throw new UnsupportedOperationException("Struct $"+symbol.address+" "+ctx.lhs_struct.structname.getText()+" symbol is null");
+            }
+
             PrimitiveStructOrArrayType structField = symbol.struct.getFieldType(ctx.lhs_struct.fieldname.getText());
-            if(!structField.isPrimitive()) throw new UnsupportedOperationException("Havent gotten to nonprimitives");
+
+            if(structField.isStruct()) {
+                throw new UnsupportedOperationException("Struct as member of struct not yet implemented");
+            }
 
             if(structField.PrimitiveType == null){
                 System.out.println("Undefined field " + ctx.lhs_struct.structname.getText() + "." + ctx.lhs_struct.fieldname.getText());
@@ -500,8 +514,37 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                     return "TYPE_MISMATCH_EXPECTED_" + structField.PrimitiveType + "_FOUND_" + rhsType + "_ERROR";
                 }
             }
-                        // value to set                                                                         struct base address                 struct field setter
-            return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, structField.PrimitiveType) : "") + " push " + symbol.address + symbol.struct.generateFieldSetterASM(ctx.lhs_struct.fieldname.getText());
+
+            if(ctx.lhs_struct.fieldArrayIndex != null) {
+                if(!structField.isArray()) throw new UnsupportedOperationException("Struct field array access but struct field is not array! " + ctx.lhs_struct.toString());
+                // value to set                                                                                                   struct base address                 struct field setter
+                ///////////////////////////////////////////////////
+
+                //PrimitiveType indexType = ctx.lhs_struct.fieldArrayIndex.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+
+                PrimitiveStructOrArrayType fieldType = symbol.struct.getFieldType(ctx.lhs_struct.fieldname.getText());
+
+                return visit(ctx.rhs) +
+                        (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
+                        "push "+symbol.address+" "+ // push stack element
+                        visit(ctx.lhs_struct.fieldArrayIndex) +" "+
+                        generateCastAssembly(Objects.requireNonNull(PrimitiveType.deduceTypeOfNumber(ctx.lhs_struct.fieldArrayIndex.getText())), PrimitiveType.Int32) +// push array index auto casted to int
+                        (fieldType.PrimitiveType.getSize() == 1 ? "" : ("push "+ fieldType.PrimitiveType.getSize()+" multiply"))+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                        (symbol.struct.getFieldByteIndex(ctx.lhs_struct.fieldname.getText()) != 0 ? (" push " + symbol.struct.getFieldByteIndex(ctx.lhs_struct.fieldname.getText()) + " add") : "") +    // add struct field offset
+                        " push "+fieldType.PrimitiveType.getSize()+
+                        " set ";  // push sizeof
+
+                //////////////////////////////////////////////////
+
+            }
+
+            if(structField.isPrimitive()) {
+                // value to set                                                                                              struct base address                 struct field setter
+                return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, structField.PrimitiveType) : "") + " push " + symbol.address + symbol.struct.generateFieldSetterASM(ctx.lhs_struct.fieldname.getText());
+            }
+            //todo struct as struct member
+
+            throw new UnsupportedOperationException("How did we get here?");
         }
 
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.lhs.getText());
@@ -1212,9 +1255,35 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 return " instruction";
             }
         }
-        throw new UnsupportedOperationException("Unknown native call: "+ctx.ID().getText());
+        throw new UnsupportedOperationException("No implementation for native call: "+ctx.ID().getText());
     }
 
+    @Override
+    public String visitPostfixOpExpression(UISCParser.PostfixOpExpressionContext ctx) {
+
+        if(ctx.parent instanceof UISCParser.StatementContext) {
+            throw new UnsupportedOperationException("Use prefix increment if you don't need postfix.");
+        }
+        throw new UnsupportedOperationException("Postfix operator not yet implemented");
+/*        PushLocalScope("PostFixOpScope");
+            // todo ++ doesnt make sense for anything but an id, array access, or struct member access
+        PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+
+        int postFixOpTempVar = getCurrentScope().declareSymbol("PostFixOpTempVar", expressionType);
+
+        return visit(ctx.expression()) + " dup "+ ASMUtil.generateStoreAddress(postFixOpTempVar) + " ";*/ // i dont think this will work
+
+
+       // return super.visitPostfixOpExpression(ctx);
+    }
+
+    @Override
+    public String visitPrefixOpExpression(UISCParser.PrefixOpExpressionContext ctx) {
+        PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+        if(!expressionType.isNumeric()) throw new UnsupportedOperationException("Cannot "+ctx.op+" non-numeric expression "+ctx.expression().getText());
+
+        return visit(ctx.expression()) + " true " + generateCastAssembly(PrimitiveType.Byte, expressionType) + (ctx.op.getText().equals("--") ? "subtract ":"add ");
+    }
 
     /**
      * End Expressions
@@ -1237,7 +1306,9 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         System.out.println("Warning: ArrayValueInitialization assumes each array initializer expression pushes exactly one value onto the stack.");
         // auto widens using visitArrayInitializer();
-        return ASMUtil.generateComment("Array value initialization "+ctx.getText()) + visit(ctx.arrayInitializer()) + " push [" + ctx.arrayInitializer().exprList().expression().size() + "] combine " + ASMUtil.generateStoreAddress(getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()));//" push [" + getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()) + "] put";
+        return ASMUtil.generateComment("Array value initialization "+ctx.getText()) + visit(ctx.arrayInitializer()) +
+                " push [" + ctx.arrayInitializer().exprList().expression().size() + "] combine " +
+                ASMUtil.generateStoreAddress(getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()));//" push [" + getCurrentScope().declareArray(ctx.ID().getText(), expectedType, ctx.arrayInitializer().exprList().expression().size()) + "] put";
     }
 
     // this is how we auto widen array initializers

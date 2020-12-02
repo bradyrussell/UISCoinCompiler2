@@ -110,7 +110,7 @@ flagData:
     ;
 
 structField:
-    structname=ID ('.' fieldname=ID)+
+    structname=ID ('[' structArrayIndex=expression ']')? ('.' fieldname=ID ('[' fieldArrayIndex=expression ']')?)+
     ;
 
 // expressions should push a single value on to the stack (net +1, temp variables are fine)

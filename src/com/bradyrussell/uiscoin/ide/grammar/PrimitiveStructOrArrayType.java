@@ -1,5 +1,7 @@
 package com.bradyrussell.uiscoin.ide.grammar;
 
+import com.bradyrussell.uiscoin.ide.symboltable.ScopeBase;
+
 import java.util.Objects;
 
 public class PrimitiveStructOrArrayType {
@@ -39,6 +41,14 @@ public class PrimitiveStructOrArrayType {
     public PrimitiveStructOrArrayType(String structName, int arrayLength) {
         ArrayLength = arrayLength;
         StructName = structName;
+    }
+
+    public int getSize(ScopeBase CurrentScope) {
+        if(isPrimitive()) return PrimitiveType.getSize();
+        if(isStructArray()) return CurrentScope.findStructDefinition(StructName).getSize() * ArrayLength;
+        if(isStruct())return CurrentScope.findStructDefinition(StructName).getSize();
+        if(isArray()) return PrimitiveType.getSize() * ArrayLength;
+        throw new UnsupportedOperationException("How did you get here?");
     }
 
     @Override

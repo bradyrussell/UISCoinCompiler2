@@ -5,6 +5,8 @@ import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 import com.bradyrussell.uiscoin.ide.symboltable.*;
 import org.antlr.v4.runtime.tree.RuleNode;
 
+import static com.bradyrussell.uiscoin.ide.grammar.PrimitiveType.deduceTypeOfNumber;
+
 public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveType> {
     public ASMGenPrimitiveTypeVisitor(ScopeGlobal global, ScopeLocal currentLocalScope) {
         super(global, currentLocalScope);
@@ -31,31 +33,7 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
         return PrimitiveType.getWiderType(aggregate, nextResult);
     }
 
-    public static PrimitiveType deduceTypeOfNumber(String NumberString){
-        try {
-            //noinspection ResultOfMethodCallIgnored
-            Byte.parseByte(NumberString);
-            return PrimitiveType.Byte;
-        } catch (Exception e) {
-            try {
-                Integer.parseInt(NumberString);
-                return PrimitiveType.Int32;
-            } catch (Exception e2) {
-                try {
-                    Long.parseLong(NumberString);
-                    return PrimitiveType.Int64;
-                } catch (Exception e3) {
-                    try {
-                        Float.parseFloat(NumberString);
-                        return PrimitiveType.Float;
-                    } catch (Exception e4) {
-                        System.out.println("Cannot deduce type of number: "+NumberString);
-                        return null;
-                    }
-                }
-            }
-        }
-    }
+
 
     private PrimitiveType getCastedBinaryExpression(UISCParser.ExpressionContext LHS, UISCParser.ExpressionContext RHS){
         //Type lhsType = LHS.accept(new ASMGenTypeVisitor(Global, CurrentLocalScope));

@@ -41,6 +41,32 @@ public enum PrimitiveType {
         throw new IllegalArgumentException(Keyword+" is not a valid type!");
     }
 
+    public static PrimitiveType deduceTypeOfNumber(String NumberString){
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            java.lang.Byte.parseByte(NumberString);
+            return PrimitiveType.Byte;
+        } catch (Exception e) {
+            try {
+                Integer.parseInt(NumberString);
+                return PrimitiveType.Int32;
+            } catch (Exception e2) {
+                try {
+                    Long.parseLong(NumberString);
+                    return PrimitiveType.Int64;
+                } catch (Exception e3) {
+                    try {
+                        java.lang.Float.parseFloat(NumberString);
+                        return PrimitiveType.Float;
+                    } catch (Exception e4) {
+                        System.out.println("Cannot deduce type of number: "+NumberString);
+                        return null;
+                    }
+                }
+            }
+        }
+    }
+
     public int getSize() {
         return SizeOf;
     }
@@ -154,6 +180,21 @@ public enum PrimitiveType {
             }
         }
         return Void;
+    }
+
+    public static boolean isNumeric(PrimitiveType type){
+        switch (type){
+            case Byte,Int32,Int64,Float -> {
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
+    public boolean isNumeric(){
+        return isNumeric(this);
     }
 
     public static boolean isArray(PrimitiveType type){

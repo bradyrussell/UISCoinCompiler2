@@ -1,9 +1,20 @@
 struct a {
+    int64 y;
     int32 x[4];
 }
 
-a b;
+int32 x = 1;
 
-int32 x = 4;
-int32 y = 3;
-int64 z = x+y;
+ufori(1,10 as int32 i){
+    a b;
+
+    x++;
+
+    int32 x = 4;
+    int32 y = 3;
+    b.x[0] = x+y;
+    b.x[1] = x+y+1;
+    b.x[2] = x+y+2;
+    b.x[3] = x+y+3;
+    b.y = ++5;
+}

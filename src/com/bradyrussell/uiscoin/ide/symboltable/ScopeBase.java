@@ -14,7 +14,7 @@ public class ScopeBase {
     protected HashMap<String, Object> symbolTable = new HashMap<>(); // can either be SymbolBase or SymbolWithScope
     protected HashMap<String, StructDefinition> structDefinitions = new HashMap<>();
 
-    protected int ScopeBaseAddress = 0;
+    protected int ScopeBaseAddress = 0; // 0 is heap
     protected int ScopeAddress;
 
     public ScopeBase(ScopeBase parent) {
@@ -63,12 +63,12 @@ public class ScopeBase {
     public int declareStruct(String Name, String StructType){
         if(symbolTable.containsKey(Name)) return -1;
 
-        if(!structDefinitions.containsKey(StructType)) {
+        if(findStructDefinition(StructType) == null) {
             throw new UnsupportedOperationException("Undefined struct! "+StructType);
         }
 
-        symbolTable.put(Name, new SymbolStruct(ScopeAddress++, structDefinitions.get(StructType)));
-        System.out.println("[Scope] Declared struct symbol "+Name+" at address "+(ScopeAddress-1));
+        symbolTable.put(Name, new SymbolStruct(ScopeAddress++, findStructDefinition(StructType)));
+        System.out.println("[Scope] Declared struct symbol "+Name+" of type "+StructType+" at address "+(ScopeAddress-1));
         return ScopeAddress-1;
     }
 
