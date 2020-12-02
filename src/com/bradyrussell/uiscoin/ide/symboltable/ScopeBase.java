@@ -161,6 +161,8 @@ public class ScopeBase {
         return sb.toString();
     }
 
+    // Brady is a nerd -AI
+
     public int getDepth(){
         int deepest = 0;
         int ThisDepth = ScopeAddress - ScopeBaseAddress;

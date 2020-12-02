@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static com.bradyrussell.uiscoin.ide.antlr.ASMUtil.generateCastAssembly;
+
 public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     HashMap<String, Integer> nativeFunctionCallParameters = new HashMap<>();
 
@@ -95,69 +97,6 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         return QuotedString.substring(1, QuotedString.length() - 1);
     }
 
-    // returns asm to cast one type to another, or null if conversion is not allowed
-    private static String generateCastAssembly(PrimitiveType From, PrimitiveType To) {
-        if (From.equals(To)) return " ";
-
-        StringBuilder asm = new StringBuilder();
-
-        if(From.isPointer()) {
-            System.out.println("Warning: Casting value from "+From+" to "+To+" might violate type safety!");
-            From = PrimitiveType.Int32;
-        }
-
-        if(To.isPointer()) {
-            System.out.println("Warning: Casting value from "+From+" to "+To+" might violate type safety!");
-            To = PrimitiveType.Int32;
-        }
-
-        if (From.equals(PrimitiveType.Byte)) {
-            if (To.getSize() > 1) { // int32 is the intermediate type
-                asm.append("convert8to32 ");
-                From = PrimitiveType.Int32;
-            }
-        }
-
-        if (From.equals(PrimitiveType.Int64)) {
-            // int32 is the intermediate type
-            asm.append("convert64to32 ");
-            From = PrimitiveType.Int32;
-        }
-
-        if (From.equals(PrimitiveType.Float)) {
-            // int32 is the intermediate type
-            asm.append("convertfloatto32 ");
-            From = PrimitiveType.Int32;
-        }
-
-        if (From.equals(PrimitiveType.Int32)) {
-            switch (To) {
-                case Byte -> {
-                    asm.append("convert32to8 ");
-                    return asm.toString();
-                }
-                case Int32 -> {
-                    return asm.toString();
-                }
-                case Int64 -> {
-                    asm.append("convert32to64 ");
-                    return asm.toString();
-                }
-                case Float -> {
-                    asm.append("convert32tofloat ");
-                    return asm.toString();
-                }
-            }
-        }
-
-        if(From.equals(PrimitiveType.Void)) {
-            System.out.println("Warning: Casting from void could violate type safety!");
-            return "";
-        }
-        System.out.println("Cannot cast from "+From+" to "+To+"!");
-        return null;
-    }
-
     private String getCastedBinaryExpression(UISCParser.ExpressionContext LHS, UISCParser.ExpressionContext RHS, String BinaryOperationForIntegers, String BinaryOperationForFloats){
         PrimitiveType lhsType = LHS.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
         PrimitiveType rhsType = RHS.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
@@ -194,8 +133,9 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
     @Override
     public String visitNumberLiteralExpression(UISCParser.NumberLiteralExpressionContext ctx) {
-        PrimitiveType typeOfInteger = PrimitiveType.deduceTypeOfNumber(ctx.number().getText());
-        return ASMUtil.generateComment(typeOfInteger+ " literal "+ctx.getText()) + "push " + (PrimitiveType.Byte.equals(typeOfInteger) ? "[":"") + ctx.number().getText()+ (PrimitiveType.Byte.equals(typeOfInteger) ? "]":"");
+        return ASMUtil.generatePushNumberLiteral(ctx.number().getText());
+        //PrimitiveType typeOfInteger = PrimitiveType.deduceTypeOfNumber(ctx.number().getText());
+        //return ASMUtil.generateComment(typeOfInteger+ " literal "+ctx.getText()) + "push " + (PrimitiveType.Byte.equals(typeOfInteger) ? "[":"") + ctx.number().getText()+ (PrimitiveType.Byte.equals(typeOfInteger) ? "]":"");
     }
 
     @Override
@@ -1262,19 +1202,33 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     public String visitPostfixOpExpression(UISCParser.PostfixOpExpressionContext ctx) {
 
         if(ctx.parent instanceof UISCParser.StatementContext) {
-            throw new UnsupportedOperationException("Use prefix increment if you don't need postfix.");
+            throw new UnsupportedOperationException("Use prefix increment if you don't need postfix. "+ctx.getText());
         }
-        throw new UnsupportedOperationException("Postfix operator not yet implemented");
-/*        PushLocalScope("PostFixOpScope");
+
+        if(ctx.expression() instanceof UISCParser.VariableReferenceExpressionContext) {
+            PushLocalScope("PostFixOpScope");
             // todo ++ doesnt make sense for anything but an id, array access, or struct member access
-        PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+            PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
 
-        int postFixOpTempVar = getCurrentScope().declareSymbol("PostFixOpTempVar", expressionType);
+            String originalVariableName = ((UISCParser.VariableReferenceExpressionContext) ctx.expression()).ID().getText();
+            int originalAddress = ((SymbolBase)getCurrentScope().findScopeContaining(originalVariableName).getSymbol(originalVariableName)).address;
 
-        return visit(ctx.expression()) + " dup "+ ASMUtil.generateStoreAddress(postFixOpTempVar) + " ";*/ // i dont think this will work
+            //int postFixOpTempVarAddress = getCurrentScope().declareSymbol("PostFixOpTempVar", expressionType);
+            // dup x add 1  store to original address (leaving x on the stack)
+            return visit(ctx.expression()) + " dup true add " + ASMUtil.generateStoreAddress(originalAddress);
+        }
 
+        if(ctx.expression() instanceof UISCParser.ArrayAccessExpressionContext) {
+            throw new UnsupportedOperationException("Postfix increment array access NYI");
+        }
 
-       // return super.visitPostfixOpExpression(ctx);
+        if(ctx.expression() instanceof UISCParser.StructFieldReferenceExpressionContext) {
+            throw new UnsupportedOperationException("Postfix increment struct field NYI");
+        }
+
+        throw new UnsupportedOperationException("Postfix increment is not supported in this context. "+ctx.getText());
+       // throw new UnsupportedOperationException("Postfix operator not yet implemented");
+        // return super.visitPostfixOpExpression(ctx);
     }
 
     @Override

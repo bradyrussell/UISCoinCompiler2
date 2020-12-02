@@ -189,17 +189,26 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
 
         Object uncasted = scopeContaining.getSymbol(ctx.ID().getText());
 
-        if(uncasted instanceof ScopeWithSymbol) { // address of function
+        if(uncasted instanceof ScopeWithSymbol || uncasted instanceof SymbolStruct) { // address of function
             return PrimitiveType.VoidPointer; // function ptr
         } else {
             SymbolBase symbol = (SymbolBase)uncasted;
-
             if(symbol.type == null) {
-                throw new UnsupportedOperationException("Struct pointers not yet implemented");
+                throw new UnsupportedOperationException("Unable to determine pointer type;");
             } else {
                 return  symbol.type.toPointer();
             }
         }
+    }
+
+    @Override
+    public PrimitiveType visitPostfixOpExpression(UISCParser.PostfixOpExpressionContext ctx) {
+        return visit(ctx.expression());
+    }
+
+    @Override
+    public PrimitiveType visitPrefixOpExpression(UISCParser.PrefixOpExpressionContext ctx) {
+        return visit(ctx.expression());
     }
 
     @Override
