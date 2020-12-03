@@ -25,6 +25,8 @@ public class Main {
         ASMGenerationVisitor asmGenerationVisitor = new ASMGenerationVisitor();
         String asm = asmGenerationVisitor.visit(tree);
 
+        System.out.println(asm);
+
         String allocation = asmGenerationVisitor.Global.getRecursiveAllocation()+ "\n" + asm;
 
         String optimized = allocation.replace("push [1]", "true").replace("push [0]", "false").replace("true gotoif", "goto").replace("convert32to8 convert8to32","");

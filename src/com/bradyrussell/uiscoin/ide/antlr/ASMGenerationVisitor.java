@@ -21,8 +21,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     ////////////////////////
     int LabelIndex = 0;
 
-    ScopeGlobal Global = new ScopeGlobal("GlobalScope", null);
-    ScopeLocal CurrentLocalScope = null;
+    public ScopeGlobal Global = new ScopeGlobal("GlobalScope", null);
+    public ScopeLocal CurrentLocalScope = null;
 
     ScopeBase getCurrentScope() {
         return CurrentLocalScope == null ? Global : CurrentLocalScope;
@@ -258,6 +258,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 if (ctx.expression() != null) {
                     PrimitiveType rhsType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
 
+                    if(rhsType == null) throw new UnsupportedOperationException("Could not determine the type of: "+ctx.expression().getText());
+
                     boolean bShouldWiden = false;
 
                     if (!primitiveType.equals(rhsType)) {
@@ -354,7 +356,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         }
 
         if(ctx.expression() instanceof UISCParser.PostfixOpExpressionContext || ctx.expression() instanceof UISCParser.PrefixOpExpressionContext) {
-            return super.visitFunctionCallStatement(ctx);
+            return super.visitFunctionCallStatement(ctx) + " drop"; // this call doesnt use the retval, drop it.
         }
 
         System.out.println("Warning: Removing unused statement: "+ctx.expression().getText());
@@ -1134,8 +1136,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
 
         return ASMUtil.generateComment("Array access "+ctx.getText()) + "push "+symbol.address+" "+ // push stack element
                 visit(ctx.expression())+" "+ castAssembly +// push array index auto casted to int
-                " push "+
-                (SizeOf == 1 ? "" : (SizeOf+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                (SizeOf == 1 ? "" : (" push "+SizeOf+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
                 " multiply"))+
                 " push "+SizeOf+
                 " get ";  // push sizeof
@@ -1207,17 +1208,15 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             throw new UnsupportedOperationException("Use prefix increment if you don't need postfix. "+ctx.getText());
         }
 
-        if(ctx.expression() instanceof UISCParser.VariableReferenceExpressionContext) {
-            PushLocalScope("PostFixOpScope");
-            // todo ++ doesnt make sense for anything but an id, array access, or struct member access
-            PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+        PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
 
+        //++ doesnt make sense for anything but an id, array access, or struct member access
+        if(ctx.expression() instanceof UISCParser.VariableReferenceExpressionContext) {
             String originalVariableName = ((UISCParser.VariableReferenceExpressionContext) ctx.expression()).ID().getText();
             int originalAddress = ((SymbolBase)getCurrentScope().findScopeContaining(originalVariableName).getSymbol(originalVariableName)).address;
 
-            //int postFixOpTempVarAddress = getCurrentScope().declareSymbol("PostFixOpTempVar", expressionType);
-            // dup x add 1  store to original address (leaving x on the stack)
-            return visit(ctx.expression()) + " dup true add " + ASMUtil.generateStoreAddress(originalAddress);
+            // dup x, add 1,  store to original address, (leaving original x on the stack)
+            return visit(ctx.expression()) + " dup true "+generateCastAssembly(PrimitiveType.Byte,expressionType)+ (ctx.op.getText().equals("++") ? " add " : " subtract ") + ASMUtil.generateStoreAddress(originalAddress);
         }
 
         if(ctx.expression() instanceof UISCParser.ArrayAccessExpressionContext) {
@@ -1238,6 +1237,22 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         PrimitiveType expressionType = ctx.expression().accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
         if(!expressionType.isNumeric()) throw new UnsupportedOperationException("Cannot "+ctx.op+" non-numeric expression "+ctx.expression().getText());
 
+        // for a var ref, array access or struct member we need to store the result
+        if(ctx.expression() instanceof UISCParser.VariableReferenceExpressionContext) {
+            String originalVariableName = ((UISCParser.VariableReferenceExpressionContext) ctx.expression()).ID().getText();
+            int originalAddress = ((SymbolBase)getCurrentScope().findScopeContaining(originalVariableName).getSymbol(originalVariableName)).address;
+
+            return visit(ctx.expression()) + " true " + generateCastAssembly(PrimitiveType.Byte, expressionType) + (ctx.op.getText().equals("--") ? "subtract ":"add ") + "dup "+ASMUtil.generateStoreAddress(originalAddress);
+        }
+
+        if(ctx.expression() instanceof UISCParser.ArrayAccessExpressionContext) {
+            throw new UnsupportedOperationException("Prefix increment array access NYI");
+        }
+
+        if(ctx.expression() instanceof UISCParser.StructFieldReferenceExpressionContext) {
+            throw new UnsupportedOperationException("Prefix increment struct field NYI");
+        }
+        // otherwise we just add to it
         return visit(ctx.expression()) + " true " + generateCastAssembly(PrimitiveType.Byte, expressionType) + (ctx.op.getText().equals("--") ? "subtract ":"add ");
     }
 
@@ -1315,9 +1330,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                     throw new UnsupportedOperationException("Nested structs are not currently supported");
                 }
 
-                Params.add(new NameAndType(structField.ID().getText(),
-                        new PrimitiveStructOrArrayType(structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer(),Integer.parseInt(structField.size.getText()))
-                ));
+                PrimitiveStructOrArrayType type = new PrimitiveStructOrArrayType(structField.type().pointer() == null ? PrimitiveType.getByKeyword(structField.type().primitiveType().getText()) : PrimitiveType.getByKeyword(structField.type().primitiveType().getText()).toPointer(), Integer.parseInt(structField.size.getText()));
+                Params.add(new NameAndType(structField.ID().getText(), type));
             }
         }
 

@@ -110,4 +110,13 @@ public class StructDefinition {
     public String generateAllocatorASM(){
         return ASMUtil.generatePushNumberLiteralCast(getSize(), PrimitiveType.Int32)+" alloc ";
     }
+
+    @Override
+    public String toString() {
+        return "StructDefinition{" +
+                "structFields=" + structFields +
+                ", structFieldOrder=" + structFieldOrder +
+                ", parentScope=" + parentScope +
+                '}';
+    }
 }

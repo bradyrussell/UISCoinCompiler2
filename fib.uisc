@@ -1,9 +1,3 @@
-struct ptrStruct{
-    void@ self;
-}
+byte x[10];
 
-ptrStruct apple;
-
-apple.self = $apple;
-
-
+x[1] = x[0];

@@ -71,7 +71,7 @@ public class PrimitiveStructOrArrayType {
 
     @Override
     public String toString() {
-        String type = isStructArray() ? (StructName+"Array["+ArrayLength+"]") : isStruct() ? StructName : isArray() ? (PrimitiveType +"Array") : PrimitiveType.toString();
+        String type = isStructArray() ? (StructName+"Array["+ArrayLength+"]") : isStruct() ? StructName : isArray() ? (PrimitiveType +"Array["+ArrayLength+"]") : PrimitiveType.toString();
 
         return "PrimitiveStructOrArrayType{"+ type +"}";
     }

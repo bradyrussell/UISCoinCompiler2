@@ -1,5 +1,6 @@
 package com.bradyrussell.uiscoin.ide.antlr;
 
+import com.bradyrussell.uiscoin.ide.grammar.PrimitiveStructOrArrayType;
 import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.ide.grammar.TypedValue;
 import com.bradyrussell.uiscoin.ide.symboltable.*;
@@ -246,7 +247,7 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
             return null;
         }
 
-        return symbol.type;
+        return symbol.type/*.fromArray()*/;
     }
 
     @Override
@@ -281,8 +282,18 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
             return null;
         }
 
-        if(!symbol.struct.getFieldType(ctx.structField().fieldname.getText()).isPrimitive()) return null;
+        if(symbol.struct.getFieldByteIndex(ctx.structField().fieldname.getText()) == -1) {
+            throw new UnsupportedOperationException("This field does not exist on the struct: "+ctx.structField().getText()+
+                    symbol.struct.toString());
+        }
 
-        return symbol.struct.getFieldType(ctx.structField().fieldname.getText()).PrimitiveType;
+        PrimitiveStructOrArrayType fieldType = symbol.struct.getFieldType(ctx.structField().fieldname.getText());
+        if(fieldType == null) throw new UnsupportedOperationException("Could not understand struct fieldname type: "+ctx.structField().fieldname.getText());
+
+        if(fieldType.isStruct()) throw new UnsupportedOperationException("Struct as member of struct NYI: "+ fieldType);
+
+        if(fieldType.isArray() && ctx.structField().fieldArrayIndex != null) return fieldType.PrimitiveType; // accessing array elem not whole array
+
+        return fieldType.isArray() ? fieldType.PrimitiveType.toArray() : fieldType.PrimitiveType;
     }
 }

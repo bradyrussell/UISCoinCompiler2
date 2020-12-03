@@ -179,7 +179,7 @@ public enum PrimitiveType {
                 return Float;
             }
         }
-        return Void;
+        throw new IllegalArgumentException("Cannot fromArray type: "+type);
     }
 
     public static boolean isNumeric(PrimitiveType type){

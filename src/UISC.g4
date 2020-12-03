@@ -44,28 +44,27 @@ formalParameter
 
 block:  '{' statement* '}' ;   // possibly empty statement block
 
-statement:   block                                                                                           #blockStatement
-    |   varDeclaration                                                                                       #varDeclarationStatement
-    |   structDeclaration                                                                                    #structDeclarationStatement
-    |   'if' conditional=expression '{' ifbody=statement+ '}' elseifStatement* elseStatement?                #ifStatement
-    |   'ufori' '(' iterations=INT (',' iterationsEnd=INT)? 'as' type ID ')' forbody=statement+              #uforiStatement
-    |   'uforeach' '(' arrayToLoop=ID 'as' varDeclaration ')' forbody=statement+                             #uforeachStatement
-    |   'while' '(' expression ')' whilebody=statement+                                                      #whileStatement // EFC code
-    |   'for' '(' varDeclaration conditional=expression ';' afterEach=statement ')' forbody=statement+       #forStatement // EFC code
-    |   'return' retval=expression? ';'                                                                      #returnStatement
-    |   (lhs=ID|lhs_struct=structField) ('[' arrayIndex=expression ']')? '=' rhs=expression ';'              #assignmentStatement
-    |   lhs=ID ('[' arrayIndex=expression ']')? op=('+='|'-='|'*='|'/='|'%='|'&='|'|=') rhs=expression ';'   #opAndAssignmentStatement
-    |   tryStatement catchStatement?                                                                         #tryCatchStatement
-    |   expression ';'                                                                                       #functionCallStatement
-    |   assembly                                                                                             #assemblyStatement
-    |   assertion                                                                                            #assertionStatement
-    |   exception                                                                                            #exceptionStatement
-    |   include                                                                                              #includeStatement
-    |   flag                                                                                                 #flagStatement
-    |   flagData                                                                                             #flagDataStatement
-    |   'break' ';'                                                                                          #breakStatement
-    |   'continue' ';'                                                                                       #continueStatement
-
+statement:   block                                                                                                      #blockStatement
+    |   varDeclaration                                                                                                  #varDeclarationStatement
+    |   structDeclaration                                                                                               #structDeclarationStatement
+    |   'if' conditional=expression '{' ifbody=statement+ '}' elseifStatement* elseStatement?                           #ifStatement
+    |   'ufori' '(' iterations=INT (',' iterationsEnd=INT)? 'as' type ID ')' forbody=statement+                         #uforiStatement
+    |   'uforeach' '(' arrayToLoop=ID 'as' varDeclaration ')' forbody=statement+                                        #uforeachStatement
+    |   'while' '(' expression ')' whilebody=statement+                                                                 #whileStatement // EFC code
+    |   'for' '(' varDeclaration conditional=expression ';' afterEach=statement ')' forbody=statement+                  #forStatement // EFC code
+    |   'return' retval=expression? ';'                                                                                 #returnStatement
+    |   (lhs=ID|lhs_struct=structField) ('[' arrayIndex=expression ']')? '=' rhs=expression ';'                         #assignmentStatement
+    |   (lhs=ID|lhs_struct=structField) ('[' arrayIndex=expression ']')? op=('+='|'-='|'*='|'/='|'%='|'&='|'|=') rhs=expression ';'      #opAndAssignmentStatement
+    |   tryStatement catchStatement?                                                                                    #tryCatchStatement
+    |   expression ';'                                                                                                  #functionCallStatement
+    |   assembly                                                                                                        #assemblyStatement
+    |   assertion                                                                                                       #assertionStatement
+    |   exception                                                                                                       #exceptionStatement
+    |   include                                                                                                         #includeStatement
+    |   flag                                                                                                            #flagStatement
+    |   flagData                                                                                                        #flagDataStatement
+    |   'break' ';'                                                                                                     #breakStatement
+    |   'continue' ';'                                                                                                  #continueStatement
     ;
 
 elseifStatement:

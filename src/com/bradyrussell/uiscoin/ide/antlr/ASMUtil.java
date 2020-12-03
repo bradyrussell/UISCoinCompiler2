@@ -3,6 +3,9 @@ package com.bradyrussell.uiscoin.ide.antlr;
 import com.bradyrussell.uiscoin.BytesUtil;
 import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.script.ScriptParser;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Arrays;
 
@@ -39,6 +42,11 @@ public class ASMUtil {
         if (From.equals(To)) return " ";
 
         StringBuilder asm = new StringBuilder();
+
+        if(PrimitiveType.Void.equals(To) || PrimitiveType.Void.equals(From)) {
+            System.out.println("Warning: Casting value from "+From+" to "+To+" might violate type safety!");
+            return " ";
+        }
 
         if(From.isPointer()) {
             System.out.println("Warning: Casting value from "+From+" to "+To+" might violate type safety!");
@@ -108,5 +116,52 @@ public class ASMUtil {
         PrimitiveType typeOfInteger = PrimitiveType.deduceTypeOfNumber(NumberLiteralString);
         if(typeOfInteger == null) throw new UnsupportedOperationException("Could not deduce type of number: "+NumberLiteralString);
         return " push " + (PrimitiveType.Byte.equals(typeOfInteger) ? "[":"") + NumberLiteralString + (PrimitiveType.Byte.equals(typeOfInteger) ? "] ":" ")+(CastToType == null ? "":generateCastAssembly(typeOfInteger, CastToType));
+    }
+
+    public static String performBasicOptimizations(String ASMString){
+        return ASMString
+                .replace("push [1]", "true")
+                .replace("push [0]", "false")
+                .replace("true gotoif", "goto")
+                .replace("convert32to8 convert8to32","")
+                .replace("convert32to64 convert64to32","");
+    }
+
+    public static String compileHLLToASM(String HLL) {
+        ASMUtil.bNoComments = true;
+
+        UISCLexer lexer = new UISCLexer(new ANTLRInputStream(HLL));
+        UISCParser parser = new UISCParser(new CommonTokenStream(lexer));
+        ParseTree tree = parser.file();
+
+        ASMGenerationVisitor asmGenerationVisitor = new ASMGenerationVisitor();
+        String asm = asmGenerationVisitor.visit(tree);
+
+        return asmGenerationVisitor.Global.getRecursiveAllocation()+ "\n" + asm;
+    }
+
+    public static String generateLoadArrayElement(){
+        return null;
+/*        return ASMUtil.generateComment("Array access "+ctx.getText()) + "push "+symbol.address+" "+ // push stack element
+                visit(ctx.expression())+" "+ castAssembly +// push array index auto casted to int
+                (SizeOf == 1 ? "" : (" push "+SizeOf+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                        " multiply"))+
+                " push "+SizeOf+
+                " get ";  // push sizeof*/
+    }
+
+    public static String generateStoreArrayElement(){
+        return null;
+/*        return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
+                "push "+symbol.address+" "+ // push stack element
+                visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType, PrimitiveType.Int32) +// push array index auto casted to int
+                (symbol.type.getSize() == 1 ? "" : ("push "+ symbol.type.getSize()+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                        " multiply"))+
+*//*
+                    " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
+                    " multiply "+*//*
+
+                " push "+symbol.type.getSize()+
+                " set ";  // push sizeof*/
     }
 }
