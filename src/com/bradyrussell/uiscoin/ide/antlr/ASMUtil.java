@@ -149,7 +149,7 @@ public class ASMUtil {
                 " push "+SizeOf+
                 " get ";  // push sizeof*/
     }
-
+ // todo cast above and below  like push [1] convert8to32 rather than push 1
     public static String generateStoreArrayElement(){
         return null;
 /*        return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
