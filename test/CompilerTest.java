@@ -31,6 +31,25 @@ public class CompilerTest {
     }
 
     @Test
+    public void Test_ArrayAccess(){
+        String Script =
+                "byte a[] = {1, 2, 3, 4};\n"+
+                "byte b = a[3];";
+
+        performStandardTests(ASMUtil.compileHLLToASM(Script), "[1, 2, 3, 4] [4]");
+    }
+
+    @Test
+    public void Test_ArrayElementAssignment(){
+        String Script =
+                "byte z = 6;\n"+
+                "byte a[] = {1, 2, 3, 4};\n"+
+                "a[2] = z;";
+
+        performStandardTests(ASMUtil.compileHLLToASM(Script), "[6] [1, 2, 6, 4]");
+    }
+
+    @Test
     public void Test_AutoWidening(){
         String Script =
                 "byte a = 64;\n"+
@@ -39,6 +58,17 @@ public class CompilerTest {
                 "int64 d = b;\n";
 
         performStandardTests(ASMUtil.compileHLLToASM(Script), "[64] [0, 0, 0, 64] [66, -128, 0, 0] [0, 0, 0, 0, 0, 0, 0, 64]");
+    }
+
+    @Test
+    public void Test_Casting(){
+        String Script =
+                "int64 a = 64;\n"+
+                "int32 b = (int32)a;\n"+
+                "float c = b;\n"+
+                "byte d = (byte)b;\n";
+
+        performStandardTests(ASMUtil.compileHLLToASM(Script), "[0, 0, 0, 0, 0, 0, 0, 64] [0, 0, 0, 64] [66, -128, 0, 0] [64]");
     }
 
     @Test
@@ -112,9 +142,9 @@ public class CompilerTest {
         assertEquals(optimizedZippedScriptExecution.getStackContents(), originalScriptExecution.getStackContents());
 
         if(expectedOutput != null) {
-            assertEquals(originalScriptExecution.getStackContents().replace("\n"," ").trim(), expectedOutput);
+            assertEquals(expectedOutput, originalScriptExecution.getStackContents().replace("\n"," ").trim());
             if (!bNoOptimization) assertEquals(optimizedScriptExecution.getStackContents().replace("\n"," ").trim(), expectedOutput);
-            assertEquals(optimizedZippedScriptExecution.getStackContents().replace("\n"," ").trim(), expectedOutput);
+            assertEquals(expectedOutput, optimizedZippedScriptExecution.getStackContents().replace("\n"," ").trim());
         }
 
         System.out.println();
