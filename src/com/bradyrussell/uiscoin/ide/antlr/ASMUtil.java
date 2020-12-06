@@ -97,10 +97,6 @@ public class ASMUtil {
             }
         }
 
-        if(From.equals(PrimitiveType.Void)) {
-            System.out.println("Warning: Casting from void could violate type safety!");
-            return "";
-        }
         System.out.println("Cannot cast from "+From+" to "+To+"!");
         return null;
     }
@@ -140,28 +136,23 @@ public class ASMUtil {
         return asmGenerationVisitor.Global.getRecursiveAllocation()+ "\n" + asm;
     }
 
-    public static String generateLoadArrayElement(){
-        return null;
-/*        return ASMUtil.generateComment("Array access "+ctx.getText()) + "push "+symbol.address+" "+ // push stack element
-                visit(ctx.expression())+" "+ castAssembly +// push array index auto casted to int
-                (SizeOf == 1 ? "" : (" push "+SizeOf+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+    public static String generateLoadArrayElement(int StackElementAddress, String ArrayIndexExpressionCastedToIntASM, int SizeOfElement){
+        return  "push "+ASMUtil.generatePushNumberLiteralCast(StackElementAddress, PrimitiveType.Int32)+" "+ // push stack element
+                ArrayIndexExpressionCastedToIntASM +// push array index auto casted to int
+                (SizeOfElement == 1 ? "" : (" push "+ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
                         " multiply"))+
-                " push "+SizeOf+
-                " get ";  // push sizeof*/
+                " push "+ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+
+                " get ";  // push sizeof
     }
- // todo cast above and below  like push [1] convert8to32 rather than push 1
-    public static String generateStoreArrayElement(){
-        return null;
-/*        return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
-                "push "+symbol.address+" "+ // push stack element
-                visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType, PrimitiveType.Int32) +// push array index auto casted to int
-                (symbol.type.getSize() == 1 ? "" : ("push "+ symbol.type.getSize()+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
-                        " multiply"))+
-*//*
-                    " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
-                    " multiply "+*//*
 
-                " push "+symbol.type.getSize()+
-                " set ";  // push sizeof*/
+    // expects the element to store to be on  top of the stack properly casted
+    public static String generateStoreArrayElement(int StackElementAddress, String ArrayIndexExpressionCastedToIntASM, int SizeOfElement){
+        return /*visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +*/
+                "push "+ASMUtil.generatePushNumberLiteralCast(StackElementAddress, PrimitiveType.Int32)+" "+ // push stack element
+                ArrayIndexExpressionCastedToIntASM +// push array index auto casted to int
+                (SizeOfElement == 1 ? "" : ("push "+ ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                        " multiply"))+
+                " push "+ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+
+                " set ";  // push sizeof
     }
 }
