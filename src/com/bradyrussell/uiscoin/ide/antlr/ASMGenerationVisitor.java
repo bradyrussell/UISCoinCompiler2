@@ -533,16 +533,18 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         } else {
             PrimitiveType indexType = ctx.arrayIndex.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
             return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
+                    ASMUtil.generateStoreArrayElement(symbol.address, visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType, PrimitiveType.Int32), symbol.type.getSize());
+/*            return ASMUtil.generateComment("Assignment statement "+ctx.getText()) + visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
                     "push "+symbol.address+" "+ // push stack element
                     visit(ctx.arrayIndex) +" "+ generateCastAssembly(indexType, PrimitiveType.Int32) +// push array index auto casted to int
                     (symbol.type.getSize() == 1 ? "" : ("push "+ symbol.type.getSize()+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
                             " multiply"))+
-/*
+*//*
                     " push "+symbol.type.getSize()+ // multiply by sizeof to get beginIndex
-                    " multiply "+*/
+                    " multiply "+*//*
 
                     " push "+symbol.type.getSize()+
-                    " set ";  // push sizeof
+                    " set ";  // push sizeof*/
 
            // return visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : "") + " push " + symbol.address + " " + visit(ctx.arrayIndex) + " push " + /*sizeof type*/symbol.type.getSize() + " set";
         }
@@ -1134,12 +1136,13 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             return "ARRAY_INDEX_INVALID_TYPE_" + indexExpressionType;
         }
 
-        return ASMUtil.generateComment("Array access "+ctx.getText()) + "push "+symbol.address+" "+ // push stack element
+        return ASMUtil.generateLoadArrayElement(symbol.address,visit(ctx.expression())+" "+ castAssembly,SizeOf);
+/*        return ASMUtil.generateComment("Array access "+ctx.getText()) + "push "+symbol.address+" "+ // push stack element
                 visit(ctx.expression())+" "+ castAssembly +// push array index auto casted to int
                 (SizeOf == 1 ? "" : (" push "+SizeOf+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
                 " multiply"))+
                 " push "+SizeOf+
-                " get ";  // push sizeof
+                " get ";  // push sizeof*/
     }
 
     @Override

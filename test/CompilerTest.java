@@ -36,6 +36,7 @@ public class CompilerTest {
                 "byte a[] = {1, 2, 3, 4};\n"+
                 "byte b = a[3];";
 
+        System.out.println(ASMUtil.compileHLLToASM(Script));
         performStandardTests(ASMUtil.compileHLLToASM(Script), "[1, 2, 3, 4] [4]");
     }
 

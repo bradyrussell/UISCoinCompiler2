@@ -137,22 +137,22 @@ public class ASMUtil {
     }
 
     public static String generateLoadArrayElement(int StackElementAddress, String ArrayIndexExpressionCastedToIntASM, int SizeOfElement){
-        return  "push "+ASMUtil.generatePushNumberLiteralCast(StackElementAddress, PrimitiveType.Int32)+" "+ // push stack element
+        return  ASMUtil.generatePushNumberLiteralCast(StackElementAddress, PrimitiveType.Int32)+" "+ // push stack element
                 ArrayIndexExpressionCastedToIntASM +// push array index auto casted to int
-                (SizeOfElement == 1 ? "" : (" push "+ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                (SizeOfElement == 1 ? "" : (ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
                         " multiply"))+
-                " push "+ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+
+                ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+
                 " get ";  // push sizeof
     }
 
     // expects the element to store to be on  top of the stack properly casted
     public static String generateStoreArrayElement(int StackElementAddress, String ArrayIndexExpressionCastedToIntASM, int SizeOfElement){
         return /*visit(ctx.rhs) + (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +*/
-                "push "+ASMUtil.generatePushNumberLiteralCast(StackElementAddress, PrimitiveType.Int32)+" "+ // push stack element
+                ASMUtil.generatePushNumberLiteralCast(StackElementAddress, PrimitiveType.Int32)+" "+ // push stack element
                 ArrayIndexExpressionCastedToIntASM +// push array index auto casted to int
-                (SizeOfElement == 1 ? "" : ("push "+ ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
+                (SizeOfElement == 1 ? "" : (ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
                         " multiply"))+
-                " push "+ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+
+                ASMUtil.generatePushNumberLiteralCast(SizeOfElement,PrimitiveType.Int32)+
                 " set ";  // push sizeof
     }
 }
