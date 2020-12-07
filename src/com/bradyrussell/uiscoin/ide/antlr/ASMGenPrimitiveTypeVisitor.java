@@ -122,7 +122,7 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
                 return PrimitiveType.Int32;
             }
         }
-        return null;
+        throw new UnsupportedOperationException("Type not defined for native: "+ctx.getText());
     }
 
     @Override
@@ -228,7 +228,7 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
 
     @Override
     public PrimitiveType visitLengthOfExpression(UISCParser.LengthOfExpressionContext ctx) {
-        return PrimitiveType.Int32; // todo check what type LEN returns
+        return PrimitiveType.Int32;
     }
 
     @Override
