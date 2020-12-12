@@ -37,5 +37,7 @@ public class Main {
 
         System.out.println("\n\nOptimized Bytecode "+(zippedASM.length() < compiledOptimized.length() ? "(Packed, Flags Not Visible!) "+zippedASM.length()+" bytes" : compiledOptimized.length()+" bytes")+": \n"+ (zippedASM.length() >= compiledOptimized.length() ? compiledOptimized : zippedASM) +"\n");
 /*        ParseTreeWalker.DEFAULT.walk(new TestUISCListener(), tree);*/
+
+       Files.write(Path.of("compiled.uiscb"), ScriptParser.CompileScriptTokensToBytecode(ScriptParser.GetTokensFromString(ASMUtil.generateExecuteZippedASM(optimized), true)));
     }
 }

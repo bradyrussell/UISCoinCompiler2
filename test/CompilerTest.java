@@ -73,6 +73,76 @@ public class CompilerTest {
     }
 
     @Test
+    public void Test_StructElementAssign(){
+        String Script =
+                "struct test {\n" +
+                        "    int32 a;\n" +
+                        "    int64 b;\n" +
+                        "    int32 c[4];\n" +
+                        "    byte d[12];\n" +
+                        "}\n" +
+                        "\n" +
+                        "test myTest;\n" +
+                        "\n" +
+                        "myTest.a = 6;\n" +
+                        "myTest.b = 12;\n" +
+                        "myTest.c[0] = 1;\n" +
+                        "myTest.c[1] = 2;\n" +
+                        "myTest.c[2] = 3;\n" +
+                        "myTest.c[3] = 4;\n" +
+                        "myTest.d[0] = -1;\n" +
+                        "myTest.d[1] = -2;\n" +
+                        "myTest.d[2] = -3;\n" +
+                        "myTest.d[3] = -4;\n" +
+                        "myTest.d[4] = -5;\n" +
+                        "myTest.d[5] = -6;\n" +
+                        "myTest.d[6] = -7;\n" +
+                        "myTest.d[7] = -8;\n" +
+                        "myTest.d[8] = -9;\n" +
+                        "myTest.d[9] = -10;\n" +
+                        "myTest.d[10] = -11;\n" +
+                        "myTest.d[11] = -12;\n";
+
+        performStandardTests(ASMUtil.compileHLLToASM(Script), "[0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12]");
+    }
+
+    @Test
+    public void Test_StructElemAccess(){
+        String Script =
+                "struct test {\n" +
+                "    int32 a;\n" +
+                "    int64 b;\n" +
+                "    int32 c[4];\n" +
+                "}\n" +
+                "\n" +
+                "test myTest;\n" +
+                "\n" +
+                "myTest.a = 10;\n" +
+                "myTest.b = myTest.a * 5;\n" +
+                "ufori(4 as int32 i){\n" +
+                "    myTest.c[i] = ((int32)myTest.b) + i;\n" +
+                "}";
+
+        performStandardTests(ASMUtil.compileHLLToASM(Script), null);
+    }
+
+    @Test
+    public void Test_OpAndAssignment(){
+        String Script =
+                "int32 a = 123;\n" +
+                "int32 b = 6;\n" +
+                "a += b;\n" +
+                "a -= b;\n" +
+                "a *= b;\n" +
+                "a /= b;\n" +
+                "a &= b;\n" +
+                "a |= b;\n" +
+                "//a ^= b;";
+
+        performStandardTests(ASMUtil.compileHLLToASM(Script), "[0, 0, 0, 6] [0, 0, 0, 6]");
+    }
+
+    @Test
     public void Test_Natives(){ // todo fix void casts
         String Script =
                 "byte m[] = \"Hello world!\";\n" +
@@ -92,6 +162,9 @@ public class CompilerTest {
         byte[] originalBytecode = ScriptParser.CompileScriptTokensToBytecode(ScriptParser.GetTokensFromString(allocation, true));
         byte[] optimizedBytecode = ScriptParser.CompileScriptTokensToBytecode(ScriptParser.GetTokensFromString(optimized, true));
         byte[] optimizedZippedBytecode = ScriptParser.CompileScriptTokensToBytecode(ScriptParser.GetTokensFromString(ASMUtil.generateExecuteZippedASM(optimized), true));
+
+        System.out.println(Arrays.toString(optimizedBytecode));
+        System.out.println(Arrays.toString(optimizedZippedBytecode));
 
         boolean bNoOptimization = Arrays.equals(originalBytecode,optimizedBytecode);
 

@@ -54,7 +54,7 @@ statement:   block                                                              
     |   'for' '(' varDeclaration conditional=expression ';' afterEach=statement ')' forbody=statement+                  #forStatement // EFC code
     |   'return' retval=expression? ';'                                                                                 #returnStatement
     |   (lhs=ID|lhs_struct=structField) ('[' arrayIndex=expression ']')? '=' rhs=expression ';'                         #assignmentStatement
-    |   (lhs=ID|lhs_struct=structField) ('[' arrayIndex=expression ']')? op=('+='|'-='|'*='|'/='|'%='|'&='|'|=') rhs=expression ';'      #opAndAssignmentStatement
+    |   (lhs=ID|lhs_struct=structField) ('[' arrayIndex=expression ']')? op=('+='|'-='|'*='|'/='|'%='|'&='|'|='|'^=') rhs=expression ';'      #opAndAssignmentStatement
     |   tryStatement catchStatement?                                                                                    #tryCatchStatement
     |   expression ';'                                                                                                  #functionCallStatement
     |   assembly                                                                                                        #assemblyStatement

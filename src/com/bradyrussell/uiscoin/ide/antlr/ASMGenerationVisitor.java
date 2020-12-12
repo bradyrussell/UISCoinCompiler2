@@ -462,16 +462,16 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
                 // value to set                                                                                                   struct base address                 struct field setter
                 ///////////////////////////////////////////////////
 
-                //PrimitiveType indexType = ctx.lhs_struct.fieldArrayIndex.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+                PrimitiveType indexType = ctx.lhs_struct.fieldArrayIndex.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
 
                 PrimitiveStructOrArrayType fieldType = symbol.struct.getFieldType(ctx.lhs_struct.fieldname.getText());
 
                 return visit(ctx.rhs) +
-                        (bShouldWiden ? " " + generateCastAssembly(rhsType, symbol.type) : " ") +
+                        (bShouldWiden ? " " + generateCastAssembly(rhsType, fieldType.PrimitiveType) : " ") +
                         //"push "+symbol.address+" "+ // push stack element
                         ASMUtil.generatePushNumberLiteralCast(Integer.toString(symbol.address), PrimitiveType.Int32)+//
                         visit(ctx.lhs_struct.fieldArrayIndex) +" "+
-                        generateCastAssembly(Objects.requireNonNull(PrimitiveType.deduceTypeOfNumber(ctx.lhs_struct.fieldArrayIndex.getText())), PrimitiveType.Int32) +// push array index auto casted to int
+                        generateCastAssembly(indexType, PrimitiveType.Int32) +// push array index auto casted to int
                         (fieldType.PrimitiveType.getSize() == 1 ? "" : (ASMUtil.generatePushNumberLiteralCast(Integer.toString(fieldType.PrimitiveType.getSize()), PrimitiveType.Int32)+" multiply"))+ // multiply by sizeof to get beginIndex, unless SizeOf is 1
                         (symbol.struct.getFieldByteIndex(ctx.lhs_struct.fieldname.getText()) != 0 ? (ASMUtil.generatePushNumberLiteralCast(Integer.toString(symbol.struct.getFieldByteIndex(ctx.lhs_struct.fieldname.getText())), PrimitiveType.Int32) + " add") : "") +    // add struct field offset
                         ASMUtil.generatePushNumberLiteralCast(Integer.toString(fieldType.PrimitiveType.getSize()), PrimitiveType.Int32)+
@@ -488,7 +488,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             }
             //todo struct as struct member
 
-            throw new UnsupportedOperationException("How did we get here?");
+            throw new UnsupportedOperationException("Assign value to struct array member? "+ctx.getText());
         }
 
         ScopeBase scopeContaining = getCurrentScope().findScopeContaining(ctx.lhs.getText());
@@ -594,6 +594,8 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
         PrimitiveType rhsType = ctx.rhs.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
 
         if(rhsType != null && rhsType.widensTo(symbol.type)) {
+
+
             return symbol.generateGetSymbolASM() + " " + visit(ctx.rhs) + " " + opAsm + " "+ symbol.generateSetSymbolASM();
         } else {
             System.out.println("Type mismatch! Expected " + symbol.type + " found " + rhsType);
