@@ -1,4 +1,4 @@
-package com.bradyrussell.uiscoin.ide.antlr;// Generated from C:/Users/Admin/IdeaProjects/UISCoinCompiler2/src\UISC.g4 by ANTLR 4.8
+package com.bradyrussell.uiscoin.ide.antlr;// Generated from C:/Users/Admin/IdeaProjects/UISCoinCompiler2/src\UISC.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class UISCParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.9.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -25,8 +25,8 @@ public class UISCParser extends Parser {
 		T__45=46, T__46=47, T__47=48, T__48=49, T__49=50, T__50=51, T__51=52, 
 		T__52=53, T__53=54, T__54=55, T__55=56, T__56=57, T__57=58, T__58=59, 
 		T__59=60, T__60=61, T__61=62, T__62=63, T__63=64, T__64=65, T__65=66, 
-		T__66=67, T__67=68, T__68=69, T__69=70, T__70=71, CONST=72, ID=73, INT=74, 
-		FLOAT=75, STRING=76, CHAR=77, WS=78, SL_COMMENT=79, ML_COMMENT=80;
+		T__66=67, T__67=68, T__68=69, T__69=70, T__70=71, T__71=72, CONST=73, 
+		ID=74, INT=75, FLOAT=76, STRING=77, CHAR=78, WS=79, SL_COMMENT=80, ML_COMMENT=81;
 	public static final int
 		RULE_file = 0, RULE_pointer = 1, RULE_varDeclaration = 2, RULE_structDeclaration = 3, 
 		RULE_type = 4, RULE_primitiveType = 5, RULE_structType = 6, RULE_booleanLiteral = 7, 
@@ -54,7 +54,7 @@ public class UISCParser extends Parser {
 			"'void'", "'byte'", "'int32'", "'int64'", "'float'", "'true'", "'false'", 
 			"'null'", "'('", "')'", "','", "'if'", "'ufori'", "'as'", "'uforeach'", 
 			"'while'", "'for'", "'return'", "'+='", "'-='", "'*='", "'/='", "'%='", 
-			"'&='", "'|='", "'break'", "'continue'", "'else'", "'try'", "'catch'", 
+			"'&='", "'|='", "'^='", "'break'", "'continue'", "'else'", "'try'", "'catch'", 
 			"'asm'", "'assert'", "'throw'", "'include'", "'flag'", "'flagdata'", 
 			"'.'", "'_'", "'$'", "'#'", "'-'", "'!'", "'--'", "'++'", "'%'", "'*'", 
 			"'/'", "'+'", "'&'", "'|'", "'^'", "'~'", "'&&'", "'||'", "'<'", "'<='", 
@@ -70,7 +70,7 @@ public class UISCParser extends Parser {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			"CONST", "ID", "INT", "FLOAT", "STRING", "CHAR", "WS", "SL_COMMENT", 
+			null, "CONST", "ID", "INT", "FLOAT", "STRING", "CHAR", "WS", "SL_COMMENT", 
 			"ML_COMMENT"
 		};
 	}
@@ -201,7 +201,7 @@ public class UISCParser extends Parser {
 				setState(61); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__34) | (1L << T__35) | (1L << T__37) | (1L << T__39) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 72)) & ~0x3f) == 0 && ((1L << (_la - 72)) & ((1L << (CONST - 72)) | (1L << (ID - 72)) | (1L << (INT - 72)) | (1L << (FLOAT - 72)) | (1L << (STRING - 72)) | (1L << (CHAR - 72)))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__35) | (1L << T__36) | (1L << T__38) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__45) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (CONST - 73)) | (1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -536,7 +536,7 @@ public class UISCParser extends Parser {
 				setState(109); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & ((1L << (T__9 - 10)) | (1L << (T__10 - 10)) | (1L << (T__11 - 10)) | (1L << (T__12 - 10)) | (1L << (T__13 - 10)) | (1L << (CONST - 10)) | (1L << (ID - 10)))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13))) != 0) || _la==CONST || _la==ID );
 			setState(111);
 			match(T__8);
 			}
@@ -809,7 +809,7 @@ public class UISCParser extends Parser {
 			setState(128);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & ((1L << (ID - 74)) | (1L << (INT - 74)) | (1L << (FLOAT - 74)) | (1L << (STRING - 74)) | (1L << (CHAR - 74)))) != 0)) {
 				{
 				setState(127);
 				exprList();
@@ -877,7 +877,7 @@ public class UISCParser extends Parser {
 			setState(136);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & ((1L << (T__9 - 10)) | (1L << (T__10 - 10)) | (1L << (T__11 - 10)) | (1L << (T__12 - 10)) | (1L << (T__13 - 10)) | (1L << (ID - 10)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13))) != 0) || _la==ID) {
 				{
 				setState(135);
 				formalParameters();
@@ -1050,7 +1050,7 @@ public class UISCParser extends Parser {
 			setState(156);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__34) | (1L << T__35) | (1L << T__37) | (1L << T__39) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 72)) & ~0x3f) == 0 && ((1L << (_la - 72)) & ((1L << (CONST - 72)) | (1L << (ID - 72)) | (1L << (INT - 72)) | (1L << (FLOAT - 72)) | (1L << (STRING - 72)) | (1L << (CHAR - 72)))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__35) | (1L << T__36) | (1L << T__38) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__45) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (CONST - 73)) | (1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0)) {
 				{
 				{
 				setState(153);
@@ -1623,7 +1623,7 @@ public class UISCParser extends Parser {
 					setState(170); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__34) | (1L << T__35) | (1L << T__37) | (1L << T__39) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 72)) & ~0x3f) == 0 && ((1L << (_la - 72)) & ((1L << (CONST - 72)) | (1L << (ID - 72)) | (1L << (INT - 72)) | (1L << (FLOAT - 72)) | (1L << (STRING - 72)) | (1L << (CHAR - 72)))) != 0) );
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__35) | (1L << T__36) | (1L << T__38) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__45) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (CONST - 73)) | (1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0) );
 				setState(172);
 				match(T__8);
 				setState(176);
@@ -1645,7 +1645,7 @@ public class UISCParser extends Parser {
 				setState(180);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==T__36) {
+				if (_la==T__37) {
 					{
 					setState(179);
 					elseStatement();
@@ -1827,7 +1827,7 @@ public class UISCParser extends Parser {
 				setState(232);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & ((1L << (ID - 74)) | (1L << (INT - 74)) | (1L << (FLOAT - 74)) | (1L << (STRING - 74)) | (1L << (CHAR - 74)))) != 0)) {
 					{
 					setState(231);
 					((ReturnStatementContext)_localctx).retval = expression(0);
@@ -1917,7 +1917,7 @@ public class UISCParser extends Parser {
 				setState(259);
 				((OpAndAssignmentStatementContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
-				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__27) | (1L << T__28) | (1L << T__29) | (1L << T__30) | (1L << T__31) | (1L << T__32) | (1L << T__33))) != 0)) ) {
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__27) | (1L << T__28) | (1L << T__29) | (1L << T__30) | (1L << T__31) | (1L << T__32) | (1L << T__33) | (1L << T__34))) != 0)) ) {
 					((OpAndAssignmentStatementContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 				}
 				else {
@@ -1940,7 +1940,7 @@ public class UISCParser extends Parser {
 				setState(265);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==T__38) {
+				if (_la==T__39) {
 					{
 					setState(264);
 					catchStatement();
@@ -2012,7 +2012,7 @@ public class UISCParser extends Parser {
 				enterOuterAlt(_localctx, 20);
 				{
 				setState(276);
-				match(T__34);
+				match(T__35);
 				setState(277);
 				match(T__2);
 				}
@@ -2022,7 +2022,7 @@ public class UISCParser extends Parser {
 				enterOuterAlt(_localctx, 21);
 				{
 				setState(278);
-				match(T__35);
+				match(T__36);
 				setState(279);
 				match(T__2);
 				}
@@ -2078,7 +2078,7 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(282);
-			match(T__36);
+			match(T__37);
 			setState(283);
 			match(T__20);
 			setState(284);
@@ -2102,7 +2102,7 @@ public class UISCParser extends Parser {
 				setState(291); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__34) | (1L << T__35) | (1L << T__37) | (1L << T__39) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 72)) & ~0x3f) == 0 && ((1L << (_la - 72)) & ((1L << (CONST - 72)) | (1L << (ID - 72)) | (1L << (INT - 72)) | (1L << (FLOAT - 72)) | (1L << (STRING - 72)) | (1L << (CHAR - 72)))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__35) | (1L << T__36) | (1L << T__38) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__45) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (CONST - 73)) | (1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0) );
 			setState(293);
 			match(T__8);
 			}
@@ -2152,7 +2152,7 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(295);
-			match(T__36);
+			match(T__37);
 			setState(296);
 			match(T__7);
 			setState(298); 
@@ -2168,7 +2168,7 @@ public class UISCParser extends Parser {
 				setState(300); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__34) | (1L << T__35) | (1L << T__37) | (1L << T__39) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 72)) & ~0x3f) == 0 && ((1L << (_la - 72)) & ((1L << (CONST - 72)) | (1L << (ID - 72)) | (1L << (INT - 72)) | (1L << (FLOAT - 72)) | (1L << (STRING - 72)) | (1L << (CHAR - 72)))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__35) | (1L << T__36) | (1L << T__38) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__45) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (CONST - 73)) | (1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0) );
 			setState(302);
 			match(T__8);
 			}
@@ -2218,7 +2218,7 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(304);
-			match(T__37);
+			match(T__38);
 			setState(305);
 			match(T__7);
 			setState(307); 
@@ -2234,7 +2234,7 @@ public class UISCParser extends Parser {
 				setState(309); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__34) | (1L << T__35) | (1L << T__37) | (1L << T__39) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 72)) & ~0x3f) == 0 && ((1L << (_la - 72)) & ((1L << (CONST - 72)) | (1L << (ID - 72)) | (1L << (INT - 72)) | (1L << (FLOAT - 72)) | (1L << (STRING - 72)) | (1L << (CHAR - 72)))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__35) | (1L << T__36) | (1L << T__38) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__45) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (CONST - 73)) | (1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0) );
 			setState(311);
 			match(T__8);
 			}
@@ -2287,13 +2287,13 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(313);
-			match(T__38);
+			match(T__39);
 			setState(314);
 			match(T__17);
 			setState(316);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & ((1L << (ID - 74)) | (1L << (INT - 74)) | (1L << (FLOAT - 74)) | (1L << (STRING - 74)) | (1L << (CHAR - 74)))) != 0)) {
 				{
 				setState(315);
 				exprList();
@@ -2317,7 +2317,7 @@ public class UISCParser extends Parser {
 				setState(323); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__34) | (1L << T__35) | (1L << T__37) | (1L << T__39) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 72)) & ~0x3f) == 0 && ((1L << (_la - 72)) & ((1L << (CONST - 72)) | (1L << (ID - 72)) | (1L << (INT - 72)) | (1L << (FLOAT - 72)) | (1L << (STRING - 72)) | (1L << (CHAR - 72)))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__6) | (1L << T__7) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__20) | (1L << T__21) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__35) | (1L << T__36) | (1L << T__38) | (1L << T__40) | (1L << T__41) | (1L << T__42) | (1L << T__43) | (1L << T__44) | (1L << T__45) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (CONST - 73)) | (1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0) );
 			setState(325);
 			match(T__8);
 			}
@@ -2413,7 +2413,7 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(329);
-			match(T__39);
+			match(T__40);
 			setState(330);
 			match(T__17);
 			setState(331);
@@ -2465,7 +2465,7 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(335);
-			match(T__40);
+			match(T__41);
 			setState(336);
 			match(T__17);
 			setState(337);
@@ -2518,13 +2518,13 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(341);
-			match(T__41);
+			match(T__42);
 			setState(342);
 			match(T__17);
 			setState(344);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & ((1L << (ID - 74)) | (1L << (INT - 74)) | (1L << (FLOAT - 74)) | (1L << (STRING - 74)) | (1L << (CHAR - 74)))) != 0)) {
 				{
 				setState(343);
 				exprList();
@@ -2576,7 +2576,7 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(349);
-			match(T__42);
+			match(T__43);
 			setState(350);
 			match(T__17);
 			setState(351);
@@ -2626,7 +2626,7 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(355);
-			match(T__43);
+			match(T__44);
 			setState(356);
 			match(T__17);
 			setState(357);
@@ -2676,7 +2676,7 @@ public class UISCParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(361);
-			match(T__44);
+			match(T__45);
 			setState(362);
 			match(T__17);
 			setState(363);
@@ -2765,7 +2765,7 @@ public class UISCParser extends Parser {
 					{
 					{
 					setState(374);
-					match(T__45);
+					match(T__46);
 					setState(375);
 					((StructFieldContext)_localctx).fieldname = match(ID);
 					setState(380);
@@ -3418,7 +3418,7 @@ public class UISCParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(392);
-				match(T__46);
+				match(T__47);
 				setState(393);
 				match(ID);
 				setState(394);
@@ -3426,7 +3426,7 @@ public class UISCParser extends Parser {
 				setState(396);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & ((1L << (ID - 74)) | (1L << (INT - 74)) | (1L << (FLOAT - 74)) | (1L << (STRING - 74)) | (1L << (CHAR - 74)))) != 0)) {
 					{
 					setState(395);
 					exprList();
@@ -3449,7 +3449,7 @@ public class UISCParser extends Parser {
 				setState(402);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__46) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52))) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & ((1L << (ID - 73)) | (1L << (INT - 73)) | (1L << (FLOAT - 73)) | (1L << (STRING - 73)) | (1L << (CHAR - 73)))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__14) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__47) | (1L << T__48) | (1L << T__49) | (1L << T__50) | (1L << T__51) | (1L << T__52) | (1L << T__53))) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & ((1L << (ID - 74)) | (1L << (INT - 74)) | (1L << (FLOAT - 74)) | (1L << (STRING - 74)) | (1L << (CHAR - 74)))) != 0)) {
 					{
 					setState(401);
 					exprList();
@@ -3481,7 +3481,7 @@ public class UISCParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(410);
-				match(T__47);
+				match(T__48);
 				setState(411);
 				match(ID);
 				}
@@ -3503,7 +3503,7 @@ public class UISCParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(414);
-				match(T__48);
+				match(T__49);
 				setState(415);
 				expression(21);
 				}
@@ -3514,7 +3514,7 @@ public class UISCParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(416);
-				match(T__48);
+				match(T__49);
 				setState(417);
 				type();
 				}
@@ -3525,7 +3525,7 @@ public class UISCParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(418);
-				match(T__49);
+				match(T__50);
 				setState(419);
 				expression(19);
 				}
@@ -3536,7 +3536,7 @@ public class UISCParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(420);
-				match(T__50);
+				match(T__51);
 				setState(421);
 				expression(18);
 				}
@@ -3549,7 +3549,7 @@ public class UISCParser extends Parser {
 				setState(422);
 				((PrefixOpExpressionContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
-				if ( !(_la==T__51 || _la==T__52) ) {
+				if ( !(_la==T__52 || _la==T__53) ) {
 					((PrefixOpExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 				}
 				else {
@@ -3650,7 +3650,7 @@ public class UISCParser extends Parser {
 						if (!(precpred(_ctx, 15))) throw new FailedPredicateException(this, "precpred(_ctx, 15)");
 						{
 						setState(437);
-						match(T__53);
+						match(T__54);
 						}
 						setState(438);
 						((ModuloExpressionContext)_localctx).rhs = expression(16);
@@ -3666,7 +3666,7 @@ public class UISCParser extends Parser {
 						setState(440);
 						((MultDivExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==T__54 || _la==T__55) ) {
+						if ( !(_la==T__55 || _la==T__56) ) {
 							((MultDivExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -3688,7 +3688,7 @@ public class UISCParser extends Parser {
 						setState(443);
 						((AddSubExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==T__49 || _la==T__56) ) {
+						if ( !(_la==T__50 || _la==T__57) ) {
 							((AddSubExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -3710,7 +3710,7 @@ public class UISCParser extends Parser {
 						setState(446);
 						((BitwiseExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__57) | (1L << T__58) | (1L << T__59) | (1L << T__60))) != 0)) ) {
+						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__58) | (1L << T__59) | (1L << T__60) | (1L << T__61))) != 0)) ) {
 							((BitwiseExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -3732,7 +3732,7 @@ public class UISCParser extends Parser {
 						setState(449);
 						((AndOrExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==T__61 || _la==T__62) ) {
+						if ( !(_la==T__62 || _la==T__63) ) {
 							((AndOrExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -3754,7 +3754,7 @@ public class UISCParser extends Parser {
 						setState(452);
 						((ComparisonExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (T__63 - 64)) | (1L << (T__64 - 64)) | (1L << (T__65 - 64)) | (1L << (T__66 - 64)))) != 0)) ) {
+						if ( !(((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & ((1L << (T__64 - 65)) | (1L << (T__65 - 65)) | (1L << (T__66 - 65)) | (1L << (T__67 - 65)))) != 0)) ) {
 							((ComparisonExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -3776,7 +3776,7 @@ public class UISCParser extends Parser {
 						setState(455);
 						((EqualityExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==T__67 || _la==T__68) ) {
+						if ( !(_la==T__68 || _la==T__69) ) {
 							((EqualityExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -3796,11 +3796,11 @@ public class UISCParser extends Parser {
 						setState(457);
 						if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
 						setState(458);
-						match(T__69);
+						match(T__70);
 						setState(459);
 						((TernaryExpressionContext)_localctx).iftrue = expression(0);
 						setState(460);
-						match(T__70);
+						match(T__71);
 						setState(461);
 						((TernaryExpressionContext)_localctx).iffalse = expression(2);
 						}
@@ -3814,7 +3814,7 @@ public class UISCParser extends Parser {
 						setState(464);
 						((PostfixOpExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==T__51 || _la==T__52) ) {
+						if ( !(_la==T__52 || _la==T__53) ) {
 							((PostfixOpExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -3940,7 +3940,7 @@ public class UISCParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3R\u01e1\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3S\u01e1\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -3979,34 +3979,34 @@ public class UISCParser extends Parser {
 		"\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\7\34\u01d4\n\34\f\34\16\34\u01d7"+
 		"\13\34\3\35\3\35\3\35\7\35\u01dc\n\35\f\35\16\35\u01df\13\35\3\35\2\3"+
 		"\66\36\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668\2"+
-		"\r\3\2\f\20\3\2\21\23\3\2\36$\3\2LM\3\2\66\67\3\29:\4\2\64\64;;\3\2<?"+
-		"\3\2@A\3\2BE\3\2FG\2\u021c\2=\3\2\2\2\4A\3\2\2\2\6g\3\2\2\2\bi\3\2\2\2"+
-		"\nu\3\2\2\2\fz\3\2\2\2\16|\3\2\2\2\20~\3\2\2\2\22\u0080\3\2\2\2\24\u0086"+
+		"\r\3\2\f\20\3\2\21\23\3\2\36%\3\2MN\3\2\678\3\2:;\4\2\65\65<<\3\2=@\3"+
+		"\2AB\3\2CF\3\2GH\2\u021c\2=\3\2\2\2\4A\3\2\2\2\6g\3\2\2\2\bi\3\2\2\2\n"+
+		"u\3\2\2\2\fz\3\2\2\2\16|\3\2\2\2\20~\3\2\2\2\22\u0080\3\2\2\2\24\u0086"+
 		"\3\2\2\2\26\u008f\3\2\2\2\30\u0097\3\2\2\2\32\u009a\3\2\2\2\34\u011a\3"+
 		"\2\2\2\36\u011c\3\2\2\2 \u0129\3\2\2\2\"\u0132\3\2\2\2$\u013b\3\2\2\2"+
 		"&\u0149\3\2\2\2(\u014b\3\2\2\2*\u0151\3\2\2\2,\u0157\3\2\2\2.\u015f\3"+
 		"\2\2\2\60\u0165\3\2\2\2\62\u016b\3\2\2\2\64\u0171\3\2\2\2\66\u01b4\3\2"+
 		"\2\28\u01d8\3\2\2\2:>\5\24\13\2;>\5\6\4\2<>\5\34\17\2=:\3\2\2\2=;\3\2"+
 		"\2\2=<\3\2\2\2>?\3\2\2\2?=\3\2\2\2?@\3\2\2\2@\3\3\2\2\2AB\7\3\2\2B\5\3"+
-		"\2\2\2CE\7J\2\2DC\3\2\2\2DE\3\2\2\2EF\3\2\2\2FG\5\n\6\2GJ\7K\2\2HI\7\4"+
+		"\2\2\2CE\7K\2\2DC\3\2\2\2DE\3\2\2\2EF\3\2\2\2FG\5\n\6\2GJ\7L\2\2HI\7\4"+
 		"\2\2IK\5\66\34\2JH\3\2\2\2JK\3\2\2\2KL\3\2\2\2LM\7\5\2\2Mh\3\2\2\2NO\5"+
-		"\n\6\2OP\7K\2\2PQ\7\6\2\2QR\7\4\2\2RS\5\22\n\2ST\7\5\2\2Th\3\2\2\2UV\5"+
-		"\n\6\2VW\7K\2\2WX\7\6\2\2XY\7\4\2\2YZ\7N\2\2Z[\7\5\2\2[h\3\2\2\2\\]\5"+
-		"\n\6\2]^\7K\2\2^_\7\7\2\2_`\7L\2\2`c\7\b\2\2ab\7\4\2\2bd\5\66\34\2ca\3"+
+		"\n\6\2OP\7L\2\2PQ\7\6\2\2QR\7\4\2\2RS\5\22\n\2ST\7\5\2\2Th\3\2\2\2UV\5"+
+		"\n\6\2VW\7L\2\2WX\7\6\2\2XY\7\4\2\2YZ\7O\2\2Z[\7\5\2\2[h\3\2\2\2\\]\5"+
+		"\n\6\2]^\7L\2\2^_\7\7\2\2_`\7M\2\2`c\7\b\2\2ab\7\4\2\2bd\5\66\34\2ca\3"+
 		"\2\2\2cd\3\2\2\2de\3\2\2\2ef\7\5\2\2fh\3\2\2\2gD\3\2\2\2gN\3\2\2\2gU\3"+
-		"\2\2\2g\\\3\2\2\2h\7\3\2\2\2ij\7\t\2\2jk\7K\2\2km\7\n\2\2ln\5\6\4\2ml"+
+		"\2\2\2g\\\3\2\2\2h\7\3\2\2\2ij\7\t\2\2jk\7L\2\2km\7\n\2\2ln\5\6\4\2ml"+
 		"\3\2\2\2no\3\2\2\2om\3\2\2\2op\3\2\2\2pq\3\2\2\2qr\7\13\2\2r\t\3\2\2\2"+
 		"sv\5\f\7\2tv\5\16\b\2us\3\2\2\2ut\3\2\2\2vx\3\2\2\2wy\5\4\3\2xw\3\2\2"+
-		"\2xy\3\2\2\2y\13\3\2\2\2z{\t\2\2\2{\r\3\2\2\2|}\7K\2\2}\17\3\2\2\2~\177"+
+		"\2xy\3\2\2\2y\13\3\2\2\2z{\t\2\2\2{\r\3\2\2\2|}\7L\2\2}\17\3\2\2\2~\177"+
 		"\t\3\2\2\177\21\3\2\2\2\u0080\u0082\7\n\2\2\u0081\u0083\58\35\2\u0082"+
 		"\u0081\3\2\2\2\u0082\u0083\3\2\2\2\u0083\u0084\3\2\2\2\u0084\u0085\7\13"+
-		"\2\2\u0085\23\3\2\2\2\u0086\u0087\5\n\6\2\u0087\u0088\7K\2\2\u0088\u008a"+
+		"\2\2\u0085\23\3\2\2\2\u0086\u0087\5\n\6\2\u0087\u0088\7L\2\2\u0088\u008a"+
 		"\7\24\2\2\u0089\u008b\5\26\f\2\u008a\u0089\3\2\2\2\u008a\u008b\3\2\2\2"+
 		"\u008b\u008c\3\2\2\2\u008c\u008d\7\25\2\2\u008d\u008e\5\32\16\2\u008e"+
 		"\25\3\2\2\2\u008f\u0094\5\30\r\2\u0090\u0091\7\26\2\2\u0091\u0093\5\30"+
 		"\r\2\u0092\u0090\3\2\2\2\u0093\u0096\3\2\2\2\u0094\u0092\3\2\2\2\u0094"+
 		"\u0095\3\2\2\2\u0095\27\3\2\2\2\u0096\u0094\3\2\2\2\u0097\u0098\5\n\6"+
-		"\2\u0098\u0099\7K\2\2\u0099\31\3\2\2\2\u009a\u009e\7\n\2\2\u009b\u009d"+
+		"\2\u0098\u0099\7L\2\2\u0099\31\3\2\2\2\u009a\u009e\7\n\2\2\u009b\u009d"+
 		"\5\34\17\2\u009c\u009b\3\2\2\2\u009d\u00a0\3\2\2\2\u009e\u009c\3\2\2\2"+
 		"\u009e\u009f\3\2\2\2\u009f\u00a1\3\2\2\2\u00a0\u009e\3\2\2\2\u00a1\u00a2"+
 		"\7\13\2\2\u00a2\33\3\2\2\2\u00a3\u011b\5\32\16\2\u00a4\u011b\5\6\4\2\u00a5"+
@@ -4017,12 +4017,12 @@ public class UISCParser extends Parser {
 		"\2\u00b2\u00b0\3\2\2\2\u00b2\u00b3\3\2\2\2\u00b3\u00b6\3\2\2\2\u00b4\u00b2"+
 		"\3\2\2\2\u00b5\u00b7\5 \21\2\u00b6\u00b5\3\2\2\2\u00b6\u00b7\3\2\2\2\u00b7"+
 		"\u011b\3\2\2\2\u00b8\u00b9\7\30\2\2\u00b9\u00ba\7\24\2\2\u00ba\u00bd\7"+
-		"L\2\2\u00bb\u00bc\7\26\2\2\u00bc\u00be\7L\2\2\u00bd\u00bb\3\2\2\2\u00bd"+
+		"M\2\2\u00bb\u00bc\7\26\2\2\u00bc\u00be\7M\2\2\u00bd\u00bb\3\2\2\2\u00bd"+
 		"\u00be\3\2\2\2\u00be\u00bf\3\2\2\2\u00bf\u00c0\7\31\2\2\u00c0\u00c1\5"+
-		"\n\6\2\u00c1\u00c2\7K\2\2\u00c2\u00c4\7\25\2\2\u00c3\u00c5\5\34\17\2\u00c4"+
+		"\n\6\2\u00c1\u00c2\7L\2\2\u00c2\u00c4\7\25\2\2\u00c3\u00c5\5\34\17\2\u00c4"+
 		"\u00c3\3\2\2\2\u00c5\u00c6\3\2\2\2\u00c6\u00c4\3\2\2\2\u00c6\u00c7\3\2"+
 		"\2\2\u00c7\u011b\3\2\2\2\u00c8\u00c9\7\32\2\2\u00c9\u00ca\7\24\2\2\u00ca"+
-		"\u00cb\7K\2\2\u00cb\u00cc\7\31\2\2\u00cc\u00cd\5\6\4\2\u00cd\u00cf\7\25"+
+		"\u00cb\7L\2\2\u00cb\u00cc\7\31\2\2\u00cc\u00cd\5\6\4\2\u00cd\u00cf\7\25"+
 		"\2\2\u00ce\u00d0\5\34\17\2\u00cf\u00ce\3\2\2\2\u00d0\u00d1\3\2\2\2\u00d1"+
 		"\u00cf\3\2\2\2\u00d1\u00d2\3\2\2\2\u00d2\u011b\3\2\2\2\u00d3\u00d4\7\33"+
 		"\2\2\u00d4\u00d5\7\24\2\2\u00d5\u00d6\5\66\34\2\u00d6\u00d8\7\25\2\2\u00d7"+
@@ -4033,11 +4033,11 @@ public class UISCParser extends Parser {
 		"\2\u00e4\u00e3\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00e4\3\2\2\2\u00e6\u00e7"+
 		"\3\2\2\2\u00e7\u011b\3\2\2\2\u00e8\u00ea\7\35\2\2\u00e9\u00eb\5\66\34"+
 		"\2\u00ea\u00e9\3\2\2\2\u00ea\u00eb\3\2\2\2\u00eb\u00ec\3\2\2\2\u00ec\u011b"+
-		"\7\5\2\2\u00ed\u00f0\7K\2\2\u00ee\u00f0\5\64\33\2\u00ef\u00ed\3\2\2\2"+
+		"\7\5\2\2\u00ed\u00f0\7L\2\2\u00ee\u00f0\5\64\33\2\u00ef\u00ed\3\2\2\2"+
 		"\u00ef\u00ee\3\2\2\2\u00f0\u00f5\3\2\2\2\u00f1\u00f2\7\7\2\2\u00f2\u00f3"+
 		"\5\66\34\2\u00f3\u00f4\7\b\2\2\u00f4\u00f6\3\2\2\2\u00f5\u00f1\3\2\2\2"+
 		"\u00f5\u00f6\3\2\2\2\u00f6\u00f7\3\2\2\2\u00f7\u00f8\7\4\2\2\u00f8\u00f9"+
-		"\5\66\34\2\u00f9\u00fa\7\5\2\2\u00fa\u011b\3\2\2\2\u00fb\u00fe\7K\2\2"+
+		"\5\66\34\2\u00f9\u00fa\7\5\2\2\u00fa\u011b\3\2\2\2\u00fb\u00fe\7L\2\2"+
 		"\u00fc\u00fe\5\64\33\2\u00fd\u00fb\3\2\2\2\u00fd\u00fc\3\2\2\2\u00fe\u0103"+
 		"\3\2\2\2\u00ff\u0100\7\7\2\2\u0100\u0101\5\66\34\2\u0101\u0102\7\b\2\2"+
 		"\u0102\u0104\3\2\2\2\u0103\u00ff\3\2\2\2\u0103\u0104\3\2\2\2\u0104\u0105"+
@@ -4046,73 +4046,73 @@ public class UISCParser extends Parser {
 		"\3\2\2\2\u010b\u010c\3\2\2\2\u010c\u011b\3\2\2\2\u010d\u010e\5\66\34\2"+
 		"\u010e\u010f\7\5\2\2\u010f\u011b\3\2\2\2\u0110\u011b\5(\25\2\u0111\u011b"+
 		"\5*\26\2\u0112\u011b\5,\27\2\u0113\u011b\5.\30\2\u0114\u011b\5\60\31\2"+
-		"\u0115\u011b\5\62\32\2\u0116\u0117\7%\2\2\u0117\u011b\7\5\2\2\u0118\u0119"+
-		"\7&\2\2\u0119\u011b\7\5\2\2\u011a\u00a3\3\2\2\2\u011a\u00a4\3\2\2\2\u011a"+
+		"\u0115\u011b\5\62\32\2\u0116\u0117\7&\2\2\u0117\u011b\7\5\2\2\u0118\u0119"+
+		"\7\'\2\2\u0119\u011b\7\5\2\2\u011a\u00a3\3\2\2\2\u011a\u00a4\3\2\2\2\u011a"+
 		"\u00a5\3\2\2\2\u011a\u00a6\3\2\2\2\u011a\u00b8\3\2\2\2\u011a\u00c8\3\2"+
 		"\2\2\u011a\u00d3\3\2\2\2\u011a\u00dc\3\2\2\2\u011a\u00e8\3\2\2\2\u011a"+
 		"\u00ef\3\2\2\2\u011a\u00fd\3\2\2\2\u011a\u0109\3\2\2\2\u011a\u010d\3\2"+
 		"\2\2\u011a\u0110\3\2\2\2\u011a\u0111\3\2\2\2\u011a\u0112\3\2\2\2\u011a"+
 		"\u0113\3\2\2\2\u011a\u0114\3\2\2\2\u011a\u0115\3\2\2\2\u011a\u0116\3\2"+
-		"\2\2\u011a\u0118\3\2\2\2\u011b\35\3\2\2\2\u011c\u011d\7\'\2\2\u011d\u011e"+
+		"\2\2\u011a\u0118\3\2\2\2\u011b\35\3\2\2\2\u011c\u011d\7(\2\2\u011d\u011e"+
 		"\7\27\2\2\u011e\u011f\7\24\2\2\u011f\u0120\5\66\34\2\u0120\u0121\7\25"+
 		"\2\2\u0121\u0123\7\n\2\2\u0122\u0124\5\34\17\2\u0123\u0122\3\2\2\2\u0124"+
 		"\u0125\3\2\2\2\u0125\u0123\3\2\2\2\u0125\u0126\3\2\2\2\u0126\u0127\3\2"+
-		"\2\2\u0127\u0128\7\13\2\2\u0128\37\3\2\2\2\u0129\u012a\7\'\2\2\u012a\u012c"+
+		"\2\2\u0127\u0128\7\13\2\2\u0128\37\3\2\2\2\u0129\u012a\7(\2\2\u012a\u012c"+
 		"\7\n\2\2\u012b\u012d\5\34\17\2\u012c\u012b\3\2\2\2\u012d\u012e\3\2\2\2"+
 		"\u012e\u012c\3\2\2\2\u012e\u012f\3\2\2\2\u012f\u0130\3\2\2\2\u0130\u0131"+
-		"\7\13\2\2\u0131!\3\2\2\2\u0132\u0133\7(\2\2\u0133\u0135\7\n\2\2\u0134"+
+		"\7\13\2\2\u0131!\3\2\2\2\u0132\u0133\7)\2\2\u0133\u0135\7\n\2\2\u0134"+
 		"\u0136\5\34\17\2\u0135\u0134\3\2\2\2\u0136\u0137\3\2\2\2\u0137\u0135\3"+
 		"\2\2\2\u0137\u0138\3\2\2\2\u0138\u0139\3\2\2\2\u0139\u013a\7\13\2\2\u013a"+
-		"#\3\2\2\2\u013b\u013c\7)\2\2\u013c\u013e\7\24\2\2\u013d\u013f\58\35\2"+
+		"#\3\2\2\2\u013b\u013c\7*\2\2\u013c\u013e\7\24\2\2\u013d\u013f\58\35\2"+
 		"\u013e\u013d\3\2\2\2\u013e\u013f\3\2\2\2\u013f\u0140\3\2\2\2\u0140\u0141"+
 		"\7\25\2\2\u0141\u0143\7\n\2\2\u0142\u0144\5\34\17\2\u0143\u0142\3\2\2"+
 		"\2\u0144\u0145\3\2\2\2\u0145\u0143\3\2\2\2\u0145\u0146\3\2\2\2\u0146\u0147"+
 		"\3\2\2\2\u0147\u0148\7\13\2\2\u0148%\3\2\2\2\u0149\u014a\t\5\2\2\u014a"+
-		"\'\3\2\2\2\u014b\u014c\7*\2\2\u014c\u014d\7\24\2\2\u014d\u014e\7N\2\2"+
+		"\'\3\2\2\2\u014b\u014c\7+\2\2\u014c\u014d\7\24\2\2\u014d\u014e\7O\2\2"+
 		"\u014e\u014f\7\25\2\2\u014f\u0150\7\5\2\2\u0150)\3\2\2\2\u0151\u0152\7"+
-		"+\2\2\u0152\u0153\7\24\2\2\u0153\u0154\5\66\34\2\u0154\u0155\7\25\2\2"+
-		"\u0155\u0156\7\5\2\2\u0156+\3\2\2\2\u0157\u0158\7,\2\2\u0158\u015a\7\24"+
+		",\2\2\u0152\u0153\7\24\2\2\u0153\u0154\5\66\34\2\u0154\u0155\7\25\2\2"+
+		"\u0155\u0156\7\5\2\2\u0156+\3\2\2\2\u0157\u0158\7-\2\2\u0158\u015a\7\24"+
 		"\2\2\u0159\u015b\58\35\2\u015a\u0159\3\2\2\2\u015a\u015b\3\2\2\2\u015b"+
 		"\u015c\3\2\2\2\u015c\u015d\7\25\2\2\u015d\u015e\7\5\2\2\u015e-\3\2\2\2"+
-		"\u015f\u0160\7-\2\2\u0160\u0161\7\24\2\2\u0161\u0162\7N\2\2\u0162\u0163"+
-		"\7\25\2\2\u0163\u0164\7\5\2\2\u0164/\3\2\2\2\u0165\u0166\7.\2\2\u0166"+
-		"\u0167\7\24\2\2\u0167\u0168\7L\2\2\u0168\u0169\7\25\2\2\u0169\u016a\7"+
-		"\5\2\2\u016a\61\3\2\2\2\u016b\u016c\7/\2\2\u016c\u016d\7\24\2\2\u016d"+
-		"\u016e\7N\2\2\u016e\u016f\7\25\2\2\u016f\u0170\7\5\2\2\u0170\63\3\2\2"+
-		"\2\u0171\u0176\7K\2\2\u0172\u0173\7\7\2\2\u0173\u0174\5\66\34\2\u0174"+
+		"\u015f\u0160\7.\2\2\u0160\u0161\7\24\2\2\u0161\u0162\7O\2\2\u0162\u0163"+
+		"\7\25\2\2\u0163\u0164\7\5\2\2\u0164/\3\2\2\2\u0165\u0166\7/\2\2\u0166"+
+		"\u0167\7\24\2\2\u0167\u0168\7M\2\2\u0168\u0169\7\25\2\2\u0169\u016a\7"+
+		"\5\2\2\u016a\61\3\2\2\2\u016b\u016c\7\60\2\2\u016c\u016d\7\24\2\2\u016d"+
+		"\u016e\7O\2\2\u016e\u016f\7\25\2\2\u016f\u0170\7\5\2\2\u0170\63\3\2\2"+
+		"\2\u0171\u0176\7L\2\2\u0172\u0173\7\7\2\2\u0173\u0174\5\66\34\2\u0174"+
 		"\u0175\7\b\2\2\u0175\u0177\3\2\2\2\u0176\u0172\3\2\2\2\u0176\u0177\3\2"+
-		"\2\2\u0177\u0180\3\2\2\2\u0178\u0179\7\60\2\2\u0179\u017e\7K\2\2\u017a"+
+		"\2\2\u0177\u0180\3\2\2\2\u0178\u0179\7\61\2\2\u0179\u017e\7L\2\2\u017a"+
 		"\u017b\7\7\2\2\u017b\u017c\5\66\34\2\u017c\u017d\7\b\2\2\u017d\u017f\3"+
 		"\2\2\2\u017e\u017a\3\2\2\2\u017e\u017f\3\2\2\2\u017f\u0181\3\2\2\2\u0180"+
 		"\u0178\3\2\2\2\u0181\u0182\3\2\2\2\u0182\u0180\3\2\2\2\u0182\u0183\3\2"+
 		"\2\2\u0183\65\3\2\2\2\u0184\u0185\b\34\1\2\u0185\u0186\7\24\2\2\u0186"+
 		"\u0187\5\n\6\2\u0187\u0188\7\25\2\2\u0188\u0189\5\66\34\35\u0189\u01b5"+
-		"\3\2\2\2\u018a\u018b\7\61\2\2\u018b\u018c\7K\2\2\u018c\u018e\7\24\2\2"+
+		"\3\2\2\2\u018a\u018b\7\62\2\2\u018b\u018c\7L\2\2\u018c\u018e\7\24\2\2"+
 		"\u018d\u018f\58\35\2\u018e\u018d\3\2\2\2\u018e\u018f\3\2\2\2\u018f\u0190"+
-		"\3\2\2\2\u0190\u01b5\7\25\2\2\u0191\u0192\7K\2\2\u0192\u0194\7\24\2\2"+
+		"\3\2\2\2\u0190\u01b5\7\25\2\2\u0191\u0192\7L\2\2\u0192\u0194\7\24\2\2"+
 		"\u0193\u0195\58\35\2\u0194\u0193\3\2\2\2\u0194\u0195\3\2\2\2\u0195\u0196"+
-		"\3\2\2\2\u0196\u01b5\7\25\2\2\u0197\u0198\7K\2\2\u0198\u0199\7\7\2\2\u0199"+
+		"\3\2\2\2\u0196\u01b5\7\25\2\2\u0197\u0198\7L\2\2\u0198\u0199\7\7\2\2\u0199"+
 		"\u019a\5\66\34\2\u019a\u019b\7\b\2\2\u019b\u01b5\3\2\2\2\u019c\u019d\7"+
-		"\62\2\2\u019d\u01b5\7K\2\2\u019e\u019f\7\3\2\2\u019f\u01b5\5\66\34\30"+
-		"\u01a0\u01a1\7\63\2\2\u01a1\u01b5\5\66\34\27\u01a2\u01a3\7\63\2\2\u01a3"+
-		"\u01b5\5\n\6\2\u01a4\u01a5\7\64\2\2\u01a5\u01b5\5\66\34\25\u01a6\u01a7"+
-		"\7\65\2\2\u01a7\u01b5\5\66\34\24\u01a8\u01a9\t\6\2\2\u01a9\u01b5\5\66"+
-		"\34\23\u01aa\u01b5\7K\2\2\u01ab\u01b5\5\64\33\2\u01ac\u01b5\5&\24\2\u01ad"+
-		"\u01b5\5\20\t\2\u01ae\u01b5\7N\2\2\u01af\u01b5\7O\2\2\u01b0\u01b1\7\24"+
+		"\63\2\2\u019d\u01b5\7L\2\2\u019e\u019f\7\3\2\2\u019f\u01b5\5\66\34\30"+
+		"\u01a0\u01a1\7\64\2\2\u01a1\u01b5\5\66\34\27\u01a2\u01a3\7\64\2\2\u01a3"+
+		"\u01b5\5\n\6\2\u01a4\u01a5\7\65\2\2\u01a5\u01b5\5\66\34\25\u01a6\u01a7"+
+		"\7\66\2\2\u01a7\u01b5\5\66\34\24\u01a8\u01a9\t\6\2\2\u01a9\u01b5\5\66"+
+		"\34\23\u01aa\u01b5\7L\2\2\u01ab\u01b5\5\64\33\2\u01ac\u01b5\5&\24\2\u01ad"+
+		"\u01b5\5\20\t\2\u01ae\u01b5\7O\2\2\u01af\u01b5\7P\2\2\u01b0\u01b1\7\24"+
 		"\2\2\u01b1\u01b2\5\66\34\2\u01b2\u01b3\7\25\2\2\u01b3\u01b5\3\2\2\2\u01b4"+
 		"\u0184\3\2\2\2\u01b4\u018a\3\2\2\2\u01b4\u0191\3\2\2\2\u01b4\u0197\3\2"+
 		"\2\2\u01b4\u019c\3\2\2\2\u01b4\u019e\3\2\2\2\u01b4\u01a0\3\2\2\2\u01b4"+
 		"\u01a2\3\2\2\2\u01b4\u01a4\3\2\2\2\u01b4\u01a6\3\2\2\2\u01b4\u01a8\3\2"+
 		"\2\2\u01b4\u01aa\3\2\2\2\u01b4\u01ab\3\2\2\2\u01b4\u01ac\3\2\2\2\u01b4"+
 		"\u01ad\3\2\2\2\u01b4\u01ae\3\2\2\2\u01b4\u01af\3\2\2\2\u01b4\u01b0\3\2"+
-		"\2\2\u01b5\u01d5\3\2\2\2\u01b6\u01b7\f\21\2\2\u01b7\u01b8\78\2\2\u01b8"+
+		"\2\2\u01b5\u01d5\3\2\2\2\u01b6\u01b7\f\21\2\2\u01b7\u01b8\79\2\2\u01b8"+
 		"\u01d4\5\66\34\22\u01b9\u01ba\f\20\2\2\u01ba\u01bb\t\7\2\2\u01bb\u01d4"+
 		"\5\66\34\21\u01bc\u01bd\f\17\2\2\u01bd\u01be\t\b\2\2\u01be\u01d4\5\66"+
 		"\34\20\u01bf\u01c0\f\16\2\2\u01c0\u01c1\t\t\2\2\u01c1\u01d4\5\66\34\17"+
 		"\u01c2\u01c3\f\r\2\2\u01c3\u01c4\t\n\2\2\u01c4\u01d4\5\66\34\16\u01c5"+
 		"\u01c6\f\f\2\2\u01c6\u01c7\t\13\2\2\u01c7\u01d4\5\66\34\r\u01c8\u01c9"+
 		"\f\13\2\2\u01c9\u01ca\t\f\2\2\u01ca\u01d4\5\66\34\f\u01cb\u01cc\f\3\2"+
-		"\2\u01cc\u01cd\7H\2\2\u01cd\u01ce\5\66\34\2\u01ce\u01cf\7I\2\2\u01cf\u01d0"+
+		"\2\u01cc\u01cd\7I\2\2\u01cd\u01ce\5\66\34\2\u01ce\u01cf\7J\2\2\u01cf\u01d0"+
 		"\5\66\34\4\u01d0\u01d4\3\2\2\2\u01d1\u01d2\f\22\2\2\u01d2\u01d4\t\6\2"+
 		"\2\u01d3\u01b6\3\2\2\2\u01d3\u01b9\3\2\2\2\u01d3\u01bc\3\2\2\2\u01d3\u01bf"+
 		"\3\2\2\2\u01d3\u01c2\3\2\2\2\u01d3\u01c5\3\2\2\2\u01d3\u01c8\3\2\2\2\u01d3"+

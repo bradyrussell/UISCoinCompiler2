@@ -149,7 +149,7 @@ CONST:
     'const'
     ;
 
-ID  :   LETTER (LETTER | [0-9])* ;
+ID  :   LETTER (LETTER | [0-9] | '_')* ;
 fragment
 LETTER : [a-zA-Z] ;
 

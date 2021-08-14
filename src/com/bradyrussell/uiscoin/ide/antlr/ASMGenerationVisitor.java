@@ -73,6 +73,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     public ASMGenerationVisitor() {
         nativeFunctionCallParameters.put("set", 4); // location, position, length, value
         nativeFunctionCallParameters.put("get", 3); // location, position, length
+        nativeFunctionCallParameters.put("copy", 5); // sourceLocation, sourcePosition, destinationLocation, destinationPosition, length
         nativeFunctionCallParameters.put("encrypt", 2);
         nativeFunctionCallParameters.put("decrypt", 2);
         nativeFunctionCallParameters.put("verifySig", 2);
@@ -350,6 +351,16 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             }
 
             if(functionSymbol.Symbol.type.equals(PrimitiveType.Void)) {
+                return visit(ctx.expression()); // this function call doesnt return a value
+            }
+            System.out.println("Warning: Result of function call on line "+ctx.start.getLine()+" is ignored.");
+            return visit(ctx.expression()) + " drop"; // this function call doesnt use the retval, drop it. like:  add(1,2);
+        }
+
+        if(ctx.expression() instanceof UISCParser.NativeCallExpressionContext) {
+            UISCParser.NativeCallExpressionContext call = (UISCParser.NativeCallExpressionContext) ctx.expression();
+            PrimitiveType nativeCallType = call.accept(new ASMGenPrimitiveTypeVisitor(Global, CurrentLocalScope));
+            if(PrimitiveType.Void.equals(nativeCallType)) {
                 return visit(ctx.expression()); // this function call doesnt return a value
             }
             System.out.println("Warning: Result of function call on line "+ctx.start.getLine()+" is ignored.");
@@ -1202,6 +1213,15 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
             }
             case "instruction"->{
                 return " instruction";
+            }
+            case "copy"->{
+                return visit(ctx.exprList().expression(0)) + " " + visit(ctx.exprList().expression(1)) + " " + visit(ctx.exprList().expression(2)) + " " + visit(ctx.exprList().expression(3)) + " " + visit(ctx.exprList().expression(4)) + " copy";
+            }
+            case "get"->{
+                return visit(ctx.exprList().expression(0)) + " " + visit(ctx.exprList().expression(1)) + " " + visit(ctx.exprList().expression(2)) + " " + visit(ctx.exprList().expression(3)) + " get";
+            }
+            case "set"->{
+                return visit(ctx.exprList().expression(0)) + " " + visit(ctx.exprList().expression(1)) + " " + visit(ctx.exprList().expression(2)) + " " + " set";
             }
         }
         throw new UnsupportedOperationException("No implementation for native call: "+ctx.ID().getText());

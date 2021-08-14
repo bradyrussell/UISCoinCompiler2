@@ -112,10 +112,10 @@ public class ASMGenPrimitiveTypeVisitor extends ASMGenSubVisitorBase<PrimitiveTy
     @Override
     public PrimitiveType visitNativeCallExpression(UISCParser.NativeCallExpressionContext ctx) {
         switch (ctx.ID().getText()) {
-            case "encrypt","decrypt","zip","unzip","sha512" ->{
+            case "encrypt","decrypt","zip","unzip","sha512","get" ->{
                 return PrimitiveType.ByteArray;
             }
-            case "verifySig" -> {
+            case "verifySig","copy","set" -> {
                 return PrimitiveType.Void;
             }
             case "instruction" -> {
