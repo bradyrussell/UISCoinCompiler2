@@ -19,6 +19,7 @@ public class ASMGenerationVisitor extends UISCBaseVisitor<String> {
     HashMap<String, Integer> nativeFunctionCallParameters = new HashMap<>();
 
     ////////////////////////
+
     int LabelIndex = 0;
 
     public ScopeGlobal Global = new ScopeGlobal("GlobalScope", null);

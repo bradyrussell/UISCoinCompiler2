@@ -172,12 +172,12 @@ public class CompilerTest {
         ScriptExecution optimizedScriptExecution = new ScriptExecution();
         ScriptExecution optimizedZippedScriptExecution = new ScriptExecution();
 
-        originalScriptExecution.Initialize(originalBytecode);
-        optimizedScriptExecution.Initialize(optimizedBytecode);
-        optimizedZippedScriptExecution.Initialize(optimizedZippedBytecode);
+        originalScriptExecution.initialize(originalBytecode);
+        optimizedScriptExecution.initialize(optimizedBytecode);
+        optimizedZippedScriptExecution.initialize(optimizedZippedBytecode);
 
         try{
-            while (originalScriptExecution.Step());
+            while (originalScriptExecution.step());
         }catch (ScriptInvalidException | ScriptEmptyStackException | ScriptInvalidParameterException | ScriptUnsupportedOperationException e){
             fail(e);
         }
@@ -187,7 +187,7 @@ public class CompilerTest {
 
         if(!bNoOptimization){
             try{
-                while (optimizedScriptExecution.Step());
+                while (optimizedScriptExecution.step());
             }catch (ScriptInvalidException | ScriptEmptyStackException | ScriptInvalidParameterException | ScriptUnsupportedOperationException e){
                 fail(e);
             }
@@ -197,7 +197,7 @@ public class CompilerTest {
         }
 
         try{
-            while (optimizedZippedScriptExecution.Step());
+            while (optimizedZippedScriptExecution.step());
         }catch (ScriptInvalidException | ScriptEmptyStackException | ScriptInvalidParameterException | ScriptUnsupportedOperationException e){
             fail(e);
         }

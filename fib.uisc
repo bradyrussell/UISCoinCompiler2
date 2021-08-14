@@ -1,4 +1,9 @@
-int32 x = 0;
-ufori(1,1000 as int32 i) {
-    ++x;
+byte x = true;
+
+if(x) {
+    int32 y = 1;
+} else if (x == false){
+    int32 z = 2;
+} else {
+    int32 z = 2;
 }

@@ -34,7 +34,7 @@ public class ASMUtil {
     }
 
     public static String generateExecuteZippedASM(String ASM) {
-        return generateExecuteZippedBytecode(BytesUtil.ZipBytes(ScriptParser.CompileScriptTokensToBytecode(ScriptParser.GetTokensFromString(ASM,true))));
+        return generateExecuteZippedBytecode(BytesUtil.zipBytes(ScriptParser.CompileScriptTokensToBytecode(ScriptParser.GetTokensFromString(ASM,true))));
     }
 
     // returns asm to cast one type to another, or null if conversion is not allowed
