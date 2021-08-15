@@ -1,6 +1,8 @@
 package com.bradyrussell.uiscoin.ide.antlr;
 
 import com.bradyrussell.uiscoin.BytesUtil;
+import com.bradyrussell.uiscoin.ide.antlr.syntaxhighlighter.SyntaxHighlightGenerator;
+import com.bradyrussell.uiscoin.ide.antlr.syntaxhighlighter.SyntaxHighlighterHtml;
 import com.bradyrussell.uiscoin.ide.grammar.PrimitiveType;
 import com.bradyrussell.uiscoin.script.ScriptParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -138,13 +140,15 @@ public class ASMUtil {
     public static String compileHLLToSyntaxMarkup(String HLL) {
         ASMUtil.bNoComments = true;
 
+        if(!HLL.endsWith("\n")) HLL = HLL+"\n";
+
         UISCLexer lexer = new UISCLexer(new ANTLRInputStream(HLL));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         UISCParser parser = new UISCParser(tokens);
         ParseTree tree = parser.file();
 
         ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
-        SyntaxHighlightGenerator syntaxHighlighter = new SyntaxHighlightGenerator(tokens);
+        SyntaxHighlightGenerator syntaxHighlighter = new SyntaxHighlightGenerator(tokens, new SyntaxHighlighterHtml());
         parseTreeWalker.walk(syntaxHighlighter, tree);
         return syntaxHighlighter.getText();
     }

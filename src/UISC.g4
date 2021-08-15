@@ -52,8 +52,8 @@ statement:   block                                                              
     |   varDeclaration                                                                                                  #varDeclarationStatement
     |   structDeclaration                                                                                               #structDeclarationStatement
     |   'if' conditional=expression '{' ifbody=statement+ '}' elseifStatement* elseStatement?                           #ifStatement
-    |   'ufori' '(' iterations=INT (',' iterationsEnd=INT)? 'as' type ID ')' forbody=statement+                         #uforiStatement
-    |   'uforeach' '(' arrayToLoop=ID 'as' varDeclaration ')' forbody=statement+                                        #uforeachStatement
+    |   'ufori' '(' iterations=INT (',' iterationsEnd=INT)? as='as' type ID ')' forbody=statement+                         #uforiStatement
+    |   'uforeach' '(' arrayToLoop=ID as='as' varDeclaration ')' forbody=statement+                                        #uforeachStatement
     |   'while' '(' expression ')' whilebody=statement+                                                                 #whileStatement // EFC code
     |   'for' '(' varDeclaration conditional=expression ';' afterEach=statement ')' forbody=statement+                  #forStatement // EFC code
     |   'return' retval=expression? ';'                                                                                 #returnStatement

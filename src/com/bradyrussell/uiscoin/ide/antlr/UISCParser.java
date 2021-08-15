@@ -1129,6 +1129,7 @@ public class UISCParser extends Parser {
 	public static class UforiStatementContext extends StatementContext {
 		public Token iterations;
 		public Token iterationsEnd;
+		public Token as;
 		public StatementContext forbody;
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
@@ -1180,6 +1181,7 @@ public class UISCParser extends Parser {
 	}
 	public static class UforeachStatementContext extends StatementContext {
 		public Token arrayToLoop;
+		public Token as;
 		public StatementContext forbody;
 		public VarDeclarationContext varDeclaration() {
 			return getRuleContext(VarDeclarationContext.class,0);
@@ -1678,7 +1680,7 @@ public class UISCParser extends Parser {
 				}
 
 				setState(189);
-				match(T__22);
+				((UforiStatementContext)_localctx).as = match(T__22);
 				setState(190);
 				type();
 				setState(191);
@@ -1718,7 +1720,7 @@ public class UISCParser extends Parser {
 				setState(200);
 				((UforeachStatementContext)_localctx).arrayToLoop = match(ID);
 				setState(201);
-				match(T__22);
+				((UforeachStatementContext)_localctx).as = match(T__22);
 				setState(202);
 				varDeclaration();
 				setState(203);

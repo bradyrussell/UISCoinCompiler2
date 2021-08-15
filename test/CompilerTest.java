@@ -172,7 +172,16 @@ public class CompilerTest {
                         "myTest.b = myTest.a * 5;\n" +
                         "ufori(4 as int32 i){\n" +
                         "    myTest.c[i] = ((int32)myTest.b) + i;\n" +
-                        "}";
+                        "}\n" +
+                        "int64 square(int64 a) {\n\treturn a * a;\n}\nint64 b = @square((int64)2);\n" +
+                        "byte m[] = \"Hello world!\";\n" +
+                        "byte k[] = \"encryptionKey\";\n" +
+                        "void o = (void)_encrypt(m, k);\n" +
+                        "asm(\"/* my asm comment */\");\n" +
+                        "o = (void)_decrypt(_encrypt(m, k), k);\n" +
+                        "o = (void)_zip(_decrypt(_encrypt(m, k), k));\n" +
+                        "o = (void)_unzip(_zip(_decrypt(_encrypt(m, k), k)));\n" +
+                        "_copy($m, (int32)0, $k, (int32)0, (int32)2);\n";
         System.out.println(ASMUtil.compileHLLToSyntaxMarkup(Script));
     }
 
