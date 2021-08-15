@@ -6,8 +6,7 @@ import com.bradyrussell.uiscoin.script.ScriptParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-
-import java.util.Arrays;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class ASMUtil {
     public static boolean bNoComments = false;
@@ -134,6 +133,20 @@ public class ASMUtil {
         String asm = asmGenerationVisitor.visit(tree);
 
         return asmGenerationVisitor.Global.getRecursiveAllocation()+ "\n" + asm;
+    }
+
+    public static String compileHLLToSyntaxMarkup(String HLL) {
+        ASMUtil.bNoComments = true;
+
+        UISCLexer lexer = new UISCLexer(new ANTLRInputStream(HLL));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        UISCParser parser = new UISCParser(tokens);
+        ParseTree tree = parser.file();
+
+        ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
+        SyntaxHighlightGenerator syntaxHighlighter = new SyntaxHighlightGenerator(tokens);
+        parseTreeWalker.walk(syntaxHighlighter, tree);
+        return syntaxHighlighter.getText();
     }
 
     public static String generateLoadArrayElement(int StackElementAddress, String ArrayIndexExpressionCastedToIntASM, int SizeOfElement){

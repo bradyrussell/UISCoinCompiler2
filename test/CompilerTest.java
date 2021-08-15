@@ -157,6 +157,25 @@ public class CompilerTest {
         performStandardTests(ASMUtil.compileHLLToASM(Script), "[72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 33] [72, 101, 99, 114, 121, 112, 116, 105, 111, 110, 75, 101, 121] [72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 33]");
     }
 
+    @Test
+    public void Test_SyntaxMarkup() {
+        String Script =
+                "struct test {\n" +
+                        "    int32 a;\n" +
+                        "    int64 b;\n" +
+                        "    int32 c[4];\n" +
+                        "}\n" +
+                        "\n" +
+                        "test myTest;\n" +
+                        "\n" +
+                        "myTest.a = 10;\n" +
+                        "myTest.b = myTest.a * 5;\n" +
+                        "ufori(4 as int32 i){\n" +
+                        "    myTest.c[i] = ((int32)myTest.b) + i;\n" +
+                        "}";
+        System.out.println(ASMUtil.compileHLLToSyntaxMarkup(Script));
+    }
+
     private void performStandardTests(String allocation, String expectedOutput) {
         String optimized = ASMUtil.performBasicOptimizations(allocation);
 

@@ -1,4 +1,8 @@
 grammar UISC;
+@lexer::members {
+    private static final int WHITESPACE = 1;
+    private static final int COMMENTS = 2;
+}
 
 file:   (functionDeclaration | varDeclaration | statement)+ ;
 
@@ -144,6 +148,9 @@ expression:
     ;
 exprList : expression (',' expression)* ;   // arg list
 
+
+
+
 //have to reserve keywords here so they arent parsed as struct names?
 CONST:
     'const'
@@ -180,12 +187,16 @@ StringChar
     |   '\\\r\n' // Added line
     ;
 
-WS  :   [ \t\n\r]+ -> skip ;
+WS  :   [ \t\n\r]+ -> channel(1);
 
 SL_COMMENT
-    :   '//' .*? '\n' -> skip
+    :   '//' .*? '\n' -> channel(2)
     ;
 
 ML_COMMENT
-    : '/*' .*? '*/' -> skip
+    : '/*' .*? '*/' -> channel(2)
+    ;
+
+INVALID
+    : . -> channel(2)
     ;

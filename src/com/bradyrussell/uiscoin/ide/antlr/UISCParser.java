@@ -26,7 +26,8 @@ public class UISCParser extends Parser {
 		T__52=53, T__53=54, T__54=55, T__55=56, T__56=57, T__57=58, T__58=59, 
 		T__59=60, T__60=61, T__61=62, T__62=63, T__63=64, T__64=65, T__65=66, 
 		T__66=67, T__67=68, T__68=69, T__69=70, T__70=71, T__71=72, CONST=73, 
-		ID=74, INT=75, FLOAT=76, STRING=77, CHAR=78, WS=79, SL_COMMENT=80, ML_COMMENT=81;
+		ID=74, INT=75, FLOAT=76, STRING=77, CHAR=78, WS=79, SL_COMMENT=80, ML_COMMENT=81, 
+		INVALID=82;
 	public static final int
 		RULE_file = 0, RULE_pointer = 1, RULE_varDeclaration = 2, RULE_structDeclaration = 3, 
 		RULE_type = 4, RULE_primitiveType = 5, RULE_structType = 6, RULE_booleanLiteral = 7, 
@@ -71,7 +72,7 @@ public class UISCParser extends Parser {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, "CONST", "ID", "INT", "FLOAT", "STRING", "CHAR", "WS", "SL_COMMENT", 
-			"ML_COMMENT"
+			"ML_COMMENT", "INVALID"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -3940,7 +3941,7 @@ public class UISCParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3S\u01e1\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3T\u01e1\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
