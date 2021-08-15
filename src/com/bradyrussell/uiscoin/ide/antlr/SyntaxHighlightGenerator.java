@@ -67,6 +67,12 @@ public class SyntaxHighlightGenerator extends UISCBaseListener {
     }
 
     @Override
+    public void enterCharLiteralExpression(UISCParser.CharLiteralExpressionContext ctx) {
+        rewriter.insertBefore(ctx.start, SyntaxHighlight.StringLiteral.getOpenTag());
+        rewriter.insertAfter(ctx.stop, SyntaxHighlight.StringLiteral.getCloseTag());
+    }
+
+    @Override
     public void enterInclude(UISCParser.IncludeContext ctx) {
         if(ctx.STRING().getSymbol() != null) {
             rewriter.insertBefore(ctx.STRING().getSymbol(), SyntaxHighlight.StringLiteral.getOpenTag());
@@ -130,7 +136,29 @@ public class SyntaxHighlightGenerator extends UISCBaseListener {
         }
     }
 
+    @Override
+    public void enterFunctionCallExpression(UISCParser.FunctionCallExpressionContext ctx) {
+        if(ctx.ID().getSymbol() != null) {
+            rewriter.insertBefore(ctx.ID().getSymbol(), SyntaxHighlight.Function.getOpenTag());
+            rewriter.insertAfter(ctx.ID().getSymbol(), SyntaxHighlight.Function.getCloseTag());
+        }
+    }
 
+    @Override
+    public void enterFunctionDeclaration(UISCParser.FunctionDeclarationContext ctx) {
+        if(ctx.ID().getSymbol() != null) {
+            rewriter.insertBefore(ctx.ID().getSymbol(), SyntaxHighlight.Function.getOpenTag());
+            rewriter.insertAfter(ctx.ID().getSymbol(), SyntaxHighlight.Function.getCloseTag());
+        }
+    }
+
+    @Override
+    public void enterVariableReferenceExpression(UISCParser.VariableReferenceExpressionContext ctx) {
+        if(ctx.ID().getSymbol() != null) {
+            rewriter.insertBefore(ctx.ID().getSymbol(), SyntaxHighlight.Variable.getOpenTag());
+            rewriter.insertAfter(ctx.ID().getSymbol(), SyntaxHighlight.Variable.getCloseTag());
+        }
+    }
 
     public static String style =
             "<style>\n" +
@@ -156,6 +184,12 @@ public class SyntaxHighlightGenerator extends UISCBaseListener {
                     "}\n" +
                     ".Keyword {\n" +
                     "\tcolor:brown;\n" +
+                    "}\n" +
+                    ".Function {\n" +
+                    "\tcolor:yellow;\n" +
+                    "}\n" +
+                    ".Variable {\n" +
+                    "\tcolor:pink;\n" +
                     "}\n" +
                     "</style>";
 

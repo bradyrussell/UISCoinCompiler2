@@ -8,7 +8,9 @@ public enum SyntaxHighlight {
     Comment,
     NumberLiteral,
     NativeCall,
-    Keyword
+    Keyword,
+    Function,
+    Variable
     ;
 
     private final String OpenTag;
